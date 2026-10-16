@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ClinicSync.Views
+namespace ClinicSyncDesktop.Views
 {
     /// <summary>
     /// Interaction logic for UserControl1.xaml

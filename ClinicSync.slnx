@@ -1,3 +1,4 @@
 <Solution>
-  <Project Path="ClinicSync.csproj" />
+  <Project Path="ClinicSyncDesktop/ClinicSyncDesktop.csproj" />
+  <Project Path="ClinicSyncServer/ClinicSyncServer.csproj" />
 </Solution>

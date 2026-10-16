@@ -1,4 +1,4 @@
-﻿namespace ClinicSync.Data
+﻿namespace ClinicSyncDesktop.Data
 {
     public class ConexionBD
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ClinicSync
+namespace ClinicSyncDesktop
 {
     public class Paciente
     {

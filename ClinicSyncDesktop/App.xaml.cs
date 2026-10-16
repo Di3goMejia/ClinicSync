@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace ClinicSync
+namespace ClinicSyncDesktop
 {
     /// <summary>
     /// Interaction logic for App.xaml
