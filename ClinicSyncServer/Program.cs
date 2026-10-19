@@ -1,41 +1,65 @@
+
+using ClinicSyncServer.Common;
+using ClinicSyncServer.Common.Seguridad;
+using ClinicSyncServer.Features.Auth;
+using ClinicSyncServer.Features.Permisos;
+using ClinicSyncServer.Features.Sesiones;
+using ClinicSyncServer.Features.Usuarios;
+using ClinicSyncServer.Infrastructure;
+using ClinicSyncServer.Infrastructure.Auth;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+/* Servicios */
+
+// Errores estandarizados
+builder.Services.AddProblemDetails(opciones =>
+{
+    opciones.CustomizeProblemDetails = ctx =>
+    {
+        ctx.ProblemDetails.Extensions["traceId"] = ctx.HttpContext.TraceIdentifier;
+
+        if (ctx.ProblemDetails is HttpValidationProblemDetails)
+            ctx.ProblemDetails.Title = "Datos no válidos.";
+    };
+});
+
+// Validación de parámetros de Minimal API
+builder.Services.AddValidation();
+
+builder.Services
+    .AddInfraestructura(builder.Configuration)  // ConnectionOptions, SqlConnectionFactory, hasher, correo, Dapper
+    .AddJwtAuth(builder.Configuration)          // JwtOptions, ITokenService, autenticación Bearer
+    .AddPoliticasPermisos()                     // FallbackPolicy + una política por permiso
+    .AddPermisos()
+    .AddSesiones()
+    .AddAuth()
+    .AddUsuarios();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+/* Pipeline */
+
+// Captura de errores.
+app.UseMiddleware<ExceptionMiddleware>();
+
+// Cultura para los mensajes de validación
+var culturas = new[] { new CultureInfo("es-HN"), new CultureInfo("es") };
+app.UseRequestLocalization(new RequestLocalizationOptions
 {
-    app.MapOpenApi();
-}
+    DefaultRequestCulture = new RequestCulture("es-HN"),
+    SupportedCultures = culturas,
+    SupportedUICultures = culturas
+});
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+/* Endpoints */
+app.MapAuth();
+app.MapUsuarios();
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
