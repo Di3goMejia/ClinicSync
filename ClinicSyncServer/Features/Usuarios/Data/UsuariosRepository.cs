@@ -11,40 +11,6 @@ namespace ClinicSyncServer.Features.Usuarios.Data
 {
     public class UsuariosRepository(SqlConnectionFactory factory)
     {
-        public async Task<UsuarioAuth?> ObtenerParaLoginAsync(string identificador)
-        {
-            await using var db = factory.Crear();
-            await db.OpenAsync();
-
-            return await db.QuerySingleOrDefaultAsync<UsuarioAuth>(
-                "api.usp_Usuarios_ObtenerParaLogin",
-                new { Identificador = identificador },
-                commandType: CommandType.StoredProcedure
-            );
-        }
-
-        public async Task RegistrarLoginExitosoAsync(int idUsuario)
-        {
-            await using var db = factory.Crear();
-            await db.OpenAsync();
-
-            await db.ExecuteAsync(
-                "api.usp_Usuarios_RegistrarLoginExitoso",
-                new { IdUsuario = idUsuario},
-                commandType: CommandType.StoredProcedure
-            );
-        }
-
-        public async Task EstablecerPasswordAsync(byte[] tokenHash, string tipo, string clave)
-        {
-            await using SqlConnection db = factory.Crear();
-            await db.OpenAsync();
-
-            await db.ExecuteAsync("api.usp_Usuarios_EstablecerPassword",
-                new { TokenHash = tokenHash, TipoToken = tipo, Clave = clave },
-                commandType: CommandType.StoredProcedure);
-        }
-
         public async Task<CrearUsuarioResponse> CrearConEmpleadoAsync(CrearUsuarioRequest req, byte[] tokenHash, DateTime expira)
         {
             await using var db = factory.Crear();

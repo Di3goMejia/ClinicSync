@@ -12,5 +12,7 @@ namespace ClinicSyncServer.Features.Usuarios
             int idSolicitante,
             bool puedeVerTodos,
             CancellationToken ct = default);
+
+        Task<IEnumerable<UsuarioListadoResponse>> ListarAsync(CancellationToken ct = default);
     }
 }

@@ -8,4 +8,10 @@
         string? ImagenPerfil, string NombreUsuario, string CorreoLogin, int IdRol,
         string Estado, DateTime FechaRegistro
     );
+
+    public record UsuarioListadoResponse(
+        int IdUsuario, int IdEmpleado, int IdRol, string Nombres, 
+        string Apellidos, string? ImagenPerfil, DateTime UltimoAcceso, 
+        string Estado
+    );
 }

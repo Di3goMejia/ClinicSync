@@ -39,5 +39,17 @@ namespace ClinicSyncServer.Features.Usuarios
                 u.CorreoContacto, u.ImagenPerfil, u.NombreUsuario, u.CorreoLogin, 
                 u.IdRol, u.Estado, u.FechaRegistro);
         }
+
+        public async Task<IEnumerable<UsuarioListadoResponse>> ListarAsync(CancellationToken ct = default)
+        {
+            var usuarios = await repo.ListarAsync();
+            return [.. usuarios
+                .Select(u => new UsuarioListadoResponse(
+                    u.IdUsuario, u.IdEmpleado, u.IdRol, u.Nombres, u.Apellidos,
+                    u.ImagenPerfil, u.UltimoAcceso, u.Estado
+                )
+            )];
+        }
+
     }
 }

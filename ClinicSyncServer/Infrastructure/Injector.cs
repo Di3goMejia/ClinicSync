@@ -3,7 +3,6 @@ using ClinicSyncServer.Common.Data;
 using ClinicSyncServer.Common.Opciones;
 using ClinicSyncServer.Infrastructure.Auth;
 using ClinicSyncServer.Infrastructure.Email;
-using Microsoft.AspNetCore.Http.Connections;
 
 namespace ClinicSyncServer.Infrastructure
 {

@@ -1,13 +1,6 @@
-﻿using System.Text;
+﻿using ClinicSyncDesktop.Api;
+using ClinicSyncDesktop.Views;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ClinicSyncDesktop
 {
@@ -16,9 +9,32 @@ namespace ClinicSyncDesktop
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private readonly ClienteApi _api;
+        private readonly ClienteAuth _auth;
+        private readonly TokenStore _tokens;
+
+        public MainWindow(ClienteApi api, ClienteAuth auth, TokenStore tokens)
         {
             InitializeComponent();
+
+            _api = api;
+            _auth = auth;
+            _tokens = tokens;
+        }
+
+        private void VolverALogin(string? aviso)
+        {
+            if (aviso is not null)
+                MessageBox.Show(aviso, "Sesión", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            new LoginWindow(_auth, _api, _tokens).Show();
+            Close();
+        }
+
+        private async void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            await _auth.CerrarSesionAsync();
+            VolverALogin(null);
         }
     }
 }

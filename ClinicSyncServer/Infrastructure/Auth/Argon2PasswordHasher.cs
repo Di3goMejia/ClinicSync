@@ -1,6 +1,5 @@
 ﻿using ClinicSyncServer.Common.Abstracciones;
 using Konscious.Security.Cryptography;
-using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -20,14 +19,14 @@ namespace ClinicSyncServer.Infrastructure.Auth
             HashFicticio = Hash(Guid.NewGuid().ToString());
         }
 
-        // Parametros para generar el hash de la contraseña.
-        // Se utiliza la segunda recomendación proporcionada por el RFC 9106.
+        // Parametros para generar el hash de la contraseña, según la segunda
+        // recomendación proporcionada por el RFC 9106.
         // https://www.rfc-editor.org/info/rfc9106/#section-4-5
         private const int MemoriaKb = 65_536; // 64 MB
-        private const int Iteraciones = 3; // Número de iteraciones.
-        private const int Paralelismo = 4; // Número de hilos a utilizar.
-        private const int TamanoSalt = 16; // 128 bits
-        private const int TamanoHash = 32; // 256 bits
+        private const int Iteraciones = 3;    // Número de iteraciones.
+        private const int Paralelismo = 4;    // Número de hilos a utilizar.
+        private const int TamanoSalt = 16;    // 128 bits
+        private const int TamanoHash = 32;    // 256 bits
 
         /// <summary>
         /// Genera el hash de la clave especificada.

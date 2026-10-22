@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         Title="ClinicSync" Height="450" Width="800">
     <Grid>
-
+        <Button Content="Cerrar" HorizontalAlignment="Center" Margin="0,124,0,0" VerticalAlignment="Top" Height="38" Width="212" Click="Button_Click_1"/>
     </Grid>
 </Window>

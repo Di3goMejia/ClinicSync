@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ClinicSyncDesktop
+namespace ClinicSyncDesktop.Models
 {
     public class Paciente
     {
