@@ -4,6 +4,7 @@ using ClinicSyncServer.Common.Seguridad;
 using ClinicSyncServer.Features.Auth;
 using ClinicSyncServer.Features.Permisos;
 using ClinicSyncServer.Features.Sesiones;
+using ClinicSyncServer.Features.Tratamientos;
 using ClinicSyncServer.Features.Usuarios;
 using ClinicSyncServer.Infrastructure;
 using ClinicSyncServer.Infrastructure.Auth;
@@ -36,7 +37,8 @@ builder.Services
     .AddPermisos()
     .AddSesiones()
     .AddAuth()
-    .AddUsuarios();
+    .AddUsuarios()
+    .AddTratamientos();
 
 var app = builder.Build();
 
@@ -61,5 +63,6 @@ app.UseAuthorization();
 /* Endpoints */
 app.MapAuth();
 app.MapUsuarios();
+app.MapTratamientos();
 
 app.Run();

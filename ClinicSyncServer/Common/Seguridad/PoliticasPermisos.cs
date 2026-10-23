@@ -8,7 +8,6 @@ namespace ClinicSyncServer.Common.Seguridad
         {
             services.AddAuthorization(opciones =>
             {
-                // Cualquier endpoint nuevo exige autenticación.
                 opciones.FallbackPolicy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();

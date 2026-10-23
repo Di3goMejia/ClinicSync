@@ -35,6 +35,20 @@ namespace ClinicSyncDesktop.Api
                 Content = cuerpo is null ? null : JsonContent.Create(cuerpo)
             }, autenticado, ct);
 
+        public Task<T?> PutAsync<T>(string ruta, object? cuerpo, bool autenticado = true,
+            CancellationToken ct = default) =>
+            EnviarYLeerAsync<T>(() => new HttpRequestMessage(HttpMethod.Put, ruta)
+            {
+                Content = cuerpo is null ? null : JsonContent.Create(cuerpo)
+            }, autenticado, ct);
+
+        public Task<T?> PatchAsync<T>(string ruta, object? cuerpo, bool autenticado = true,
+            CancellationToken ct = default) =>
+            EnviarYLeerAsync<T>(() => new HttpRequestMessage(HttpMethod.Patch, ruta)
+            {
+                Content = cuerpo is null ? null : JsonContent.Create(cuerpo)
+            }, autenticado, ct);
+
         private async Task<T?> EnviarYLeerAsync<T>(Func<HttpRequestMessage> crear,
             bool autenticado, CancellationToken ct)
         {
