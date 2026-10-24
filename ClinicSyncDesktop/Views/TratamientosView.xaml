@@ -1,0 +1,407 @@
+﻿<UserControl x:Class="ClinicSyncDesktop.Views.TratamientosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#F4F6F3"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch">
+
+    <UserControl.Resources>
+
+        <!-- DEGRADADO DEL MENÚ PRINCIPAL -->
+        <LinearGradientBrush x:Key="DegradadoTurquesa"
+                             StartPoint="0,0"
+                             EndPoint="0,1">
+            <GradientStop Color="#32A5AB" Offset="0"/>
+            <GradientStop Color="#138DAA" Offset="1"/>
+        </LinearGradientBrush>
+
+        <SolidColorBrush x:Key="AzulOscuro" Color="#17475A"/>
+        <SolidColorBrush x:Key="FondoTabla" Color="#D9DDD8"/>
+        <SolidColorBrush x:Key="LineaTabla" Color="#E8EBE7"/>
+
+        <!-- BOTÓN AGREGAR -->
+        <Style x:Key="BotonAgregar"
+               TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="8,0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderThickness="0"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                RecognizesAccessKey="True"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BUSCADOR -->
+        <Style x:Key="CampoBuscar"
+               TargetType="{x:Type TextBox}">
+            <Setter Property="Background" Value="#F5F7F4"/>
+            <Setter Property="Foreground"
+                    Value="{StaticResource AzulOscuro}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="8,1"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="12"
+                                SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- INTERRUPTOR VISUAL -->
+        <Style x:Key="InterruptorActivo"
+               TargetType="{x:Type ToggleButton}">
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="Height" Value="15"/>
+            <Setter Property="Background" Value="#F1F3F0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Grid>
+                            <Border x:Name="Pista"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="8"/>
+
+                            <Ellipse x:Name="Circulo"
+                                     Width="11"
+                                     Height="11"
+                                     Fill="White"
+                                     HorizontalAlignment="Left"
+                                     Margin="2,0,0,0"/>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Pista"
+                                        Property="Background"
+                                        Value="#25AD9A"/>
+                                <Setter TargetName="Circulo"
+                                        Property="HorizontalAlignment"
+                                        Value="Right"/>
+                                <Setter TargetName="Circulo"
+                                        Property="Margin"
+                                        Value="0,0,2,0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ENGRANAJE -->
+
+        <Style x:Key="BotonEngranaje"
+               TargetType="{x:Type Button}">
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="Transparent"
+                                BorderThickness="0">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <!-- TABLA DE TRATAMIENTOS -->
+        <Style x:Key="TablaTratamientos"
+               TargetType="{x:Type DataGrid}">
+
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="RowHeaderWidth" Value="0"/>
+
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="CanUserReorderColumns" Value="False"/>
+            <Setter Property="CanUserResizeRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+
+            <Setter Property="HorizontalGridLinesBrush" Value="#E8EBE7"/>
+            <Setter Property="VerticalGridLinesBrush" Value="#D9DDD8"/>
+
+            <Setter Property="RowHeight" Value="32"/>
+            <Setter Property="ColumnHeaderHeight" Value="38"/>
+            <Setter Property="FontSize" Value="15"/>
+
+            <Setter Property="AlternationCount" Value="2"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
+
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
+                    Value="Auto"/>
+
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
+                    Value="Disabled"/>
+        </Style>
+
+        <!-- ENCABEZADOS CENTRADOS -->
+        <Style TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="4,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- FILAS ALTERNADAS -->
+        <Style TargetType="{x:Type DataGridRow}">
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+
+            <Style.Triggers>
+                <Trigger Property="AlternationIndex" Value="0">
+                    <Setter Property="Background" Value="#D9DDD8"/>
+                </Trigger>
+
+                <Trigger Property="AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#E8EBE7"/>
+                </Trigger>
+
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#C9DCD8"/>
+                    <Setter Property="Foreground" Value="#17475A"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- CELDAS: ALINEACIÓN CONTROLADA POR CADA COLUMNA -->
+        <Style TargetType="{x:Type DataGridCell}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="4,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#C9DCD8"/>
+                    <Setter Property="Foreground" Value="#17475A"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+    </UserControl.Resources>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <Grid Background="#F4F6F3"
+          ClipToBounds="True">
+
+
+        <Button Content="← Volver al menú"
+        Width="155"
+        Height="38"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        Margin="15,15,0,0"
+        Background="#32A5AB"
+        Foreground="White"
+        BorderThickness="0"
+        FontSize="13"
+        FontWeight="SemiBold"
+        Cursor="Hand"
+        Click="btnVolver_Click"/>
+
+        <Border Margin="185,0,20,20"
+                Background="{StaticResource FondoTabla}"
+                CornerRadius="10"
+                ClipToBounds="True">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="42"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- BARRA SUPERIOR CON DEGRADADO DEL MENÚ -->
+                <Border Grid.Row="0"
+                        Background="{StaticResource DegradadoTurquesa}"
+                        CornerRadius="10,10,0,0">
+
+                    <Grid Margin="12,0,12,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button x:Name="btnAgregar"
+                                Grid.Column="0"
+                                Style="{StaticResource BotonAgregar}"
+                                HorizontalContentAlignment="Left"
+                                Click="btnAgregar_Click">
+
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/Resources/ImagenesTabla/IconoMas.png"
+                                       Width="17"
+                                       Height="17"
+                                       Stretch="Uniform"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,11,0"/>
+
+                                <TextBlock Text="AGREGAR NUEVO"
+                                           FontSize="13"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <TextBlock Grid.Column="1"
+                                   Text="Buscar:"
+                                   Foreground="White"
+                                   FontSize="13"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,10,0"/>
+
+                        <TextBox x:Name="txtBuscar"
+                                 Grid.Column="2"
+                                 Style="{StaticResource CampoBuscar}"
+                                 Height="27"
+                                 VerticalAlignment="Center"
+                                 ToolTip="Buscar tratamiento"/>
+                    </Grid>
+                </Border>
+
+                <!-- TABLA -->
+                <DataGrid x:Name="dgTratamientos"
+                          Grid.Row="1"
+                          Style="{StaticResource TablaTratamientos}"
+                          Margin="0"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch">
+
+                    <DataGrid.Columns>
+
+                        <!-- IDENTIFICADOR -->
+                        <DataGridTextColumn Header="#"
+                                            Binding="{Binding IdTratamiento}"
+                                            Width="0.55*">  
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <!-- NOMBRE -->
+                        <DataGridTextColumn Header="Nombre del tratamiento"
+                                            Binding="{Binding Nombre}"
+                                            Width="2.1*">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <!-- PRECIO -->
+                        <DataGridTextColumn Header="Precio base"
+                                            Binding="{Binding Precio, StringFormat={}{0:N2}}"
+                                            Width="1.3*">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <!-- INTERRUPTOR CENTRADO -->
+                        <DataGridTemplateColumn Header="Estado"
+                                                Width="0.9*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ToggleButton
+                                        Style="{StaticResource InterruptorActivo}"
+                                        IsChecked="{Binding Activo}"
+                                        IsHitTestVisible="False"
+                                        Focusable="False"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- ENGRANAJE -->
+                        <DataGridTemplateColumn Header=""
+                                                Width="0.5*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+
+                                    <Button Style="{StaticResource BotonEngranaje}"
+                                            ToolTip="Opciones del tratamiento"
+                                            IsEnabled="False">
+                                        <Image Source="/Resources/ImagenesTabla/IconoEngranaje.png"
+                                               Width="25"
+                                               Height="25"
+                                               Stretch="Uniform"
+                                               SnapsToDevicePixels="True"/>
+                                    </Button>
+
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

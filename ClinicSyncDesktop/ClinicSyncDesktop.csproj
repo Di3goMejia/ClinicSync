@@ -9,7 +9,43 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
+    <None Remove="Resources\Imagenes MenuPrincipal\agenda.png" />
+    <None Remove="Resources\Imagenes MenuPrincipal\ajuste.png" />
+    <None Remove="Resources\Imagenes MenuPrincipal\campana-azul.png" />
+    <None Remove="Resources\Imagenes MenuPrincipal\ClinicSync-LOGO.png" />
+    <None Remove="Resources\Imagenes MenuPrincipal\finanzas.png" />
+    <None Remove="Resources\Imagenes MenuPrincipal\inventario.png" />
+    <None Remove="Resources\Imagenes MenuPrincipal\pacientes.png" />
+    <None Remove="Resources\Imagenes MenuPrincipal\tratamientos.png" />
+    <None Remove="Resources\Imagenes MenuPrincipal\usuario-perfil.png" />
+    <None Remove="Resources\Imagenes MenuPrincipal\usuario.png" />
+    <None Remove="Resources\ImagenesAvisos\IconoAlerta.png" />
+    <None Remove="Resources\ImagenesAvisos\IconoAviso.png" />
+    <None Remove="Resources\ImagenesAvisos\IconoCheque.png" />
+    <None Remove="Resources\ImagenesAvisos\IconoError.png" />
+    <None Remove="Resources\ImagenesLogin\mostrar-contraseña.png" />
+    <None Remove="Resources\ImagenesTabla\IconoEngranaje.png" />
+    <None Remove="Resources\ImagenesTabla\IconoMas.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Imagenes MenuPrincipal\agenda.png" />
+    <Resource Include="Resources\Imagenes MenuPrincipal\ajuste.png" />
+    <Resource Include="Resources\Imagenes MenuPrincipal\campana-azul.png" />
+    <Resource Include="Resources\Imagenes MenuPrincipal\ClinicSync-LOGO.png" />
+    <Resource Include="Resources\Imagenes MenuPrincipal\finanzas.png" />
+    <Resource Include="Resources\Imagenes MenuPrincipal\inventario.png" />
+    <Resource Include="Resources\Imagenes MenuPrincipal\pacientes.png" />
+    <Resource Include="Resources\Imagenes MenuPrincipal\tratamientos.png" />
+    <Resource Include="Resources\Imagenes MenuPrincipal\usuario-perfil.png" />
+    <Resource Include="Resources\Imagenes MenuPrincipal\usuario.png" />
+    <Resource Include="Resources\ImagenesAvisos\IconoAlerta.png" />
+    <Resource Include="Resources\ImagenesAvisos\IconoAviso.png" />
+    <Resource Include="Resources\ImagenesAvisos\IconoCheque.png" />
+    <Resource Include="Resources\ImagenesAvisos\IconoError.png" />
+    <Resource Include="Resources\ImagenesLogin\mostrar-contraseña.png" />
+    <Resource Include="Resources\ImagenesTabla\IconoEngranaje.png" />
+    <Resource Include="Resources\ImagenesTabla\IconoMas.png" />
   </ItemGroup>
 
 </Project>
