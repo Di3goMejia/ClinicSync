@@ -165,7 +165,7 @@ namespace ClinicSyncDesktop.Views
                     "Ya existe un tratamiento con ese nombre",
                     StringComparison.OrdinalIgnoreCase))
                 {
-                    MensajeWindow.MostrarInformacion(
+                    MensajeWindow.MostrarError(
                         this,
                         "El tratamiento ya existe.");
                 }
