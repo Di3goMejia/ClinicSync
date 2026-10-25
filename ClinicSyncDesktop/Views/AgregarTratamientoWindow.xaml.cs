@@ -3,6 +3,7 @@ using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace ClinicSyncDesktop.Views
 {
@@ -11,15 +12,11 @@ namespace ClinicSyncDesktop.Views
         private readonly TratamientosApiService? _tratamientosService;
         private bool _guardando;
 
-        public AgregarTratamientoWindow()
-        {
-            InitializeComponent();
-        }
-
         public AgregarTratamientoWindow(
             TratamientosApiService tratamientosService)
-            : this()
         {
+            InitializeComponent();
+
             _tratamientosService = tratamientosService;
         }
 
@@ -46,9 +43,9 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
-            string nombre = txtNombre.Text.Trim();
-            string textoPrecio = txtPrecio.Text.Trim();
-            string descripcion = txtDescripcion.Text.Trim();
+            string nombre = TxtNombre.Text.Trim();
+            string textoPrecio = TxtPrecio.Text.Trim();
+            string descripcion = TxtDescripcion.Text.Trim();
 
             // Validar nombre obligatorio
             if (string.IsNullOrWhiteSpace(nombre))
@@ -57,7 +54,7 @@ namespace ClinicSyncDesktop.Views
                     this,
                     "Ingresa el nombre del tratamiento.");
 
-                txtNombre.Focus();
+                TxtNombre.Focus();
                 return;
             }
 
@@ -67,7 +64,7 @@ namespace ClinicSyncDesktop.Views
                     this,
                     "El nombre no puede superar los 100 caracteres.");
 
-                txtNombre.Focus();
+                TxtNombre.Focus();
                 return;
             }
 
@@ -78,7 +75,7 @@ namespace ClinicSyncDesktop.Views
                     this,
                     "Ingresa el precio base del tratamiento.");
 
-                txtPrecio.Focus();
+                TxtPrecio.Focus();
                 return;
             }
 
@@ -95,7 +92,7 @@ namespace ClinicSyncDesktop.Views
                     this,
                     "Ingresa un precio válido. Puedes utilizar hasta dos decimales, por ejemplo: 350.00.");
 
-                txtPrecio.Focus();
+                TxtPrecio.Focus();
                 return;
             }
 
@@ -105,7 +102,7 @@ namespace ClinicSyncDesktop.Views
                     this,
                     "El precio no puede ser negativo.");
 
-                txtPrecio.Focus();
+                TxtPrecio.Focus();
                 return;
             }
 
@@ -115,7 +112,7 @@ namespace ClinicSyncDesktop.Views
                     this,
                     "El precio supera el límite permitido.");
 
-                txtPrecio.Focus();
+                TxtPrecio.Focus();
                 return;
             }
 
@@ -125,7 +122,7 @@ namespace ClinicSyncDesktop.Views
                     this,
                     "El precio solo puede tener dos decimales.");
 
-                txtPrecio.Focus();
+                TxtPrecio.Focus();
                 return;
             }
 
@@ -136,7 +133,7 @@ namespace ClinicSyncDesktop.Views
                     this,
                     "La descripción no puede superar los 200 caracteres.");
 
-                txtDescripcion.Focus();
+                TxtDescripcion.Focus();
                 return;
             }
 
@@ -184,6 +181,11 @@ namespace ClinicSyncDesktop.Views
                 _guardando = false;
                 btnAgregar.IsEnabled = true;
             }
+        }
+
+        private void Barra_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left) DragMove();    
         }
     }
 }

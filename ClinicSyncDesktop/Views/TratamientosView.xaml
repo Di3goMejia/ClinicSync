@@ -4,7 +4,6 @@
              Background="#F4F6F3"
              HorizontalAlignment="Stretch"
              VerticalAlignment="Stretch">
-
     <UserControl.Resources>
 
         <!-- DEGRADADO DEL MENÚ PRINCIPAL -->
@@ -67,49 +66,6 @@
                                           Margin="{TemplateBinding Padding}"
                                           VerticalAlignment="Center"/>
                         </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- INTERRUPTOR VISUAL -->
-        <Style x:Key="InterruptorActivo"
-               TargetType="{x:Type ToggleButton}">
-            <Setter Property="Width" Value="28"/>
-            <Setter Property="Height" Value="15"/>
-            <Setter Property="Background" Value="#F1F3F0"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ToggleButton}">
-                        <Grid>
-                            <Border x:Name="Pista"
-                                    Background="{TemplateBinding Background}"
-                                    CornerRadius="8"/>
-
-                            <Ellipse x:Name="Circulo"
-                                     Width="11"
-                                     Height="11"
-                                     Fill="White"
-                                     HorizontalAlignment="Left"
-                                     Margin="2,0,0,0"/>
-                        </Grid>
-
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Pista"
-                                        Property="Background"
-                                        Value="#25AD9A"/>
-                                <Setter TargetName="Circulo"
-                                        Property="HorizontalAlignment"
-                                        Value="Right"/>
-                                <Setter TargetName="Circulo"
-                                        Property="Margin"
-                                        Value="0,0,2,0"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -252,7 +208,7 @@
         FontSize="13"
         FontWeight="SemiBold"
         Cursor="Hand"
-        Click="btnVolver_Click"/>
+        Click="BtnVolver_Click"/>
 
         <Border Margin="185,0,20,20"
                 Background="{StaticResource FondoTabla}"
@@ -277,11 +233,11 @@
                             <ColumnDefinition Width="220"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button x:Name="btnAgregar"
+                        <Button x:Name="BtnAgregar"
                                 Grid.Column="0"
                                 Style="{StaticResource BotonAgregar}"
                                 HorizontalContentAlignment="Left"
-                                Click="btnAgregar_Click">
+                                Click="BtnAgregar_Click">
 
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="/Resources/ImagenesTabla/IconoMas.png"
@@ -304,12 +260,12 @@
                                    VerticalAlignment="Center"
                                    Margin="0,0,10,0"/>
 
-                        <TextBox x:Name="txtBuscar"
+                        <TextBox x:Name="TxtBuscar"
                                  Grid.Column="2"
                                  Style="{StaticResource CampoBuscar}"
                                  Height="27"
                                  VerticalAlignment="Center"
-                                 ToolTip="Buscar tratamiento"/>
+                                 ToolTip="Buscar tratamiento" TextChanged="TxtBuscar_TextChanged"/>
                     </Grid>
                 </Border>
 
@@ -368,7 +324,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <ToggleButton
-                                        Style="{StaticResource InterruptorActivo}"
+                                        Style="{StaticResource Interruptor}"
                                         IsChecked="{Binding Activo}"
                                         IsHitTestVisible="False"
                                         Focusable="False"
@@ -384,9 +340,11 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
 
-                                    <Button Style="{StaticResource BotonEngranaje}"
+                                    <Button x:Name="BtnOpciones" 
+                                            Style="{StaticResource BotonEngranaje}"
                                             ToolTip="Opciones del tratamiento"
-                                            IsEnabled="False">
+                                            IsEnabled="True" 
+                                            Click="BtnOpciones_Click">
                                         <Image Source="/Resources/ImagenesTabla/IconoEngranaje.png"
                                                Width="25"
                                                Height="25"
