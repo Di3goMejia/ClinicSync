@@ -20,12 +20,33 @@ namespace ClinicSyncDesktop.Views
             _tratamientosService = tratamientosService;
         }
 
+
         private void Cerrar_Click(
             object sender,
             RoutedEventArgs e)
         {
+            string nombre = TxtNombre.Text.Trim();
+            string precio = TxtPrecio.Text.Trim();
+            string descripcion = TxtDescripcion.Text.Trim();
+
+            bool tieneDatos =
+                !string.IsNullOrWhiteSpace(nombre) ||
+                !string.IsNullOrWhiteSpace(precio) ||
+                !string.IsNullOrWhiteSpace(descripcion);
+
+            if (tieneDatos)
+            {
+                bool descartar = MensajeWindow.MostrarConfirmacion(
+                    this,
+                    "¿Seguro que desea descartar este registro?");
+
+                if (!descartar)
+                    return;
+            }
+
             DialogResult = false;
         }
+
 
         private async void Agregar_Click(
             object sender,
@@ -165,7 +186,7 @@ namespace ClinicSyncDesktop.Views
                     "Ya existe un tratamiento con ese nombre",
                     StringComparison.OrdinalIgnoreCase))
                 {
-                    MensajeWindow.MostrarInformacion(
+                    MensajeWindow.MostrarError(
                         this,
                         "El tratamiento ya existe.");
                 }
