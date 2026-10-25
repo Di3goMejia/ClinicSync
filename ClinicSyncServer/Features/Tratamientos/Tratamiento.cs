@@ -1,6 +1,6 @@
-﻿namespace ClinicSyncServer.Features.Tratamientos.Responses
+﻿namespace ClinicSyncServer.Features.Tratamientos
 {
-    public class TratamientoListado
+    public class Tratamiento
     {
         public int IdTratamiento { get; set; }
 

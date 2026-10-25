@@ -13,7 +13,7 @@ namespace ClinicSyncServer.Features.Tratamientos
             return services;
         }
 
-        public static WebApplication MapTratamientosModule(
+        public static WebApplication MapTratamientos(
             this WebApplication app)
         {
             app.MapTratamientosEndpoints();
