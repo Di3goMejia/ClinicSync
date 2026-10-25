@@ -38,7 +38,7 @@ builder.Services
     .AddSesiones()
     .AddAuth()
     .AddUsuarios()
-    .AddTratamientos();  // Agrega el módulo de Tratamientos
+    .AddTratamientos();  
 
 var app = builder.Build();
 
@@ -63,6 +63,6 @@ app.UseAuthorization();
 /* Endpoints */
 app.MapAuth();
 app.MapUsuarios();
-app.MapTratamientosModule();
+app.MapTratamientos();
 
 app.Run();

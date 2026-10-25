@@ -4,11 +4,18 @@
     {
         public const string UsuariosLeer = "USUARIOS_LEER";
         public const string UsuariosCrear = "USUARIOS_CREAR";
+        public const string TratamientosCrear = "TRATAMIENTOS_CREAR";
+        public const string TratamientosLeer = "TRATAMIENTOS_LEER";
+        public const string TratamientosModificar = "TRATAMIENTOS_MODIFICAR";
+        public const string TratamientosEstado = "TRATAMIENTOS_ESTADO";
 
         public static readonly IReadOnlyList<string> Todos =
         [
-            UsuariosLeer, UsuariosCrear
-        ]; 
+            // Usuarios
+            UsuariosLeer, UsuariosCrear,
+            // Tratamientos
+            TratamientosLeer, TratamientosCrear, TratamientosModificar, TratamientosEstado
+        ];
     }
 
     public static class ClaimsPersonalizados

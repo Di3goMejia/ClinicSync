@@ -84,14 +84,12 @@ namespace ClinicSync.Views
             iniciandoSesion = true;
 
             Button? boton = sender as Button;
-
-            if (boton != null)
-                boton.IsEnabled = false;
+            boton?.IsEnabled = false;
 
             try
             {
                 var resultado = await ClienteApi.IniciarSesionAsync(
-                    usuario,
+                    usuario, 
                     password);
 
                 if (resultado.Requiere2fa)
@@ -110,7 +108,7 @@ namespace ClinicSync.Views
                 // Comprobar que la sesión permite consultar el perfil.
                 await ClienteApi.ObtenerPerfilAsync();
 
-                MenuPrincipal menu = new MenuPrincipal();
+                MenuPrincipal menu = new();
 
                 Application.Current.MainWindow = menu;
                 menu.Show();
@@ -143,9 +141,7 @@ namespace ClinicSync.Views
                 TxtContrasenaVisible.Clear();
 
                 iniciandoSesion = false;
-
-                if (boton != null)
-                    boton.IsEnabled = true;
+                boton?.IsEnabled = true;
             }
         }
 
@@ -155,6 +151,11 @@ namespace ClinicSync.Views
             MessageBox.Show(
                 "Aquí se abrirá el formulario de recuperación de contraseña.",
                 "ClinicSync");
+        }
+
+        private void ChkRecordarSesion_Checked(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

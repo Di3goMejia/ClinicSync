@@ -28,6 +28,8 @@ namespace ClinicSyncServer.Features.Usuarios
 
         public async Task<UsuarioDetalleResponse?> ObtenerAsync(int idSolicitado, int idSolicitante, bool puedeVerTodos, CancellationToken ct = default)
         {
+            // Una persona sin el permiso de leer usuarios solo puede consultar la información de su
+            // propio usuario.
             if (!puedeVerTodos && idSolicitado != idSolicitante)
                 return null;
 
