@@ -20,6 +20,7 @@
     <None Remove="Resources\Imagenes MenuPrincipal\usuario-azul.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\usuario-blanco.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\usuario-perfil.png" />
+    <None Remove="Resources\ImagenesAvisos\borrar-archivo.png" />
     <None Remove="Resources\ImagenesAvisos\cerrar-aviso.png" />
     <None Remove="Resources\ImagenesAvisos\IconoAlerta.png" />
     <None Remove="Resources\ImagenesAvisos\IconoAviso.png" />
@@ -30,6 +31,10 @@
     <None Remove="Resources\ImagenesPacientes\cerrar-ventana.png" />
     <None Remove="Resources\ImagenesPacientes\expediente-medico.png" />
     <None Remove="Resources\ImagenesPacientes\flecha-hacia-abajo-combobox.png" />
+    <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\seleccion-marcada.png" />
+    <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\seleccion-sin-marcar.png" />
+    <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\subir-archivo.png" />
+    <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\volver-pacientes.png" />
     <None Remove="Resources\ImagenesTabla\IconoEngranaje.png" />
     <None Remove="Resources\ImagenesTabla\IconoMas.png" />
   </ItemGroup>
@@ -68,14 +73,27 @@
     <Resource Include="Resources\Imagenes MenuPrincipal\usuario-perfil.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\ImagenesAvisos\borrar-archivo.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\ImagenesAvisos\cerrar-aviso.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\ImagenesAvisos\IconoAlerta.png" />
-    <Resource Include="Resources\ImagenesAvisos\IconoAviso.png" />
-    <Resource Include="Resources\ImagenesAvisos\IconoCheque.png" />
-    <Resource Include="Resources\ImagenesAvisos\IconoError.png" />
-    <Resource Include="Resources\ImagenesLogin\mostrar-contraseña.png" />
+    <Resource Include="Resources\ImagenesAvisos\IconoAlerta.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesAvisos\IconoAviso.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesAvisos\IconoCheque.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesAvisos\IconoError.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesLogin\mostrar-contraseña.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\ImagenesPacientes\calendario.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -88,8 +106,24 @@
     <Resource Include="Resources\ImagenesPacientes\flecha-hacia-abajo-combobox.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\ImagenesTabla\IconoEngranaje.png" />
-    <Resource Include="Resources\ImagenesTabla\IconoMas.png" />
+    <Resource Include="Resources\ImagenesPacientes\ImagenesExpediente\seleccion-marcada.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesPacientes\ImagenesExpediente\seleccion-sin-marcar.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesPacientes\ImagenesExpediente\subir-archivo.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesPacientes\ImagenesExpediente\volver-pacientes.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesTabla\IconoEngranaje.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesTabla\IconoMas.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

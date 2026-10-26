@@ -4,6 +4,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ClinicSyncDesktop.Data
 {
@@ -20,6 +23,8 @@ namespace ClinicSyncDesktop.Data
         public string NombreUsuario { get; set; } = "";
         public string Rol { get; set; } = "";
         public bool TieneFinanzas { get; set; }
+        public int IdEmpleado { get; set; }
+        public string NombreEmpleado { get; set; } = "";
     }
 
     public static class ClienteApi
@@ -150,7 +155,7 @@ namespace ClinicSyncDesktop.Data
         {
             var tokenUsado = accessToken ??
                 throw new InvalidOperationException("No hay una sesión iniciada.");
-            
+
             using var solicitud = new HttpRequestMessage(metodo, ruta);
 
             solicitud.Headers.Authorization =
@@ -186,7 +191,7 @@ namespace ClinicSyncDesktop.Data
                     "La sesión terminó. Iniciá sesión nuevamente.");
 
             using var reintento = new HttpRequestMessage(
-                HttpMethod.Post,
+                metodo,
                 ruta);
 
             reintento.Headers.Authorization =
@@ -286,48 +291,105 @@ namespace ClinicSyncDesktop.Data
         }
 
 
-        public static async Task<HttpResponseMessage> PutAutenticadoAsync<T>(
-            string ruta,
-            T contenido)
+        // CREAR VISITA COMPLETA CON TRATAMIENTOS
+        public static async Task<int> CrearVisitaCompletaAsync<T>(T request)
         {
+            using var respuesta = await PostAutenticadoAsync(
+                "api/expedientes/visitas/completa", request);
 
-            using var respuestaPerfil = await EnviarAutenticadoAsync(
-                HttpMethod.Get,
-                "api/auth/me");
+            await VerificarRespuestaAsync(respuesta);
 
-            await VerificarRespuestaAsync(respuestaPerfil);
+            var resultado = await respuesta.Content.ReadFromJsonAsync<VisitaCreada>(opciones)
+                ?? throw new InvalidOperationException("El servidor no devolvió la visita creada.");
 
-            string token = accessToken
+            return resultado.IdVisita;
+        }
+
+        // MODIFICAR VISITA COMPLETA CON TRATAMIENTOS
+        public static async Task ModificarVisitaCompletaAsync<T>(int idVisita, T request)
+        {
+            if (idVisita <= 0)
+                throw new ArgumentOutOfRangeException(nameof(idVisita));
+
+            using var respuesta = await PutAutenticadoAsync(
+                $"api/expedientes/visitas/{idVisita}/completa", request);
+
+            await VerificarRespuestaAsync(respuesta);
+        }
+
+        private sealed class VisitaCreada
+        {
+            public int IdVisita { get; set; }
+        }
+
+
+        public static async Task SubirArchivoVisitaAsync(
+            int idVisita,
+            string rutaArchivo,
+            CancellationToken ct = default)
+        {
+            if (idVisita <= 0)
+                throw new ArgumentException("Visita inválida.");
+
+            if (!File.Exists(rutaArchivo))
+                throw new FileNotFoundException("No se encontró el archivo.");
+
+            string tokenAnterior = accessToken
                 ?? throw new InvalidOperationException(
                     "No hay una sesión iniciada.");
 
-            using var solicitud = new HttpRequestMessage(
-                HttpMethod.Put,
-                ruta);
+            async Task<HttpResponseMessage> EnviarAsync(string token)
+            {
+                using var solicitud = new HttpRequestMessage(
+                    HttpMethod.Post,
+                    $"api/expedientes/visitas/{idVisita}/archivos");
 
-            solicitud.Headers.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
+                solicitud.Headers.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
 
-            solicitud.Headers.Add(
-                "X-Equipo",
-                Environment.MachineName);
+                solicitud.Headers.Add(
+                    "X-Equipo",
+                    Environment.MachineName);
 
-            solicitud.Content = JsonContent.Create(
-                contenido,
-                options: opciones);
+                using var formulario = new MultipartFormDataContent();
 
-            var respuesta = await cliente.SendAsync(solicitud);
+                await using var archivo = File.OpenRead(rutaArchivo);
+
+                using var contenido = new StreamContent(archivo);
+
+                contenido.Headers.ContentType =
+                    new MediaTypeHeaderValue(
+                        Path.GetExtension(rutaArchivo).ToLowerInvariant() switch
+                        {
+                            ".jpg" or ".jpeg" => "image/jpeg",
+                            ".png" => "image/png",
+                            ".pdf" => "application/pdf",
+                            _ => "application/octet-stream"
+                        });
+
+                formulario.Add(
+                    contenido,
+                    "archivo",
+                    Path.GetFileName(rutaArchivo));
+
+                solicitud.Content = formulario;
+
+                return await cliente.SendAsync(solicitud, ct);
+            }
+
+            using var respuesta = await EnviarAsync(tokenAnterior);
 
             if (respuesta.StatusCode != HttpStatusCode.Unauthorized)
-                return respuesta;
+            {
+                await VerificarRespuestaAsync(respuesta);
+                return;
+            }
 
-            respuesta.Dispose();
-
-            await bloqueoRenovacion.WaitAsync();
+            await bloqueoRenovacion.WaitAsync(ct);
 
             try
             {
-                if (accessToken == token)
+                if (accessToken == tokenAnterior)
                     await RenovarSesionAsync();
             }
             finally
@@ -335,25 +397,38 @@ namespace ClinicSyncDesktop.Data
                 bloqueoRenovacion.Release();
             }
 
-            using var reintento = new HttpRequestMessage(
-                HttpMethod.Put,
-                ruta);
+            string tokenNuevo = accessToken
+                ?? throw new InvalidOperationException(
+                    "La sesión terminó.");
 
-            reintento.Headers.Authorization =
-                new AuthenticationHeaderValue(
-                    "Bearer",
-                    accessToken ?? throw new InvalidOperationException(
-                        "La sesión terminó. Iniciá sesión nuevamente."));
+            using var reintento = await EnviarAsync(tokenNuevo);
 
-            reintento.Headers.Add(
-                "X-Equipo",
-                Environment.MachineName);
+            await VerificarRespuestaAsync(reintento);
+        }
 
-            reintento.Content = JsonContent.Create(
-                contenido,
-                options: opciones);
+        // OBTENER ARCHIVOS DE UNA VISITA
+        public static async Task<T> ObtenerArchivosVisitaAsync<T>(
+            int idVisita)
+        {
+            return await ObtenerAutenticadoAsync<T>(
+                $"api/expedientes/visitas/{idVisita}/archivos");
+        }
 
-            return await cliente.SendAsync(reintento);
+
+        public static async Task DesactivarArchivoAsync(int idArchivo)
+        {
+            if (idArchivo <= 0)
+            {
+                throw new ArgumentException(
+                    "El identificador del archivo no es válido.");
+            }
+
+            await PutAutenticadoAsync<object>(
+                $"api/expedientes/archivos/{idArchivo}/estado",
+                new
+                {
+                    Activo = false
+                });
         }
 
         // CERRAR SESIÓN
@@ -566,6 +641,6 @@ namespace ClinicSyncDesktop.Data
             }
 
             throw new InvalidOperationException(mensaje);
-        } 
+        }
     }
 }

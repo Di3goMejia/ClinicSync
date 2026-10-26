@@ -7,6 +7,7 @@ using ClinicSyncServer.Features.Sesiones;
 using ClinicSyncServer.Features.Usuarios;
 using ClinicSyncServer.Features.Tratamientos;
 using ClinicSyncServer.Features.Pacientes;
+using ClinicSyncServer.Features.Expedientes;
 using ClinicSyncServer.Infrastructure;
 using ClinicSyncServer.Infrastructure.Auth;
 using Microsoft.AspNetCore.Localization;
@@ -41,7 +42,15 @@ builder.Services
     .AddAuth()
     .AddUsuarios()
     .AddTratamientos()
-    .AddPacientes();
+    .AddPacientes()
+    .AddExpedientes();
+
+builder.Services.Configure< Microsoft.AspNetCore.Http.Features.FormOptions>(
+    opciones =>
+    {
+        opciones.MultipartBodyLengthLimit =
+            10 * 1024 * 1024;
+    });
 
 var app = builder.Build();
 
@@ -68,5 +77,6 @@ app.MapAuth();
 app.MapUsuarios();
 app.MapTratamientos();
 app.MapPacientesModule();
+app.MapExpedientesModule();
 
 app.Run();
