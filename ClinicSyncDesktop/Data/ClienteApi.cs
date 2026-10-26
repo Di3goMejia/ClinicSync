@@ -1,11 +1,9 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace ClinicSyncDesktop.Data
 {
@@ -33,14 +31,15 @@ namespace ClinicSyncDesktop.Data
         };
 
         private static readonly SemaphoreSlim bloqueoRenovacion =
-            new SemaphoreSlim(1, 1);
+            new(1, 1);
 
         private static readonly JsonSerializerOptions opciones =
-            new JsonSerializerOptions(JsonSerializerDefaults.Web);
+            new(JsonSerializerDefaults.Web);
 
         private static string? accessToken;
         private static string? refreshToken;
 
+        // INICIAR SESIÓN
         public static async Task<RespuestaLogin> IniciarSesionAsync(
             string usuario,
             string password)
@@ -87,6 +86,7 @@ namespace ClinicSyncDesktop.Data
             return resultado;
         }
 
+        // OBTENER PERFIL
         public static async Task<PerfilActual> ObtenerPerfilAsync()
         {
             using var respuesta = await EnviarAutenticadoAsync(
@@ -101,6 +101,7 @@ namespace ClinicSyncDesktop.Data
                     "No se pudieron obtener los datos del usuario.");
         }
 
+        // OBTENER DATOS DESDE LA API
         public static async Task<T> ObtenerAutenticadoAsync<T>(
             string ruta)
         {
@@ -116,31 +117,52 @@ namespace ClinicSyncDesktop.Data
                     "El servidor devolvió una respuesta vacía.");
         }
 
+        // ENVIAR DATOS MEDIANTE POST
         public static async Task<HttpResponseMessage> PostAutenticadoAsync<T>(
             string ruta,
             T contenido,
             CancellationToken ct = default)
         {
-            string tokenUsado = accessToken
-                ?? throw new InvalidOperationException(
-                    "No hay una sesión iniciada.");
+            return await EnviarJsonAutenticadoAsync<T>(HttpMethod.Post, ruta, contenido, ct);
+        }
 
-            using var solicitud = new HttpRequestMessage(
-                HttpMethod.Post,
-                ruta);
+        public static async Task<HttpResponseMessage> PutAutenticadoAsync<T>(
+            string ruta,
+            T contenido,
+            CancellationToken ct = default)
+        {
+            return await EnviarJsonAutenticadoAsync<T>(HttpMethod.Put, ruta, contenido, ct);
+        }
+
+        public static async Task<HttpResponseMessage> PatchAutenticadoAsync<T>(
+            string ruta,
+            T contenido,
+            CancellationToken ct = default)
+        {
+            return await EnviarJsonAutenticadoAsync<T>(HttpMethod.Patch, ruta, contenido, ct);
+        }
+
+        private static async Task<HttpResponseMessage> EnviarJsonAutenticadoAsync<T>(
+            HttpMethod metodo,
+            string ruta,
+            T contenido,
+            CancellationToken ct = default)
+        {
+            var tokenUsado = accessToken ??
+                throw new InvalidOperationException("No hay una sesión iniciada.");
+            
+            using var solicitud = new HttpRequestMessage(metodo, ruta);
 
             solicitud.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", tokenUsado);
 
-            solicitud.Headers.Add(
-                "X-Equipo",
-                Environment.MachineName);
+            solicitud.Headers.Add("X-Equipo", Environment.MachineName);
 
-            solicitud.Content = JsonContent.Create(contenido, options: opciones);
+            solicitud.Content = JsonContent.Create(
+                contenido,
+                options: opciones);
 
-            var respuesta = await cliente.SendAsync(
-                solicitud,
-                ct);
+            var respuesta = await cliente.SendAsync(solicitud, ct);
 
             if (respuesta.StatusCode != HttpStatusCode.Unauthorized)
                 return respuesta;
@@ -181,6 +203,160 @@ namespace ClinicSyncDesktop.Data
             return await cliente.SendAsync(reintento, ct);
         }
 
+        // CAMBIAR ESTADO DE PACIENTE
+        public static async Task CambiarEstadoPacienteAsync(
+            int idPaciente,
+            bool activo)
+        {
+            string ruta =
+                $"api/pacientes/{idPaciente}/estado";
+
+            string tokenUsado = accessToken
+                ?? throw new InvalidOperationException(
+                    "No hay una sesión iniciada.");
+
+            using var solicitud = new HttpRequestMessage(
+                HttpMethod.Patch,
+                ruta);
+
+            solicitud.Headers.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    tokenUsado);
+
+            solicitud.Headers.Add(
+                "X-Equipo",
+                Environment.MachineName);
+
+            solicitud.Content = JsonContent.Create(
+                new { Activo = activo },
+                options: opciones);
+
+            var respuesta = await cliente.SendAsync(solicitud);
+
+            if (respuesta.StatusCode != HttpStatusCode.Unauthorized)
+            {
+                using (respuesta)
+                {
+                    await VerificarRespuestaAsync(respuesta);
+                }
+
+                return;
+            }
+
+            respuesta.Dispose();
+
+            await bloqueoRenovacion.WaitAsync();
+
+            try
+            {
+                if (accessToken == tokenUsado)
+                    await RenovarSesionAsync();
+            }
+            finally
+            {
+                bloqueoRenovacion.Release();
+            }
+
+            string nuevoToken = accessToken
+                ?? throw new InvalidOperationException(
+                    "La sesión terminó. Iniciá sesión nuevamente.");
+
+            using var reintento = new HttpRequestMessage(
+                HttpMethod.Patch,
+                ruta);
+
+            reintento.Headers.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    nuevoToken);
+
+            reintento.Headers.Add(
+                "X-Equipo",
+                Environment.MachineName);
+
+            reintento.Content = JsonContent.Create(
+                new { Activo = activo },
+                options: opciones);
+
+            using var segundaRespuesta =
+                await cliente.SendAsync(reintento);
+
+            await VerificarRespuestaAsync(segundaRespuesta);
+        }
+
+
+        public static async Task<HttpResponseMessage> PutAutenticadoAsync<T>(
+            string ruta,
+            T contenido)
+        {
+
+            using var respuestaPerfil = await EnviarAutenticadoAsync(
+                HttpMethod.Get,
+                "api/auth/me");
+
+            await VerificarRespuestaAsync(respuestaPerfil);
+
+            string token = accessToken
+                ?? throw new InvalidOperationException(
+                    "No hay una sesión iniciada.");
+
+            using var solicitud = new HttpRequestMessage(
+                HttpMethod.Put,
+                ruta);
+
+            solicitud.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            solicitud.Headers.Add(
+                "X-Equipo",
+                Environment.MachineName);
+
+            solicitud.Content = JsonContent.Create(
+                contenido,
+                options: opciones);
+
+            var respuesta = await cliente.SendAsync(solicitud);
+
+            if (respuesta.StatusCode != HttpStatusCode.Unauthorized)
+                return respuesta;
+
+            respuesta.Dispose();
+
+            await bloqueoRenovacion.WaitAsync();
+
+            try
+            {
+                if (accessToken == token)
+                    await RenovarSesionAsync();
+            }
+            finally
+            {
+                bloqueoRenovacion.Release();
+            }
+
+            using var reintento = new HttpRequestMessage(
+                HttpMethod.Put,
+                ruta);
+
+            reintento.Headers.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    accessToken ?? throw new InvalidOperationException(
+                        "La sesión terminó. Iniciá sesión nuevamente."));
+
+            reintento.Headers.Add(
+                "X-Equipo",
+                Environment.MachineName);
+
+            reintento.Content = JsonContent.Create(
+                contenido,
+                options: opciones);
+
+            return await cliente.SendAsync(reintento);
+        }
+
+        // CERRAR SESIÓN
         public static async Task CerrarSesionAsync()
         {
             try
@@ -200,8 +376,9 @@ namespace ClinicSyncDesktop.Data
             }
         }
 
+        // SOLICITAR CÓDIGO PARA RESTABLECER LA CONTRASEÑA
         public static async Task SolicitarCodigoAsync(
-          string correo)
+            string correo)
         {
             using var respuesta = await cliente.PostAsJsonAsync(
                 "api/auth/olvide-contrasena",
@@ -213,6 +390,7 @@ namespace ClinicSyncDesktop.Data
             await VerificarRespuestaAsync(respuesta);
         }
 
+        // RESTABLECER CONTRASEÑA
         public static async Task RestablecerPasswordAsync(
             string correo,
             string codigo,
@@ -232,12 +410,14 @@ namespace ClinicSyncDesktop.Data
             await VerificarRespuestaAsync(respuesta);
         }
 
+        // LIMPIAR SESIÓN
         public static void LimpiarSesion()
         {
             accessToken = null;
             refreshToken = null;
         }
 
+        // ENVIAR PETICIÓN AUTENTICADA
         private static async Task<HttpResponseMessage> EnviarAutenticadoAsync(
             HttpMethod metodo,
             string ruta)
@@ -260,7 +440,7 @@ namespace ClinicSyncDesktop.Data
 
             try
             {
-                // Si otra petición ya renovó el token, reutilizarlo.
+                // Si otra petición renovó el token, reutilizarlo.
                 if (accessToken == tokenUsado)
                     await RenovarSesionAsync();
             }
@@ -276,15 +456,20 @@ namespace ClinicSyncDesktop.Data
                     "La sesión terminó. Iniciá sesión nuevamente."));
         }
 
+        // ENVIAR PETICIÓN CON TOKEN
         private static async Task<HttpResponseMessage> EnviarConTokenAsync(
             HttpMethod metodo,
             string ruta,
             string token)
         {
-            using var solicitud = new HttpRequestMessage(metodo, ruta);
+            using var solicitud = new HttpRequestMessage(
+                metodo,
+                ruta);
 
             solicitud.Headers.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    token);
 
             solicitud.Headers.Add(
                 "X-Equipo",
@@ -293,6 +478,7 @@ namespace ClinicSyncDesktop.Data
             return await cliente.SendAsync(solicitud);
         }
 
+        // RENOVAR SESIÓN
         private static async Task RenovarSesionAsync()
         {
             string token = refreshToken
@@ -328,6 +514,7 @@ namespace ClinicSyncDesktop.Data
             refreshToken = resultado.RefreshToken;
         }
 
+        // VERIFICAR RESPUESTA DEL SERVIDOR
         private static async Task VerificarRespuestaAsync(
             HttpResponseMessage respuesta)
         {
@@ -347,16 +534,27 @@ namespace ClinicSyncDesktop.Data
                     (int)respuesta.StatusCode
             };
 
-            string contenido = await respuesta.Content.ReadAsStringAsync();
+            string contenido =
+                await respuesta.Content.ReadAsStringAsync();
 
             try
             {
                 using var documento = JsonDocument.Parse(contenido);
 
                 if (documento.RootElement.TryGetProperty(
-                    "detail", out var detalle))
+                    "detail",
+                    out var detalle))
                 {
                     string? texto = detalle.GetString();
+
+                    if (!string.IsNullOrWhiteSpace(texto))
+                        mensaje = texto;
+                }
+                else if (documento.RootElement.TryGetProperty(
+                    "mensaje",
+                    out var mensajeApi))
+                {
+                    string? texto = mensajeApi.GetString();
 
                     if (!string.IsNullOrWhiteSpace(texto))
                         mensaje = texto;
@@ -368,6 +566,6 @@ namespace ClinicSyncDesktop.Data
             }
 
             throw new InvalidOperationException(mensaje);
-        }
+        } 
     }
 }

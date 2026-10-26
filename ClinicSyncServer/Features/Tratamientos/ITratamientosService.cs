@@ -1,17 +1,13 @@
-﻿
-using ClinicSyncServer.Features.Tratamientos.Responses;
+﻿using ClinicSyncServer.Features.Tratamientos.Requests;
 
 namespace ClinicSyncServer.Features.Tratamientos
 {
     public interface ITratamientosService
     {
-        Task<IEnumerable<TratamientoListado>> ListarAsync(
-            CancellationToken ct = default);
-
-        Task<int> RegistrarAsync(
-            string nombre,
-            decimal precio,
-            string? descripcion = null,
-            CancellationToken ct = default);
+        Task<int> InsertarAsync(RegistrarTratamientoRequest req, CancellationToken ct = default);
+        Task<Tratamiento?> ObtenerPorIdAsync(int id, CancellationToken ct = default);
+        Task<IEnumerable<Tratamiento>> ListarAsync(ListarTratamientoQuery query, CancellationToken ct = default);
+        Task<Tratamiento?> ModificarAsync(int id, RegistrarTratamientoRequest req, CancellationToken ct = default);
+        Task CambiarEstadoAsync(int id, bool activo, CancellationToken ct = default);
     }
 }

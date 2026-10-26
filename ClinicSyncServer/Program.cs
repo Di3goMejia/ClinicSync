@@ -6,6 +6,7 @@ using ClinicSyncServer.Features.Permisos;
 using ClinicSyncServer.Features.Sesiones;
 using ClinicSyncServer.Features.Usuarios;
 using ClinicSyncServer.Features.Tratamientos;
+using ClinicSyncServer.Features.Pacientes;
 using ClinicSyncServer.Infrastructure;
 using ClinicSyncServer.Infrastructure.Auth;
 using Microsoft.AspNetCore.Localization;
@@ -39,7 +40,8 @@ builder.Services
     .AddSesiones()
     .AddAuth()
     .AddUsuarios()
-    .AddTratamientos();  // Agrega el módulo de Tratamientos
+    .AddTratamientos()
+    .AddPacientes();
 
 var app = builder.Build();
 
@@ -64,6 +66,7 @@ app.UseAuthorization();
 /* Endpoints */
 app.MapAuth();
 app.MapUsuarios();
-app.MapTratamientosModule();
+app.MapTratamientos();
+app.MapPacientesModule();
 
 app.Run();

@@ -4,7 +4,7 @@
         Title="Mensaje"
         Width="260"
         SizeToContent="Height"
-        MinHeight="205"
+        MinHeight="0"
         MaxHeight="320"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
@@ -16,7 +16,7 @@
     <Window.Resources>
         <LinearGradientBrush x:Key="DegradadoTurquesa"
                              StartPoint="0,0"
-                             EndPoint="0,1">
+                             EndPoint="1,0">
             <GradientStop Color="#32A5AB" Offset="0"/>
             <GradientStop Color="#138DAA" Offset="1"/>
         </LinearGradientBrush>
@@ -47,43 +47,43 @@
     </Window.Resources>
 
     <Border Background="White"
-            CornerRadius="16"
+            CornerRadius="12"
             ClipToBounds="True"
             BorderBrush="#D5DEDA"
             BorderThickness="1">
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="40"/>
+                <RowDefinition Height="34"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Encabezado -->
+            <!-- ENCABEZADO -->
             <Border Grid.Row="0"
                     Background="{StaticResource DegradadoTurquesa}"
-                    CornerRadius="15,15,0,0">
+                    CornerRadius="11,11,0,0">
 
-                <Grid Margin="13,0,10,0">
+                <Grid Margin="11,0,9,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="28"/>
                     </Grid.ColumnDefinitions>
 
                     <TextBlock x:Name="txtTitulo"
                                Text="AVISO!"
                                Foreground="White"
-                               FontSize="17"
+                               FontSize="15"
                                FontWeight="Bold"
                                VerticalAlignment="Center"/>
 
                     <Button Grid.Column="1"
                             Content="✕"
-                            Width="28"
-                            Height="29"
+                            Width="23"
+                            Height="24"
                             Background="#E8425A"
                             Foreground="White"
-                            FontSize="17"
+                            FontSize="15"
                             FontWeight="Bold"
                             BorderThickness="0"
                             Cursor="Hand"
@@ -91,7 +91,7 @@
                         <Button.Template>
                             <ControlTemplate TargetType="{x:Type Button}">
                                 <Border Background="{TemplateBinding Background}"
-                                        CornerRadius="6">
+                                        CornerRadius="5">
                                     <ContentPresenter
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"/>
@@ -102,32 +102,34 @@
                 </Grid>
             </Border>
 
-            <!-- Contenido -->
+            <!-- CONTENIDO -->
             <StackPanel Grid.Row="1"
-                        Margin="17,12,17,13"
+                        Margin="14,10,14,10"
                         HorizontalAlignment="Stretch">
 
                 <Image x:Name="imgIcono"
-                       Width="76"
-                       Height="76"
+                       Width="64"
+                       Height="64"
                        Stretch="Uniform"
-                       Margin="0,0,0,8"
+                       Margin="0,0,0,7"
                        Visibility="Collapsed"/>
 
                 <TextBlock x:Name="txtMensaje"
                            Text="Mensaje"
                            Foreground="#244B65"
-                           FontSize="17"
+                           FontSize="15"
                            FontWeight="SemiBold"
                            TextAlignment="Center"
                            TextWrapping="Wrap"
                            HorizontalAlignment="Stretch"/>
             </StackPanel>
 
-            <!-- Botones inferiores -->
+            <!-- BOTONES -->
             <Border Grid.Row="2"
                     Background="{StaticResource DegradadoTurquesa}"
-                    Padding="10,7">
+                    Padding="8,6"
+                    CornerRadius="0,0,11,11"
+                    ClipToBounds="True">
 
                 <StackPanel x:Name="panelBotones"
                             Orientation="Horizontal"
@@ -141,14 +143,14 @@
                     <Button x:Name="btnSi"
                             Content="Sí"
                             Style="{StaticResource BotonMensaje}"
-                            Margin="0,0,5,0"
+                            Margin="0,0,4,0"
                             Visibility="Collapsed"
                             Click="Si_Click"/>
 
                     <Button x:Name="btnNo"
                             Content="No"
                             Style="{StaticResource BotonMensaje}"
-                            Margin="5,0,0,0"
+                            Margin="4,0,0,0"
                             Visibility="Collapsed"
                             Click="No_Click"/>
                 </StackPanel>
