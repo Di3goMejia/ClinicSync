@@ -1,4 +1,3 @@
-﻿
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,6 +10,7 @@ using ClinicSyncDesktop.Data;
 
 namespace ClinicSyncDesktop.Views
 {
+
     public class PacienteVista : INotifyPropertyChanged
     {
         public int IdPaciente { get; set; }
@@ -27,7 +27,6 @@ namespace ClinicSyncDesktop.Views
         public bool Activo
         {
             get => activo;
-
             set
             {
                 if (activo == value)
@@ -41,8 +40,7 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
-        public string NombreCompleto =>
-            Nombres + " " + Apellidos;
+        public string NombreCompleto => Nombres + " " + Apellidos;
 
         public int Edad
         {
@@ -76,9 +74,7 @@ namespace ClinicSyncDesktop.Views
 
     public partial class PacientesView : UserControl
     {
-        private readonly ObservableCollection<PacienteVista>
-            pacientes = new();
-
+        private readonly ObservableCollection<PacienteVista> pacientes = new();
         private readonly ICollectionView vistaPacientes;
 
         private bool cargandoPacientes = false;
@@ -314,8 +310,6 @@ namespace ClinicSyncDesktop.Views
                     MessageBoxImage.Information);
             }
         }
-
-        // EDITAR PACIENTE
 
         // EDITAR PACIENTE
         private async void Editar_Click(

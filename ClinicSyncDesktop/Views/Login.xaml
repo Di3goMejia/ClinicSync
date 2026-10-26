@@ -167,8 +167,9 @@
 
                     </StackPanel>
 
-                    <CheckBox x:Name="ChkRecordarUsuario"
-                              Content="Recordar mi usuario"
+                    <CheckBox x:Name="ChkRecordarSesion"
+                              IsEnabled="False"
+                              Content="Recordar mi sesión"
                               Foreground="White"
                               FontSize="15"
                               FontWeight="SemiBold"

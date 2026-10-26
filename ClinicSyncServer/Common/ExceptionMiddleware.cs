@@ -32,7 +32,7 @@ namespace ClinicSyncServer.Common
             {
                 await EscribirProblemaAsync(ctx, StatusCodes.Status400BadRequest,
                     titulo: "Solicitud no válida.",
-                    detalle: "El cuerpo de la solicitud no es un JSON válido.");
+                    detalle: "El cuerpo de la solicitud no es válido.");
             }
             catch (NoAutorizadoException ex)
             {

@@ -1,28 +1,29 @@
 ﻿using ClinicSyncServer.Features.Tratamientos.Data;
-using ClinicSyncServer.Features.Tratamientos.Responses;
+using ClinicSyncServer.Features.Tratamientos.Requests;
 
 namespace ClinicSyncServer.Features.Tratamientos
 {
     public class TratamientoService(
-        TratamientosRepository repository) : ITratamientosService
+        TratamientosRepository repo) : ITratamientosService
     {
-        public Task<IEnumerable<TratamientoListado>> ListarAsync(
-            CancellationToken ct = default)
+        public async Task<int> InsertarAsync(RegistrarTratamientoRequest req, CancellationToken ct = default) =>
+            await repo.InsertarAsync(req, ct);
+
+        public async Task<Tratamiento?> ObtenerPorIdAsync(int id, CancellationToken ct = default) =>
+            await repo.ObtenerPorIdAsync(id, ct);
+
+        public async Task<IEnumerable<Tratamiento>> ListarAsync(ListarTratamientoQuery query, CancellationToken ct = default) =>
+            await repo.ListarAsync(query, ct);
+
+        public async Task<Tratamiento?> ModificarAsync(int id, RegistrarTratamientoRequest req, CancellationToken ct = default)
         {
-            return repository.ListarAsync(ct);
+            if (await repo.ObtenerPorIdAsync(id, ct) is null) return null;
+
+            await repo.ModificarAsync(id, req, ct);
+            return await repo.ObtenerPorIdAsync(id, ct);
         }
 
-        public Task<int> RegistrarAsync(
-            string nombre,
-            decimal precio,
-            string? descripcion = null,
-            CancellationToken ct = default)
-        {
-            return repository.RegistrarAsync(
-                nombre,
-                precio,
-                descripcion,
-                ct);
-        }
+        public async Task CambiarEstadoAsync(int id, bool activo, CancellationToken ct = default) =>
+            await repo.CambiarEstadoAsync(id, activo, ct);
     }
 }

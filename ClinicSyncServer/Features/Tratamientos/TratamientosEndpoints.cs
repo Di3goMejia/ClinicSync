@@ -1,77 +1,69 @@
-﻿using ClinicSyncServer.Validators;
+﻿using ClinicSyncServer.Features.Tratamientos.Requests;
+using ClinicSyncServer.Features.Tratamientos.Responses;
 using Microsoft.AspNetCore.Mvc;
+using PermisosSeguridad = ClinicSyncServer.Common.Seguridad.Permisos;
 
 namespace ClinicSyncServer.Features.Tratamientos
 {
     public static class TratamientosEndpoints
     {
-        public static void MapTratamientosEndpoints(
-            this WebApplication app)
+        public static void MapTratamientosEndpoints(this WebApplication app)
         {
-            var auth = app.MapGroup("/api/tratamientos")
-                          .RequireAuthorization();
+            var tratamientos = app.MapGroup("/api/tratamientos").RequireAuthorization();
 
-            auth.MapGet("/", async (
-                ITratamientosService service,
-                CancellationToken ct) =>
+            // ENDPOINT CREAR
+            tratamientos.MapPost("/", async ([FromBody] RegistrarTratamientoRequest req, ITratamientosService svc) =>
             {
-                var tratamientos = await service.ListarAsync(ct);
-
-                return Results.Ok(tratamientos);
+                var id = await svc.InsertarAsync(req);
+                return Results.Created($"/api/tratamientos/{id}", new RegistrarTratamientoResponse(id));
             })
-            .WithName("ListarTratamientos");
+            .WithName("CrearTratamiento")
+            .RequireAuthorization(PermisosSeguridad.TratamientosCrear);
 
-            auth.MapPost("/", async (
-                [FromBody] RegistrarTratamientoRequest request,
-                ITratamientosService service,
-                CancellationToken ct) =>
+            // ENDPOINT LISTAR
+            tratamientos.MapGet("/", async ([AsParameters] ListarTratamientoQuery query, ITratamientosService svc) =>
             {
-                var error = TratamientoValidator.Validar(
-                    request.Nombre,
-                    request.Precio,
-                    request.Descripcion);
-
-                if (error is not null)
-                {
-                    return Results.BadRequest(new
-                    {
-                        Mensaje = error
-                    });
-                }
-
-                try
-                {
-                    var idTratamiento = await service.RegistrarAsync(
-                        request.Nombre.Trim(),
-                        request.Precio,
-                        string.IsNullOrWhiteSpace(request.Descripcion)
-                            ? null
-                            : request.Descripcion.Trim(),
-                        ct);
-
-                    return Results.Created(
-                        $"/api/tratamientos/{idTratamiento}",
-                        new { IdTratamiento = idTratamiento });
-                }
-                catch (Microsoft.Data.SqlClient.SqlException ex)
-                    when (ex.Number == 2627 || ex.Number == 2601)
-                {
-                    return Results.Conflict(new
-                    {
-                        Mensaje = "Ya existe un tratamiento con ese nombre."
-                    });
-                }
+                return await svc.ListarAsync(query);
             })
-            .WithName("RegistrarTratamiento");
+            .WithName("ListarTratamientos")
+            .RequireAuthorization(PermisosSeguridad.TratamientosLeer);
+
+            // ENDPOINT OBTENER
+            tratamientos.MapGet("/{id:int}", async (int id, ITratamientosService svc) =>
+            {
+                var tratamiento = await svc.ObtenerPorIdAsync(id);
+
+                return tratamiento is null
+                    ? Results.NotFound()
+                    : Results.Ok(tratamiento);
+            })
+            .WithName("ObtenerTratamiento")
+            .RequireAuthorization(PermisosSeguridad.TratamientosLeer);
+
+            // ENDPOINT MODIFICAR
+            tratamientos.MapPut("/{id:int}", async (int id, [FromBody] RegistrarTratamientoRequest req, ITratamientosService svc) =>
+            {
+                var tratamiento = await svc.ModificarAsync(id, req);
+
+                return tratamiento is null
+                    ? Results.NotFound()
+                    : Results.Ok(tratamiento);
+            })
+            .WithName("ModificarTratamiento")
+            .RequireAuthorization(PermisosSeguridad.TratamientosModificar);
+
+            // ENDPOINT ESTADO
+            tratamientos.MapPatch("/{id:int}/estado", async (int id, [FromBody] CambiarEstadoTratamientoRequest req, ITratamientosService svc) =>
+            {
+                var tratamiento = await svc.ObtenerPorIdAsync(id);
+                if (tratamiento is null)
+                    return Results.NotFound();
+
+                await svc.CambiarEstadoAsync(id, req.Activo);
+                return Results.NoContent();
+            })
+            .WithName("CambiarEstadoTratamiento")
+            .RequireAuthorization(PermisosSeguridad.TratamientosEstado);
         }
-    }
-
-    public class RegistrarTratamientoRequest
-    {
-        public string Nombre { get; set; } = string.Empty;
-
-        public decimal Precio { get; set; }
-
-        public string? Descripcion { get; set; }
     }
 }

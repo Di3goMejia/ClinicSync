@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Agregar nuevo tratamiento"
         Width="370"
-        Height="350"
+        Height="296"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -38,7 +38,7 @@
             <Border Grid.Row="0"
                     Background="{StaticResource Turquesa}"
                     CornerRadius="11,11,0,0"
-                    ClipToBounds="True">
+                    ClipToBounds="True" MouseLeftButtonDown="Barra_MouseLeftButtonDown">
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -46,12 +46,12 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Agregar nuevo tratamiento:"
+                    <TextBlock
                                Margin="11,0,0,0"
                                VerticalAlignment="Center"
                                FontSize="12"
                                FontWeight="SemiBold"
-                               Foreground="White"/>
+                               Foreground="White"><Run Language="es-hn" Text="Agregar tratamiento:"/></TextBlock>
 
                     <Button Grid.Column="1"
                             Content="✕"
@@ -103,7 +103,7 @@
                                    Foreground="#E8424B"/>
                     </StackPanel>
 
-                    <TextBox x:Name="txtNombre"
+                    <TextBox x:Name="TxtNombre"
                              Height="29"
                              Padding="8,0"
                              FontSize="11"
@@ -142,7 +142,7 @@
                                    Foreground="#E8424B"/>
                     </StackPanel>
 
-                    <TextBox x:Name="txtPrecio"
+                    <TextBox x:Name="TxtPrecio"
                              Width="115"
                              Height="29"
                              HorizontalAlignment="Left"
@@ -182,7 +182,7 @@
                                    Foreground="#71817D"/>
                     </StackPanel>
 
-                    <TextBox x:Name="txtDescripcion"
+                    <TextBox x:Name="TxtDescripcion"
                              MinHeight="48"
                              MaxHeight="60"
                              Padding="8,6"
@@ -218,7 +218,7 @@
                     ClipToBounds="True">
 
                 <Button x:Name="btnAgregar"
-                        Content="Agregar"
+                        Content="Guardar"
                         Width="94"
                         Height="29"
                         HorizontalAlignment="Center"

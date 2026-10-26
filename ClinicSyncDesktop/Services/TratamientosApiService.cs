@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Diagnostics;
 
 namespace ClinicSyncDesktop.Services
 {
@@ -18,6 +19,98 @@ namespace ClinicSyncDesktop.Services
 
             return await ClienteApi.ObtenerAutenticadoAsync<
                 List<Tratamiento>>("api/tratamientos/");
+        }
+
+        public async Task<Tratamiento> ModificarAsync(int idTratamiento,
+            string nombre,
+            decimal precio,
+            string? descripcion = null,
+            CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            using var respuesta = await ClienteApi.PutAutenticadoAsync(
+                $"api/tratamientos/{idTratamiento}", 
+                new { nombre, precio, descripcion },
+                ct
+            );
+
+
+            if (!respuesta.IsSuccessStatusCode)
+            {
+                string contenido =
+                    await respuesta.Content.ReadAsStringAsync(ct);
+
+                string mensaje = "No fue posible editar el tratamiento.";
+
+                try
+                {
+                    using var documento = JsonDocument.Parse(contenido);
+
+                    if (documento.RootElement.TryGetProperty(
+                        "detail", out var detalle))
+                    {
+                        mensaje = detalle.GetString() ?? mensaje;
+                    }
+                }
+                catch (JsonException)
+                {
+                    // Conservar el mensaje general.
+                }
+
+                throw new HttpRequestException(
+                    mensaje,
+                    null,
+                    respuesta.StatusCode);
+            }
+
+            var resultado = await respuesta.Content.ReadFromJsonAsync
+                <Tratamiento>(cancellationToken: ct);
+
+            return resultado ?? throw new HttpRequestException(
+                "La API no devolvió el nuevo tratamiento.");
+        }
+
+        public async Task CambiarEstadoAsync(int idTratamiento,
+            bool activo,
+            CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            using var respuesta = await ClienteApi.PatchAutenticadoAsync(
+                $"api/tratamientos/{idTratamiento}/estado",
+                new { activo },
+                ct
+            );
+
+
+            if (!respuesta.IsSuccessStatusCode)
+            {
+                string contenido =
+                    await respuesta.Content.ReadAsStringAsync(ct);
+
+                string mensaje = "No fue posible cambiar el estado del tratamiento.";
+
+                try
+                {
+                    using var documento = JsonDocument.Parse(contenido);
+
+                    if (documento.RootElement.TryGetProperty(
+                        "detail", out var detalle))
+                    {
+                        mensaje = detalle.GetString() ?? mensaje;
+                    }
+                }
+                catch (JsonException)
+                {
+                    // Conservar el mensaje general.
+                }
+
+                throw new HttpRequestException(
+                    mensaje,
+                    null,
+                    respuesta.StatusCode);
+            }
         }
 
         public async Task<int> RegistrarAsync(
@@ -51,7 +144,7 @@ namespace ClinicSyncDesktop.Services
                     using var documento = JsonDocument.Parse(contenido);
 
                     if (documento.RootElement.TryGetProperty(
-                        "mensaje", out var detalle))
+                        "detail", out var detalle))
                     {
                         mensaje = detalle.GetString() ?? mensaje;
                     }

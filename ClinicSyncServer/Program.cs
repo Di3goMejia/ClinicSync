@@ -1,4 +1,3 @@
-
 using ClinicSyncServer.Common;
 using ClinicSyncServer.Common.Seguridad;
 using ClinicSyncServer.Features.Auth;
@@ -39,7 +38,7 @@ builder.Services
     .AddSesiones()
     .AddAuth()
     .AddUsuarios()
-    .AddTratamientos()  // Agrega el módulo de Tratamientos
+    .AddTratamientos()
     .AddPacientes();
 
 var app = builder.Build();
