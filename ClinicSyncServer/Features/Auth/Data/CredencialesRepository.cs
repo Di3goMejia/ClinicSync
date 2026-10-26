@@ -48,7 +48,12 @@ namespace ClinicSyncServer.Features.Auth.Data
             try
             {
                 await db.ExecuteAsync("api.usp_Usuarios_EstablecerPassword",
-                    new { TokenHash = tokenHash, Proposito = proposito, PasswordHash = passwordHash },
+                    new
+                    {
+                        TokenHash = tokenHash,
+                        Proposito = proposito,
+                        ClaveHash = passwordHash
+                    },
                     commandType: CommandType.StoredProcedure);
             }
             catch (SqlException ex) when (SqlErrorTranslator.EsTraducible(ex))

@@ -66,11 +66,14 @@ namespace ClinicSyncServer.Features.Auth
             });
 
             publico.MapPost("/restablecer", async (
-                RestablecerContrasenaRequest req,
-                IAuthService auth) =>
+            RestablecerContrasenaRequest req,
+            IAuthService auth) =>
             {
                 await auth.RestablecerContrasenaAsync(
-                    req.Token, req.NuevaPassword);
+                    req.Identificador,
+                    req.Codigo,
+                    req.NuevaPassword,
+                    req.ConfirmarPassword);
 
                 return Results.NoContent();
             });
