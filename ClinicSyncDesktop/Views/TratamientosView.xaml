@@ -8,8 +8,8 @@
 
         <!-- DEGRADADO DEL MENÚ PRINCIPAL -->
         <LinearGradientBrush x:Key="DegradadoTurquesa"
-                             StartPoint="0,0"
-                             EndPoint="0,1">
+                     StartPoint="0,0"
+                     EndPoint="1,0">
             <GradientStop Color="#32A5AB" Offset="0"/>
             <GradientStop Color="#138DAA" Offset="1"/>
         </LinearGradientBrush>
@@ -195,22 +195,7 @@
     <Grid Background="#F4F6F3"
           ClipToBounds="True">
 
-
-        <Button Content="← Volver al menú"
-        Width="155"
-        Height="38"
-        HorizontalAlignment="Left"
-        VerticalAlignment="Top"
-        Margin="15,15,0,0"
-        Background="#32A5AB"
-        Foreground="White"
-        BorderThickness="0"
-        FontSize="13"
-        FontWeight="SemiBold"
-        Cursor="Hand"
-        Click="BtnVolver_Click"/>
-
-        <Border Margin="185,0,20,20"
+        <Border Margin="20,0,20,20"
                 Background="{StaticResource FondoTabla}"
                 CornerRadius="10"
                 ClipToBounds="True">
@@ -361,5 +346,11 @@
 
             </Grid>
         </Border>
+
+        <StackPanel x:Name="PanelAvisos"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="0,0,20,35"
+            Panel.ZIndex="10"/>
     </Grid>
 </UserControl>
