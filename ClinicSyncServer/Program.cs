@@ -64,7 +64,7 @@ app.UseAuthorization();
 /* Endpoints */
 app.MapAuth();
 app.MapUsuarios();
-app.MapTratamientosModule();
+app.MapTratamientos();
 app.MapPacientesModule();
 
 app.Run();
