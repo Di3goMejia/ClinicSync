@@ -1,0 +1,431 @@
+﻿<Window x:Class="ClinicSync.Views.MenuLateral"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ClinicSync"
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen"
+        MinWidth="900"
+        MinHeight="550"
+        Background="#F4F6F3"
+        Loaded="Ventana_Loaded">
+
+    <Window.Resources>
+
+        <!-- DEGRADADO DEL MENÚ -->
+        <LinearGradientBrush x:Key="FondoMenu"
+                             StartPoint="0,0"
+                             EndPoint="0,1">
+            <GradientStop Color="#32A5AB" Offset="0"/>
+            <GradientStop Color="#138DAA" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- BOTONES CENTRADOS COMO EN EL PROTOTIPO -->
+        <Style x:Key="BotonMenu" TargetType="Button">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Margin" Value="9,3"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Center"/>
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="20">
+
+                            <ContentPresenter
+                                Content="{TemplateBinding Content}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+                                <Setter TargetName="Fondo"
+                                        Property="Opacity"
+                                        Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BOTONES SUPERIORES -->
+        <Style x:Key="BotonIcono" TargetType="Button">
+            <Setter Property="Width" Value="45"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BOTONES DE LOS PANELES -->
+        <Style x:Key="BotonRedondo" TargetType="Button">
+            <Setter Property="Background" Value="#8BD4E0"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="15">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <!-- ANCHO DEL PROTOTIPO -->
+            <ColumnDefinition Width="165"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- MENÚ LATERAL -->
+        <Grid Grid.Column="0"
+              Background="{StaticResource FondoMenu}">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="179"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <!-- LOGO ORIGINAL -->
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Height="146"
+                Width="80">
+
+                <Image Source="/Resources/Imagenes MenuPrincipal/ClinicSync-LOGO.png"
+                       Width="80"
+                       Height="80"
+                       Stretch="Uniform"/>
+
+                <TextBlock Text="CLINIC&#10;SYNC"
+                           Foreground="White"
+                           FontSize="22"
+                           FontWeight="Bold"
+                           TextAlignment="Center"
+                           LineHeight="24"
+                           Margin="0,8,0,0"/>
+            </StackPanel>
+
+            <!-- OPCIONES -->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+
+                <StackPanel Margin="0,10,0,15">
+
+                    <Button x:Name="btnInicio"
+                            Content="Inicio"
+                            Tag="Inicio"
+                            Style="{StaticResource BotonMenu}"
+                            Click="Modulo_Click"/>
+
+                    <Button x:Name="btnPacientes"
+                            Content="Pacientes"
+                            Tag="Pacientes"
+                            Style="{StaticResource BotonMenu}"
+                            Click="Modulo_Click"/>
+
+                    <Button x:Name="btnTratamientos"
+                            Content="Tratamientos"
+                            Tag="Tratamientos"
+                            Style="{StaticResource BotonMenu}"
+                            Click="Modulo_Click"/>
+
+                    <Button x:Name="btnInventario"
+                            Content="Inventario"
+                            Tag="Inventario"
+                            Style="{StaticResource BotonMenu}"
+                            Click="Modulo_Click"/>
+
+                    <Button x:Name="btnFinanzas"
+                            Content="Finanzas"
+                            Tag="Finanzas"
+                            Style="{StaticResource BotonMenu}"
+                            Click="Modulo_Click"/>
+
+                    <Button x:Name="btnAgenda"
+                            Content="Agenda"
+                            Tag="Agenda"
+                            Style="{StaticResource BotonMenu}"
+                            Click="Modulo_Click"/>
+
+                    <Button x:Name="btnSeguridad"
+                            Content="Seguridad"
+                            Tag="Seguridad"
+                            Style="{StaticResource BotonMenu}"
+                            Click="Modulo_Click"/>
+
+                    <Button x:Name="btnNotificaciones"
+                            Content="Notificaciones"
+                            Tag="Notificaciones"
+                            Style="{StaticResource BotonMenu}"
+                            Click="Modulo_Click"/>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- ÁREA DERECHA -->
+        <Grid Grid.Column="1"
+              Background="#F4F6F3">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="75"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- BARRA SUPERIOR -->
+            <Grid Grid.Row="0"
+                  Background="#D9DDD8"
+                  Margin="0,0,0,25">
+
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Margin="0,0,30,0">
+
+                    <!-- ICONO ORIGINAL DE NOTIFICACIONES -->
+                    <Button x:Name="btnCampana"
+                            Style="{StaticResource BotonIcono}"
+                            Click="Campana_Click"
+                            Width="62">
+
+                        <Border Width="36"
+                                Height="36"
+                                CornerRadius="18"
+                                Background="#138DAA">
+
+                            <Image Source="/Resources/Imagenes MenuPrincipal/campana-blanca.png"
+                                   Width="23"
+                                   Height="23"/>
+                        </Border>
+                    </Button>
+
+                    <!-- ICONO ORIGINAL DE USUARIO -->
+                    <Button x:Name="btnUsuario"
+                            Style="{StaticResource BotonIcono}"
+                            Click="Usuario_Click"
+                            Width="62">
+
+                        <Border Width="36"
+                                Height="36"
+                                CornerRadius="18"
+                                Background="#138DAA">
+
+                            <Image Source="/Resources/Imagenes MenuPrincipal/usuario-blanco.png"
+                                   Width="23"
+                                   Height="23"/>
+                        </Border>
+                    </Button>
+
+                </StackPanel>
+            </Grid>
+
+            <!-- MÓDULO ACTUAL -->
+            <ContentControl x:Name="ContenidoPrincipal"
+                            Grid.Row="1"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"/>
+
+        </Grid>
+
+        <!-- PANEL DE NOTIFICACIONES -->
+        <Popup x:Name="PopupNotificaciones"
+               PlacementTarget="{Binding ElementName=btnCampana}"
+               Placement="Bottom"
+               HorizontalOffset="-255"
+               VerticalOffset="-4"
+               AllowsTransparency="True"
+               StaysOpen="False">
+
+            <Border Width="310"
+                    Height="315"
+                    Background="White"
+                    CornerRadius="15">
+
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15"
+                                      ShadowDepth="5"
+                                      Opacity="0.25"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="32"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="32"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0"
+                            Background="{StaticResource FondoMenu}"
+                            CornerRadius="15,15,0,0">
+
+                        <TextBlock Text="Notificaciones"
+                                   Foreground="White"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"
+                                   Margin="14,0"/>
+                    </Border>
+
+                    <Button Grid.Row="1"
+                            Content="Marcar como leído"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Margin="0,0,14,0"
+                            Padding="4,0"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="#17475A"
+                            FontSize="11"
+                            Cursor="Hand"
+                            Click="MarcarLeidas_Click"/>
+
+                    <Grid Grid.Row="2"
+                          Background="White">
+                        <StackPanel x:Name="ListaAhora"/>
+                        <StackPanel x:Name="ListaAnteriores"/>
+                    </Grid>
+
+                    <Border Grid.Row="3"
+                            Background="{StaticResource FondoMenu}"
+                            CornerRadius="0,0,15,15">
+
+                        <Button Content="Todo"
+                                Style="{StaticResource BotonRedondo}"
+                                Width="78"
+                                Height="24"
+                                HorizontalAlignment="Right"
+                                Margin="0,0,12,0"
+                                Click="VerTodas_Click"/>
+                    </Border>
+                </Grid>
+            </Border>
+        </Popup>
+
+        <!-- PANEL DE PERFIL -->
+        <Popup x:Name="PopupPerfil"
+               PlacementTarget="{Binding ElementName=btnUsuario}"
+               Placement="Bottom"
+               HorizontalOffset="-220"
+               VerticalOffset="-4"
+               AllowsTransparency="True"
+               StaysOpen="False">
+
+            <Border Width="285"
+                    Background="White"
+                    CornerRadius="15">
+
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15"
+                                      ShadowDepth="5"
+                                      Opacity="0.25"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="65"/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0"
+                            Background="White"
+                            CornerRadius="15,15,0,0">
+
+                        <Grid Margin="12,7,12,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="32"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- ICONO ORIGINAL DE PERFIL -->
+                            <Image Grid.Column="0"
+                                   Source="/Resources/Imagenes MenuPrincipal/usuario-perfil.png"
+                                   Width="32"
+                                   Height="32"/>
+
+                            <StackPanel Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Margin="5,0,0,0">
+
+                                <TextBlock x:Name="NombrePerfil"
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           Foreground="#17475A"
+                                           TextTrimming="CharacterEllipsis"/>
+
+                                <TextBlock x:Name="RolPerfil"
+                                           FontSize="12"
+                                           Foreground="#17475A"/>
+                            </StackPanel>
+
+                            <!-- ICONO ORIGINAL DE CONFIGURACIÓN -->
+                            <Button Grid.Column="2"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="Configuracion_Click">
+
+                                <Image Source="/Resources/ImagenesTabla/IconoEngranaje.png"
+                                       Width="23"
+                                       Height="23"/>
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Row="1"
+                            Background="{StaticResource FondoMenu}"
+                            CornerRadius="0,0,15,15">
+
+                        <Button Content="Cerrar sesión"
+                                Style="{StaticResource BotonRedondo}"
+                                Width="100"
+                                Height="23"
+                                HorizontalAlignment="Right"
+                                Margin="0,0,12,0"
+                                Click="CerrarSesion_Click"/>
+                    </Border>
+                </Grid>
+            </Border>
+        </Popup>
+
+    </Grid>
+</Window>
