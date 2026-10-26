@@ -16,9 +16,26 @@ namespace ClinicSyncServer.Features.Auth.Requests
         [property: Required] string Token,
         [property: Required] string NuevaPassword);
 
-    public record OlvideContrasenaRequest([property: Required] string Identificador);
+    public record OlvideContrasenaRequest(
+    [property: Required, EmailAddress]
+    string Identificador
+);
 
     public record RestablecerContrasenaRequest(
-        [property: Required] string Token,
-        [property: Required] string NuevaPassword);
+        [property: Required, EmailAddress]
+    string Identificador,
+
+        [property: Required]
+    [property: RegularExpression(
+        @"^[0-9]{6}$",
+        ErrorMessage = "El código debe tener 6 dígitos.")]
+    string Codigo,
+
+        [property: Required]
+    [property: MinLength(8)]
+    string NuevaPassword,
+
+        [property: Required]
+    string ConfirmarPassword
+    );
 }

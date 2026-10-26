@@ -150,11 +150,14 @@ namespace ClinicSync.Views
         }
 
         private void OlvidoContrasena_Click(
-            object sender, RoutedEventArgs e)
+        object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(
-                "Aquí se abrirá el formulario de recuperación de contraseña.",
-                "ClinicSync");
+            var ventana =
+                new ClinicSyncDesktop.Views.RecuperacionContrasenaView();
+
+            ventana.Owner = this;
+
+            ventana.ShowDialog();
         }
     }
 }

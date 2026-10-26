@@ -13,6 +13,10 @@ namespace ClinicSyncServer.Features.Auth
         Task CerrarSesionAsync(Guid idSesion);
         Task ActivarCuentaAsync(string token, string nuevaPassword);
         Task SolicitarRestablecimientoAsync(string identificador, CancellationToken ct = default);
-        Task RestablecerContrasenaAsync(string token, string nuevaPassword);
+        Task RestablecerContrasenaAsync(
+        string identificador,
+        string codigo,
+        string nuevaPassword,
+        string confirmarPassword);
     }
 }

@@ -6,6 +6,9 @@ using ClinicSyncServer.Features.Auth.Requests;
 using ClinicSyncServer.Features.Auth.Responses;
 using ClinicSyncServer.Features.Permisos;
 using ClinicSyncServer.Features.Sesiones;
+using System.Security.Cryptography;
+using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace ClinicSyncServer.Features.Auth
 {
@@ -17,11 +20,12 @@ namespace ClinicSyncServer.Features.Auth
         IPasswordHasher hasher,
         ITokenService tokenService,
         IFactorSegundoService factores,
-        IEmailSender correo) : IAuthService
+        IEmailSender correo,
+        IConfiguration config) : IAuthService
     {
         private const int DiasRefresh = 30;
         private const int MinutosRestablecimiento = 30;
-        private const int MinLongitudPassword = 12;
+        private const int MinLongitudPassword = 8;
         private const int CodigoPolitica = 50012;
         private const int CodigoEnlace = 50011;
 
@@ -91,22 +95,101 @@ namespace ClinicSyncServer.Features.Auth
         public async Task ActivarCuentaAsync(string token, string nuevaPassword) =>
             await UsarTokenAsync(token, "PRIMER_ACCESO", nuevaPassword);
 
-        public async Task RestablecerContrasenaAsync(string token, string nuevaPassword) =>
-            await UsarTokenAsync(token, "NUEVA_CLAVE", nuevaPassword);
-
-        public async Task SolicitarRestablecimientoAsync(string identificador, CancellationToken ct = default)
+        public async Task RestablecerContrasenaAsync(
+    string identificador,
+    string codigo,
+    string nuevaPassword,
+    string confirmarPassword)
         {
-            var contacto = await credenciales.ObtenerContactoAsync(Normalizar(identificador));
+            if (string.IsNullOrWhiteSpace(identificador))
+                throw new ReglaNegocioException(
+                    "Ingrese su correo electrónico.", 50012);
 
-            // El controlador responde 202 siempre. Sin cuenta, no se hace nada más.
-            if (contacto is null) 
+            if (string.IsNullOrWhiteSpace(codigo))
+                throw new ReglaNegocioException(
+                    "Ingrese el código de recuperación.", 50011);
+
+            if (codigo.Length != 6 ||
+                !codigo.All(c => c >= '0' && c <= '9'))
+                throw new ReglaNegocioException(
+                    "El código debe contener exactamente 6 dígitos.", 50011);
+
+            if (string.IsNullOrWhiteSpace(nuevaPassword))
+                throw new ReglaNegocioException(
+                    "Ingrese la nueva contraseña.", 50011);
+
+            if (nuevaPassword.Length < 8)
+                throw new ReglaNegocioException(
+                    "La contraseña debe tener al menos 8 caracteres.",50011);
+
+            if (nuevaPassword != confirmarPassword)
+                throw new ReglaNegocioException(
+                    "Las contraseñas no coinciden.",50011);
+
+            ValidarPolitica(nuevaPassword);
+
+            var contacto =
+                await credenciales.ObtenerContactoAsync(
+                    Normalizar(identificador));
+
+            if (contacto is null)
+                throw new ReglaNegocioException(
+                    "El código es incorrecto o ha caducado.", 50012);
+
+            byte[] codigoHash =
+                ObtenerHashCodigo(
+                    contacto.IdUsuario,
+                    codigo);
+
+            await credenciales.EstablecerPasswordAsync(
+                codigoHash,
+                "NUEVA_CLAVE",
+                hasher.Hash(nuevaPassword));
+        }
+
+        public async Task SolicitarRestablecimientoAsync(
+    string identificador,
+    CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(identificador))
+                throw new ReglaNegocioException(
+                    "Ingrese su correo electrónico.", 50012);
+
+            identificador = Normalizar(identificador);
+
+            var contacto =
+                await credenciales.ObtenerContactoAsync(
+                    identificador);
+
+            // No revelar si existe la cuenta.
+            if (contacto is null)
                 return;
 
-            var token = tokenService.GenerarRefreshToken(); // generador de 32 bytes aleatorios, mismo esquema
-            await tokens.InsertarAsync(contacto.IdUsuario, token.Hash, "NUEVA_CLAVE",
-                DateTime.UtcNow.AddMinutes(MinutosRestablecimiento));
+            // Generar número seguro de 6 dígitos.
+            string codigo =
+                RandomNumberGenerator.GetInt32(
+                    0, 1000000).ToString("D6");
 
-            await correo.EnviarRestablecimientoAsync(contacto.Correo, token.Token, ct);
+            // Nunca guardar el código original.
+            byte[] codigoHash =
+                ObtenerHashCodigo(
+                    contacto.IdUsuario,
+                    codigo);
+
+            DateTime fechaExpiracion =
+                DateTime.UtcNow.AddMinutes(
+                    MinutosRestablecimiento);
+
+            await tokens.InsertarAsync(
+                contacto.IdUsuario,
+                codigoHash,
+                "NUEVA_CLAVE",
+                fechaExpiracion);
+
+            await correo.EnviarRestablecimientoAsync(
+                contacto.Correo,
+                codigo,
+                ct);
         }
 
         private async Task UsarTokenAsync(string token, string proposito, string nuevaPassword)
@@ -142,6 +225,27 @@ namespace ClinicSyncServer.Features.Auth
                 throw new ReglaNegocioException(
                     $"La contraseña debe tener al menos {MinLongitudPassword} caracteres, con letras y números.",
                     CodigoPolitica);
+        }
+
+        private byte[] ObtenerHashCodigo(
+        int idUsuario,
+        string codigo)
+        {
+            string secreto = config["Recuperacion:ClaveSecreta"]
+                ?? throw new InvalidOperationException(
+                    "No se configuró la clave de recuperación.");
+
+            byte[] clave = Convert.FromBase64String(secreto);
+
+            if (clave.Length < 32)
+                throw new InvalidOperationException(
+                    "La clave de recuperación es demasiado corta.");
+
+            string datos = $"{idUsuario}:{codigo}";
+
+            return HMACSHA256.HashData(
+                clave,
+                Encoding.UTF8.GetBytes(datos));
         }
 
         private static string Normalizar(string valor) => valor.Trim().ToLowerInvariant();

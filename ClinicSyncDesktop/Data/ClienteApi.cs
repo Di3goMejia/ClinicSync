@@ -200,6 +200,38 @@ namespace ClinicSyncDesktop.Data
             }
         }
 
+        public static async Task SolicitarCodigoAsync(
+          string correo)
+        {
+            using var respuesta = await cliente.PostAsJsonAsync(
+                "api/auth/olvide-contrasena",
+                new
+                {
+                    Identificador = correo
+                });
+
+            await VerificarRespuestaAsync(respuesta);
+        }
+
+        public static async Task RestablecerPasswordAsync(
+            string correo,
+            string codigo,
+            string nuevaPassword,
+            string confirmarPassword)
+        {
+            using var respuesta = await cliente.PostAsJsonAsync(
+                "api/auth/restablecer",
+                new
+                {
+                    Identificador = correo,
+                    Codigo = codigo,
+                    NuevaPassword = nuevaPassword,
+                    ConfirmarPassword = confirmarPassword
+                });
+
+            await VerificarRespuestaAsync(respuesta);
+        }
+
         public static void LimpiarSesion()
         {
             accessToken = null;
