@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -64,12 +65,14 @@ namespace ClinicSyncDesktop.Views
             var ventana = new MensajeWindow();
 
             ventana.Configurar(
-                "CUIDADO!",
+                "Descartar",
                 mensaje,
                 "IconoAviso.png",
                 true);
 
-            ventana.Owner = propietario;
+            if (propietario is not null)
+                ventana.Owner = propietario;
+
             ventana.ShowDialog();
 
             return ventana.Confirmado;
@@ -104,10 +107,10 @@ namespace ClinicSyncDesktop.Views
             txtTitulo.Text = titulo;
             txtMensaje.Text = mensaje;
 
-            if (string.IsNullOrWhiteSpace(titulo))
-                txtTitulo.Visibility = Visibility.Collapsed;
-            else
-                txtTitulo.Visibility = Visibility.Visible;
+            txtTitulo.Visibility =
+                string.IsNullOrWhiteSpace(titulo)
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
 
             if (!string.IsNullOrWhiteSpace(icono))
             {
