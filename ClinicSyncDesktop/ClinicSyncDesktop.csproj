@@ -10,40 +10,84 @@
 
   <ItemGroup>
     <None Remove="Resources\Imagenes MenuPrincipal\agenda.png" />
-    <None Remove="Resources\Imagenes MenuPrincipal\ajuste.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\campana-azul.png" />
+    <None Remove="Resources\Imagenes MenuPrincipal\campana-blanca.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\ClinicSync-LOGO.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\finanzas.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\inventario.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\pacientes.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\tratamientos.png" />
+    <None Remove="Resources\Imagenes MenuPrincipal\usuario-azul.png" />
+    <None Remove="Resources\Imagenes MenuPrincipal\usuario-blanco.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\usuario-perfil.png" />
-    <None Remove="Resources\Imagenes MenuPrincipal\usuario.png" />
+    <None Remove="Resources\ImagenesAvisos\cerrar-aviso.png" />
     <None Remove="Resources\ImagenesAvisos\IconoAlerta.png" />
     <None Remove="Resources\ImagenesAvisos\IconoAviso.png" />
     <None Remove="Resources\ImagenesAvisos\IconoCheque.png" />
     <None Remove="Resources\ImagenesAvisos\IconoError.png" />
     <None Remove="Resources\ImagenesLogin\mostrar-contraseña.png" />
+    <None Remove="Resources\ImagenesPacientes\calendario.png" />
+    <None Remove="Resources\ImagenesPacientes\cerrar-ventana.png" />
+    <None Remove="Resources\ImagenesPacientes\expediente-medico.png" />
+    <None Remove="Resources\ImagenesPacientes\flecha-hacia-abajo-combobox.png" />
     <None Remove="Resources\ImagenesTabla\IconoEngranaje.png" />
     <None Remove="Resources\ImagenesTabla\IconoMas.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\Imagenes MenuPrincipal\agenda.png" />
-    <Resource Include="Resources\Imagenes MenuPrincipal\ajuste.png" />
-    <Resource Include="Resources\Imagenes MenuPrincipal\campana-azul.png" />
-    <Resource Include="Resources\Imagenes MenuPrincipal\ClinicSync-LOGO.png" />
-    <Resource Include="Resources\Imagenes MenuPrincipal\finanzas.png" />
-    <Resource Include="Resources\Imagenes MenuPrincipal\inventario.png" />
-    <Resource Include="Resources\Imagenes MenuPrincipal\pacientes.png" />
-    <Resource Include="Resources\Imagenes MenuPrincipal\tratamientos.png" />
-    <Resource Include="Resources\Imagenes MenuPrincipal\usuario-perfil.png" />
-    <Resource Include="Resources\Imagenes MenuPrincipal\usuario.png" />
+    <Resource Include="Resources\Imagenes MenuPrincipal\agenda.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Imagenes MenuPrincipal\campana-azul.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Imagenes MenuPrincipal\campana-blanca.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Imagenes MenuPrincipal\ClinicSync-LOGO.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Imagenes MenuPrincipal\finanzas.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Imagenes MenuPrincipal\inventario.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Imagenes MenuPrincipal\pacientes.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Imagenes MenuPrincipal\tratamientos.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Imagenes MenuPrincipal\usuario-azul.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Imagenes MenuPrincipal\usuario-blanco.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Imagenes MenuPrincipal\usuario-perfil.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesAvisos\cerrar-aviso.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\ImagenesAvisos\IconoAlerta.png" />
     <Resource Include="Resources\ImagenesAvisos\IconoAviso.png" />
     <Resource Include="Resources\ImagenesAvisos\IconoCheque.png" />
     <Resource Include="Resources\ImagenesAvisos\IconoError.png" />
     <Resource Include="Resources\ImagenesLogin\mostrar-contraseña.png" />
+    <Resource Include="Resources\ImagenesPacientes\calendario.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesPacientes\cerrar-ventana.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesPacientes\expediente-medico.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesPacientes\flecha-hacia-abajo-combobox.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\ImagenesTabla\IconoEngranaje.png" />
     <Resource Include="Resources\ImagenesTabla\IconoMas.png" />
   </ItemGroup>
