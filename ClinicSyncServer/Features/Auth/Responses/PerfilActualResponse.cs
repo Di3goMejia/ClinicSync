@@ -1,8 +1,11 @@
-﻿namespace ClinicSyncServer.Features.Auth.Responses
+﻿
+namespace ClinicSyncServer.Features.Auth.Responses
 {
     public record PerfilActualResponse(
         string NombreUsuario,
         string Rol,
-        bool TieneFinanzas
+        bool TieneFinanzas,
+        int IdEmpleado,
+        string NombreEmpleado
     );
 }

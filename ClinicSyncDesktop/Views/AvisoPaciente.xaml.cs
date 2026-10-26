@@ -17,19 +17,22 @@ namespace ClinicSyncDesktop.Views
         {
             InitializeComponent();
 
+            // MOSTRAR MENSAJE
             txtMensaje.Text = mensaje;
 
+            // SELECCIONAR ÍCONO
             string icono = exitoso
                 ? "IconoCheque.png"
                 : "IconoError.png";
 
+            // CARGAR IMAGEN
             imgEstado.Source = new BitmapImage(
                 new Uri(
                     "pack://application:,,,/Resources/ImagenesAvisos/" +
                     icono,
                     UriKind.Absolute));
 
-            // TEMPORIZADOR DE 5 SEGUNDOS
+            // TEMPORIZADOR
             temporizador = new DispatcherTimer();
 
             temporizador.Interval =
@@ -50,7 +53,7 @@ namespace ClinicSyncDesktop.Views
             CerrarAviso();
         }
 
-        // CERRAR MANUALMENTE CON LA X
+        // CERRAR CON LA X
         private void Cerrar_Click(
             object sender,
             RoutedEventArgs e)
@@ -58,7 +61,7 @@ namespace ClinicSyncDesktop.Views
             CerrarAviso();
         }
 
-        // QUITAR AVISO DE LA PANTALLA
+        // QUITAR AVISO
         private void CerrarAviso()
         {
             temporizador.Stop();
@@ -66,10 +69,17 @@ namespace ClinicSyncDesktop.Views
             if (Parent is Panel panel)
             {
                 panel.Children.Remove(this);
+
+                // OCULTAR CONTENEDOR VACÍO
+                if (panel.Children.Count == 0)
+                {
+                    panel.Visibility =
+                        Visibility.Collapsed;
+                }
             }
         }
 
-        // DETENER TEMPORIZADOR SI SE QUITA EL AVISO
+        // DETENER TEMPORIZADOR AL QUITARLO
         private void AvisoPaciente_Unloaded(
             object sender,
             RoutedEventArgs e)

@@ -294,7 +294,7 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
-        // EXPEDIENTE
+        // ABRIR EXPEDIENTE DEL PACIENTE
         private void Expediente_Click(
             object sender,
             RoutedEventArgs e)
@@ -302,12 +302,10 @@ namespace ClinicSyncDesktop.Views
             if (sender is Button boton &&
                 boton.DataContext is PacienteVista paciente)
             {
-                MessageBox.Show(
-                    "Expediente de: " + paciente.NombreCompleto +
-                    "\n\nAquí conectaremos el expediente clínico.",
-                    "Expediente",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                if (Window.GetWindow(this) is ClinicSync.Views.MenuLateral menu)
+                {
+                    menu.AbrirExpediente(paciente.IdPaciente);
+                }
             }
         }
 

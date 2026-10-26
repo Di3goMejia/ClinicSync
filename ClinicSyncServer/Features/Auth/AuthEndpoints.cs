@@ -110,7 +110,10 @@ namespace ClinicSyncServer.Features.Auth
                 var respuesta = new PerfilActualResponse(
                     detalle.NombreUsuario,
                     perfilPermisos.Rol,
-                    tieneFinanzas);
+                    tieneFinanzas,
+                    detalle.IdEmpleado,
+                    $"{detalle.Nombres} {detalle.Apellidos}".Trim()
+                );
 
                 return Results.Ok(respuesta);
             })

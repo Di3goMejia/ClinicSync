@@ -185,6 +185,21 @@ namespace ClinicSync.Views
             };
         }
 
+        // ABRIR EXPEDIENTE
+        public void AbrirExpediente(int idPaciente)
+        {
+            ContenidoPrincipal.Content =
+                new ExpedientesView(idPaciente);
+
+            ResaltarBoton(btnPacientes);
+        }
+
+        // VOLVER A PACIENTES
+        public void VolverAPacientes()
+        {
+            AbrirModulo("Pacientes");
+        }
+
         // NOTIFICACIONES
         private void Campana_Click(
             object sender, RoutedEventArgs e)

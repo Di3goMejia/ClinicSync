@@ -44,6 +44,15 @@ namespace ClinicSyncServer.Infrastructure.Auth
                 )
             );
 
+            System.Diagnostics.Debug.WriteLine(
+    "ROL DEL USUARIO: " + perfil.Rol
+);
+
+            System.Diagnostics.Debug.WriteLine(
+                "PERMISOS DEL USUARIO: " +
+                string.Join(", ", perfil.Permisos)
+            );
+
             return Emitir(claims, _jwt.Audience, DateTime.UtcNow.AddMinutes(_jwt.AccesoMinutos));
         }
 
