@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using ClinicSyncServer.Common;
 using ClinicSyncServer.Common.Seguridad;
 using ClinicSyncServer.Features.Auth;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+// TEMPORAL: crear contraseña para usuario de prueba
 
 /* Servicios */
 

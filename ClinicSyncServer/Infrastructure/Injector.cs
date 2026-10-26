@@ -16,7 +16,7 @@ namespace ClinicSyncServer.Infrastructure
             services.Configure<OpcionesConexion>(config.GetSection("ConnectionStrings"));
             services.AddSingleton<SqlConnectionFactory>();
             services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
-            services.AddSingleton<IEmailSender, NoOpEmailSender>();
+            services.AddTransient<IEmailSender, GmailEmailSender>();
 
             return services;
         }

@@ -356,7 +356,6 @@ namespace ClinicSyncDesktop.Data
             return await cliente.SendAsync(reintento);
         }
 
-
         // CERRAR SESIÓN
         public static async Task CerrarSesionAsync()
         {
@@ -375,6 +374,40 @@ namespace ClinicSyncDesktop.Data
             {
                 LimpiarSesion();
             }
+        }
+
+        // SOLICITAR CÓDIGO PARA RESTABLECER LA CONTRASEÑA
+        public static async Task SolicitarCodigoAsync(
+            string correo)
+        {
+            using var respuesta = await cliente.PostAsJsonAsync(
+                "api/auth/olvide-contrasena",
+                new
+                {
+                    Identificador = correo
+                });
+
+            await VerificarRespuestaAsync(respuesta);
+        }
+
+        // RESTABLECER CONTRASEÑA
+        public static async Task RestablecerPasswordAsync(
+            string correo,
+            string codigo,
+            string nuevaPassword,
+            string confirmarPassword)
+        {
+            using var respuesta = await cliente.PostAsJsonAsync(
+                "api/auth/restablecer",
+                new
+                {
+                    Identificador = correo,
+                    Codigo = codigo,
+                    NuevaPassword = nuevaPassword,
+                    ConfirmarPassword = confirmarPassword
+                });
+
+            await VerificarRespuestaAsync(respuesta);
         }
 
         // LIMPIAR SESIÓN
