@@ -406,6 +406,111 @@ namespace ClinicSyncDesktop.Data
             await VerificarRespuestaAsync(reintento);
         }
 
+        // SUBIR IMAGEN DE MATERIAL
+        public static async Task<string> SubirImagenMaterialAsync(
+            string rutaArchivo,
+            CancellationToken ct = default)
+        {
+            if (!File.Exists(rutaArchivo))
+                throw new FileNotFoundException(
+                    "No se encontró la imagen seleccionada.",
+                    rutaArchivo);
+
+            string tokenAnterior = accessToken
+                ?? throw new InvalidOperationException(
+                    "No hay una sesión iniciada.");
+
+            async Task<HttpResponseMessage> EnviarAsync(string token)
+            {
+                using var solicitud = new HttpRequestMessage(
+                    HttpMethod.Post,
+                    "api/inventario/materiales/imagenes");
+
+                solicitud.Headers.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+
+                solicitud.Headers.Add(
+                    "X-Equipo",
+                    Environment.MachineName);
+
+                using var formulario = new MultipartFormDataContent();
+
+                await using var archivo = File.OpenRead(rutaArchivo);
+                using var contenido = new StreamContent(archivo);
+
+                contenido.Headers.ContentType =
+                    new MediaTypeHeaderValue(
+                        Path.GetExtension(rutaArchivo).ToLowerInvariant() switch
+                        {
+                            ".jpg" or ".jpeg" => "image/jpeg",
+                            ".png" => "image/png",
+                            ".webp" => "image/webp",
+                            _ => "application/octet-stream"
+                        });
+
+                formulario.Add(
+                    contenido,
+                    "archivo",
+                    Path.GetFileName(rutaArchivo));
+
+                solicitud.Content = formulario;
+
+                return await cliente.SendAsync(solicitud, ct);
+            }
+
+            using var respuesta = await EnviarAsync(tokenAnterior);
+
+            if (respuesta.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                await bloqueoRenovacion.WaitAsync(ct);
+
+                try
+                {
+                    if (accessToken == tokenAnterior)
+                        await RenovarSesionAsync();
+                }
+                finally
+                {
+                    bloqueoRenovacion.Release();
+                }
+
+                string tokenNuevo = accessToken
+                    ?? throw new InvalidOperationException(
+                        "La sesión terminó. Inicia sesión nuevamente.");
+
+                using var reintento = await EnviarAsync(tokenNuevo);
+
+                await VerificarRespuestaAsync(reintento);
+
+                return await LeerReferenciaImagenAsync(reintento, ct);
+            }
+
+            await VerificarRespuestaAsync(respuesta);
+
+            return await LeerReferenciaImagenAsync(respuesta, ct);
+        }
+
+        private static async Task<string> LeerReferenciaImagenAsync(
+            HttpResponseMessage respuesta,
+            CancellationToken ct)
+        {
+            using var documento = await JsonDocument.ParseAsync(
+                await respuesta.Content.ReadAsStreamAsync(ct),
+                cancellationToken: ct);
+
+            if (documento.RootElement.TryGetProperty(
+                "imagen", out var imagen))
+            {
+                string? referencia = imagen.GetString();
+
+                if (!string.IsNullOrWhiteSpace(referencia))
+                    return referencia;
+            }
+
+            throw new InvalidOperationException(
+                "La API no devolvió la referencia de la imagen.");
+        }
+
         // OBTENER ARCHIVOS DE UNA VISITA
         public static async Task<T> ObtenerArchivosVisitaAsync<T>(
             int idVisita)
@@ -642,5 +747,42 @@ namespace ClinicSyncDesktop.Data
 
             throw new InvalidOperationException(mensaje);
         }
+
+
+        public static async Task<byte[]> DescargarImagenMaterialAsync(
+            string referencia)
+        {
+            if (string.IsNullOrWhiteSpace(referencia))
+            {
+                throw new ArgumentException(
+                    "La referencia de la imagen está vacía.",
+                    nameof(referencia));
+            }
+
+            const string prefijo =
+                "/api/inventario/materiales/imagenes/";
+
+            if (!referencia.StartsWith(
+                prefijo,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException(
+                    "La referencia de la imagen no es válida.",
+                    nameof(referencia));
+            }
+
+            // Eliminar la barra inicial para utilizar la ruta relativa
+            // respecto a la dirección base de la API.
+            string ruta = referencia.TrimStart('/');
+
+            using var respuesta = await EnviarAutenticadoAsync(
+                HttpMethod.Get,
+                ruta);
+
+            await VerificarRespuestaAsync(respuesta);
+
+            return await respuesta.Content.ReadAsByteArrayAsync();
+        }
+
     }
 }

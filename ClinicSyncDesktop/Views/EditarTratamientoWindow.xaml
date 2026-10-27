@@ -244,6 +244,15 @@
                                   Unchecked="ChkActivo_Unchecked"/>
                     </Grid>
 
+
+                    <TextBlock x:Name="TxtAvisoEstado"
+                               Text="⚠ El tratamiento está deshabilitado. Habilítalo para poder modificar sus datos."
+                               Foreground="#FF3655"
+                               FontSize="11"
+                               TextWrapping="Wrap"
+                               Margin="3,0,0,8"
+                               Visibility="Collapsed"/>
+                    
                     <!-- ÚNICO MENSAJE DE VALIDACIÓN -->
                     <TextBlock x:Name="TxtErrorGeneral"
                                Foreground="#E84263"

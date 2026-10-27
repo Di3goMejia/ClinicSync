@@ -13,7 +13,11 @@ namespace ClinicSyncDesktop.Views
     {
         private readonly TratamientosApiService _tratamientosService;
         private readonly Tratamiento _tratamiento;
+
         private bool _guardando;
+
+        // Estado guardado del tratamiento al abrir la ventana.
+        private bool _estadoInicialActivo;
 
         public bool ErrorAlGuardar { get; private set; }
 
@@ -29,18 +33,25 @@ namespace ClinicSyncDesktop.Views
             _tratamiento = tr;
             _tratamientosService = svc;
 
+            // Capturar el estado original antes de permitir cambios.
+            _estadoInicialActivo = _tratamiento.Activo;
+
             TxtNombre.Text = _tratamiento.Nombre;
 
             TxtPrecio.Text = _tratamiento.Precio.ToString(
                 "0.00",
                 CultureInfo.InvariantCulture);
 
-            TxtDescripcion.Text = _tratamiento.Descripcion;
+            TxtDescripcion.Text =
+                _tratamiento.Descripcion ?? "";
+
             ChkActivo.IsChecked = _tratamiento.Activo;
 
             ActualizarTextoEstado();
+            ActualizarControlesEstado();
         }
 
+        // ACTUALIZAR TEXTO DEL ESTADO
         private void ActualizarTextoEstado()
         {
             TxtEstado.Text = ChkActivo.IsChecked == true
@@ -48,18 +59,45 @@ namespace ClinicSyncDesktop.Views
                 : "Deshabilitado";
         }
 
+        // ACTUALIZAR CAMPOS SEGÚN EL ESTADO GUARDADO
+        private void ActualizarControlesEstado()
+        {
+            // El estado inicial determina si se pueden editar los datos.
+            // Cambiar el interruptor no modifica este valor.
+            bool permitirEdicion = _estadoInicialActivo;
+
+            TxtNombre.IsEnabled = permitirEdicion;
+            TxtPrecio.IsEnabled = permitirEdicion;
+            TxtDescripcion.IsEnabled = permitirEdicion;
+
+            // El interruptor siempre debe poder utilizarse.
+            ChkActivo.IsEnabled = true;
+
+            // Evitar varios guardados simultáneos.
+            BtnGuardar.IsEnabled = !_guardando;
+
+            // Mostrar el aviso si el tratamiento ya estaba deshabilitado
+            // al abrir la ventana.
+            TxtAvisoEstado.Visibility = permitirEdicion
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+        }
+
+        // MOSTRAR ERROR
         private void MostrarError(string mensaje)
         {
             TxtErrorGeneral.Text = mensaje;
             TxtErrorGeneral.Visibility = Visibility.Visible;
         }
 
+        // OCULTAR ERROR
         private void OcultarError()
         {
             TxtErrorGeneral.Text = string.Empty;
             TxtErrorGeneral.Visibility = Visibility.Collapsed;
         }
 
+        // CAMBIOS EN EL NOMBRE
         private void TxtNombre_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -67,6 +105,7 @@ namespace ClinicSyncDesktop.Views
             OcultarError();
         }
 
+        // CAMBIOS EN EL PRECIO
         private void TxtPrecio_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -74,6 +113,7 @@ namespace ClinicSyncDesktop.Views
             OcultarError();
         }
 
+        // CAMBIOS EN LA DESCRIPCIÓN
         private void TxtDescripcion_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -81,6 +121,7 @@ namespace ClinicSyncDesktop.Views
             OcultarError();
         }
 
+        // CERRAR VENTANA
         private void Cerrar_Click(
             object sender,
             RoutedEventArgs e)
@@ -111,6 +152,7 @@ namespace ClinicSyncDesktop.Views
             DialogResult = false;
         }
 
+        // VALIDAR FORMULARIO
         private bool ValidarFormulario(out decimal precio)
         {
             OcultarError();
@@ -120,10 +162,11 @@ namespace ClinicSyncDesktop.Views
             string textoPrecio = TxtPrecio.Text.Trim();
             string descripcion = TxtDescripcion.Text.Trim();
 
-            // Primero, validar el nombre.
             if (string.IsNullOrWhiteSpace(nombre))
             {
-                MostrarError("Ingresa el nombre del tratamiento.");
+                MostrarError(
+                    "Ingresa el nombre del tratamiento.");
+
                 TxtNombre.Focus();
                 return false;
             }
@@ -137,10 +180,11 @@ namespace ClinicSyncDesktop.Views
                 return false;
             }
 
-            // Después, validar el precio.
             if (string.IsNullOrWhiteSpace(textoPrecio))
             {
-                MostrarError("Ingresa el precio base del tratamiento.");
+                MostrarError(
+                    "Ingresa el precio base del tratamiento.");
+
                 TxtPrecio.Focus();
                 return false;
             }
@@ -162,14 +206,18 @@ namespace ClinicSyncDesktop.Views
 
             if (precio < 0)
             {
-                MostrarError("El precio no puede ser negativo.");
+                MostrarError(
+                    "El precio no puede ser negativo.");
+
                 TxtPrecio.Focus();
                 return false;
             }
 
             if (precio > 99999999.99m)
             {
-                MostrarError("El precio supera el límite permitido.");
+                MostrarError(
+                    "El precio supera el límite permitido.");
+
                 TxtPrecio.Focus();
                 return false;
             }
@@ -183,7 +231,6 @@ namespace ClinicSyncDesktop.Views
                 return false;
             }
 
-            // Finalmente, validar la descripción opcional.
             if (descripcion.Length > 200)
             {
                 MostrarError(
@@ -196,6 +243,7 @@ namespace ClinicSyncDesktop.Views
             return true;
         }
 
+        // GUARDAR CAMBIOS
         private async void BtnGuardar_Click(
             object sender,
             RoutedEventArgs e)
@@ -205,26 +253,44 @@ namespace ClinicSyncDesktop.Views
 
             OcultarError();
 
-            if (!ValidarFormulario(out decimal precio))
-                return;
-
-            string nombre = TxtNombre.Text.Trim();
-            string descripcion = TxtDescripcion.Text.Trim();
             bool activo = ChkActivo.IsChecked == true;
 
+            // Por defecto, conservar los datos originales.
+            string nombre = _tratamiento.Nombre;
+            string descripcion = _tratamiento.Descripcion ?? "";
+            decimal precio = _tratamiento.Precio;
+
+            // Solo permitir modificar datos si el tratamiento estaba
+            // habilitado al abrir la ventana.
+            if (_estadoInicialActivo)
+            {
+                if (!ValidarFormulario(out precio))
+                    return;
+
+                nombre = TxtNombre.Text.Trim();
+                descripcion = TxtDescripcion.Text.Trim();
+            }
+
+            bool cambioDatos =
+                nombre != _tratamiento.Nombre ||
+                precio != _tratamiento.Precio ||
+                descripcion != (_tratamiento.Descripcion ?? "");
+
+            bool cambioEstado =
+                activo != _tratamiento.Activo;
+
+            if (!cambioDatos && !cambioEstado)
+            {
+                DialogResult = false;
+                return;
+            }
+
             _guardando = true;
-            BtnGuardar.IsEnabled = false;
+            ActualizarControlesEstado();
 
             try
             {
-                bool cambioDatos =
-                    nombre != _tratamiento.Nombre ||
-                    precio != _tratamiento.Precio ||
-                    descripcion != (_tratamiento.Descripcion ?? "");
-
-                bool cambioEstado =
-                    activo != _tratamiento.Activo;
-
+                // Actualizar datos solo cuando corresponda.
                 if (cambioDatos)
                 {
                     await _tratamientosService.ModificarAsync(
@@ -234,6 +300,7 @@ namespace ClinicSyncDesktop.Views
                         descripcion);
                 }
 
+                // Guardar la activación o desactivación.
                 if (cambioEstado)
                 {
                     await _tratamientosService.CambiarEstadoAsync(
@@ -241,6 +308,7 @@ namespace ClinicSyncDesktop.Views
                         activo);
                 }
 
+                // Actualizar el objeto local después de guardar.
                 _tratamiento.Nombre = nombre;
                 _tratamiento.Descripcion = descripcion;
                 _tratamiento.Precio = precio;
@@ -250,32 +318,40 @@ namespace ClinicSyncDesktop.Views
             }
             catch (Exception ex)
             {
-                ErrorAlGuardar = false;
+                ErrorAlGuardar = true;
 
                 if (ex.Message.Contains(
                     "Ya existe un tratamiento con ese nombre",
                     StringComparison.OrdinalIgnoreCase))
                 {
-                    MostrarError("El tratamiento ya existe.");
+                    MensajeError =
+                        "El tratamiento ya existe.";
+
+                    MostrarError(MensajeError);
                 }
                 else
                 {
-                    MostrarError(
-                        "No se pudo actualizar el tratamiento. Verifica la conexión e inténtalo nuevamente.");
+                    MensajeError =
+                        "No se pudo actualizar el tratamiento. " +
+                        "Verifica la conexión e inténtalo nuevamente.";
+
+                    MostrarError(MensajeError);
                 }
             }
             finally
             {
                 _guardando = false;
-                BtnGuardar.IsEnabled = true;
+                ActualizarControlesEstado();
             }
         }
 
+        // CAMBIAR EL INTERRUPTOR NO BLOQUEA LOS CAMPOS INMEDIATAMENTE
         private void ChkActivo_Checked(
             object sender,
             RoutedEventArgs e)
         {
             ActualizarTextoEstado();
+            OcultarError();
         }
 
         private void ChkActivo_Unchecked(
@@ -283,8 +359,10 @@ namespace ClinicSyncDesktop.Views
             RoutedEventArgs e)
         {
             ActualizarTextoEstado();
+            OcultarError();
         }
 
+        // MOVER VENTANA
         private void Barra_MouseLeftButtonDown(
             object sender,
             MouseButtonEventArgs e)
