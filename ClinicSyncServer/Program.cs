@@ -1,4 +1,4 @@
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using ClinicSyncServer.Common;
 using ClinicSyncServer.Common.Seguridad;
 using ClinicSyncServer.Features.Auth;
@@ -6,6 +6,7 @@ using ClinicSyncServer.Features.Permisos;
 using ClinicSyncServer.Features.Sesiones;
 using ClinicSyncServer.Features.Usuarios;
 using ClinicSyncServer.Features.Tratamientos;
+using ClinicSyncServer.Features.Inventario;
 using ClinicSyncServer.Features.Pacientes;
 using ClinicSyncServer.Features.Expedientes;
 using ClinicSyncServer.Infrastructure;
@@ -42,6 +43,7 @@ builder.Services
     .AddAuth()
     .AddUsuarios()
     .AddTratamientos()
+    .AddInventario()
     .AddPacientes()
     .AddExpedientes();
 
@@ -76,6 +78,7 @@ app.UseAuthorization();
 app.MapAuth();
 app.MapUsuarios();
 app.MapTratamientos();
+app.MapInventario();
 app.MapPacientesModule();
 app.MapExpedientesModule();
 

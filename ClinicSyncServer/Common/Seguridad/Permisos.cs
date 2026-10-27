@@ -13,6 +13,14 @@ namespace ClinicSyncServer.Common.Seguridad
         public const string TratamientosModificar = "TRATAMIENTOS_MODIFICAR";
         public const string TratamientosEstado = "TRATAMIENTOS_ESTADO";
 
+        // INVENTARIO
+        public const string InventarioCrear = "INVENTARIO_CREAR";
+        public const string InventarioLeer = "INVENTARIO_LEER";
+        public const string InventarioModificar = "INVENTARIO_MODIFICAR";
+        public const string InventarioEstado = "INVENTARIO_ESTADO";
+        public const string InventarioConsultarMovimientos = "INVENTARIO_CONSULTAR_MOVIMIENTOS";
+        public const string InventarioRegistrarMovimientos = "INVENTARIO_REGISTRAR_MOVIMIENTOS";
+
         // EXPEDIENTES
         public const string ExpedientesLeer = "EXPEDIENTES_LEER";
         public const string ExpedientesModificar = "EXPEDIENTES_MODIFICAR";
@@ -33,6 +41,14 @@ namespace ClinicSyncServer.Common.Seguridad
             TratamientosCrear,
             TratamientosModificar,
             TratamientosEstado,
+
+            // INVENTARIO
+            InventarioCrear,
+            InventarioLeer,
+            InventarioModificar,
+            InventarioEstado,
+            InventarioConsultarMovimientos,
+            InventarioRegistrarMovimientos,
 
             // EXPEDIENTES
             ExpedientesLeer,
