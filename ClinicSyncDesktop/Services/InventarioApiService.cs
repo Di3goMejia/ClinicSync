@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.IO;
 using ClinicSyncDesktop.Data;
 using ClinicSyncDesktop.Models;
@@ -71,7 +72,6 @@ namespace ClinicSyncDesktop.Services
         {
             ct.ThrowIfCancellationRequested();
 
-            // Subir la imagen antes de registrar el material.
             string? referenciaImagen = await ResolverImagenAsync(
                 imagen,
                 ct);
@@ -115,7 +115,7 @@ namespace ClinicSyncDesktop.Services
                     "La API no devolvió el identificador del material.");
         }
 
-        // MODIFICAR MATERIAL
+        // MODIFICAR MATERIAL, INCLUYENDO EL STOCK
         public async Task<Material> ModificarAsync(
             int idMaterial,
             string codigo,
@@ -125,11 +125,13 @@ namespace ClinicSyncDesktop.Services
             decimal precioCompra,
             string? imagen = null,
             string? descripcion = null,
+            decimal? stockActual = null,
+            decimal? stockEsperado = null,
+            string? motivo = null,
             CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 
-            // Subir la imagen si se seleccionó un archivo local.
             string? referenciaImagen = await ResolverImagenAsync(
                 imagen,
                 ct);
@@ -144,7 +146,12 @@ namespace ClinicSyncDesktop.Services
                 StockMinimo = stockMinimo,
                 PrecioCompra = precioCompra,
                 Imagen = referenciaImagen,
-                Descripcion = descripcion
+                Descripcion = descripcion,
+
+                // Si son null, el procedimiento no modifica el stock.
+                StockActual = stockActual,
+                StockEsperado = stockEsperado,
+                Motivo = motivo
             };
 
             using var respuesta =
@@ -184,8 +191,6 @@ namespace ClinicSyncDesktop.Services
 
             imagen = imagen.Trim();
 
-            // Si ya es una referencia de imagen de la API,
-            // no volver a subirla.
             const string prefijoImagen =
                 "/api/inventario/materiales/imagenes/";
 
@@ -196,7 +201,6 @@ namespace ClinicSyncDesktop.Services
                 return imagen;
             }
 
-            // Conservar referencias HTTP o HTTPS existentes.
             if (Uri.TryCreate(
                     imagen,
                     UriKind.Absolute,
@@ -207,8 +211,6 @@ namespace ClinicSyncDesktop.Services
                 return imagen;
             }
 
-            // Si no es una referencia existente, debe ser
-            // una ruta local a un archivo que podamos subir.
             if (!File.Exists(imagen))
             {
                 throw new FileNotFoundException(
@@ -219,7 +221,6 @@ namespace ClinicSyncDesktop.Services
 
             ct.ThrowIfCancellationRequested();
 
-            // La API guarda el archivo y devuelve su referencia.
             string referencia = await ClienteApi.SubirImagenMaterialAsync(
                 imagen,
                 ct);
@@ -259,7 +260,6 @@ namespace ClinicSyncDesktop.Services
         }
 
         // LEER MENSAJE DE ERROR DE LA API
-
         private static async Task<string> ObtenerMensajeErrorAsync(
             HttpResponseMessage respuesta,
             string mensajePredeterminado,
@@ -268,7 +268,8 @@ namespace ClinicSyncDesktop.Services
             string contenido =
                 await respuesta.Content.ReadAsStringAsync(ct);
 
-            string codigo = $"{(int)respuesta.StatusCode} ({respuesta.StatusCode})";
+            string codigo =
+                $"{(int)respuesta.StatusCode} ({respuesta.StatusCode})";
 
             try
             {
@@ -300,7 +301,6 @@ namespace ClinicSyncDesktop.Services
 
             return $"HTTP {codigo}: {mensajePredeterminado}";
         }
-
 
         // RESPUESTA DEL REGISTRO
         private sealed class RespuestaRegistro

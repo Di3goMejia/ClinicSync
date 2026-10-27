@@ -3,11 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Editar material"
         Width="357"
-        Height="475"
+        Height="530"
         MinWidth="357"
-        MinHeight="475"
+        MinHeight="530"
         MaxWidth="357"
-        MaxHeight="475"
+        MaxHeight="530"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -146,6 +146,7 @@
                     <RowDefinition Height="59"/>
                     <RowDefinition Height="49"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="50"/>
                     <RowDefinition Height="32"/>
                     <RowDefinition Height="24"/>
                 </Grid.RowDefinitions>
@@ -364,7 +365,8 @@
                                      Background="Transparent"
                                      Padding="0"
                                      TextAlignment="Center"
-                                     IsReadOnly="True"
+                                     IsReadOnly="False"
+                                     MaxLength="10"
                                      ToolTip="Stock actual del material"/>
 
                             <Border Grid.Column="1"
@@ -378,7 +380,9 @@
                                      Padding="1"
                                      TextAlignment="Center"
                                      MaxLength="20"
-                                     ToolTip="Unidad de medida"/>
+                                     IsReadOnly="True"
+                                     Focusable="False"
+                                     ToolTip="La unidad de medida no se puede modificar"/>
                         </Grid>
                     </Grid>
 
@@ -418,8 +422,27 @@
                              MaxLength="200"/>
                 </Grid>
 
-                <!-- ESTADO DEL MATERIAL -->
+                <!-- MOTIVO DEL AJUSTE DE STOCK -->
                 <Grid Grid.Row="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="23"/>
+                        <RowDefinition Height="23"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Style="{StaticResource Etiqueta}"
+                               Text="Motivo del ajuste de stock:"/>
+
+                    <TextBox x:Name="txtMotivoAjuste"
+                             Grid.Row="1"
+                             Style="{StaticResource Campo}"
+                             Height="23"
+                             MaxLength="200"
+                             ToolTip="Obligatorio si modificas el stock actual"/>
+                </Grid>
+
+                <!-- ESTADO DEL MATERIAL -->
+                <Grid Grid.Row="6">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
@@ -478,7 +501,7 @@
 
                 <!-- MENSAJE DE VALIDACIÓN -->
                 <TextBlock x:Name="txtAvisoValidacion"
-                           Grid.Row="6"
+                           Grid.Row="7"
                            Foreground="#E83C53"
                            FontSize="11"
                            VerticalAlignment="Center"
