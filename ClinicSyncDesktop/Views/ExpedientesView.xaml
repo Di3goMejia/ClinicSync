@@ -17,6 +17,7 @@
             <GradientStop Color="#138DAA" Offset="1"/>
         </LinearGradientBrush>
 
+
         <Style x:Key="BotonTransparente"
                TargetType="{x:Type Button}">
             <Setter Property="Background" Value="Transparent"/>
@@ -24,7 +25,24 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Padding" Value="5,0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderThickness="0"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                RecognizesAccessKey="True"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
+
 
         <Style TargetType="{x:Type DataGridColumnHeader}">
             <Setter Property="Background" Value="#D9DDD8"/>
