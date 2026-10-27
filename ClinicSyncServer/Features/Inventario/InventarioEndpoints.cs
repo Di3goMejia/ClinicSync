@@ -72,7 +72,9 @@ namespace ClinicSyncServer.Features.Inventario
                     }
 
                     var id = await svc.InsertarAsync(
-                        req, idUsuario, ct);
+                        req,
+                        idUsuario,
+                        ct);
 
                     return Results.Created(
                         $"/api/inventario/materiales/{id}",
@@ -88,14 +90,26 @@ namespace ClinicSyncServer.Features.Inventario
                 async (
                     int id,
                     [FromBody] MaterialRequest req,
+                    ClaimsPrincipal usuario,
                     IInventarioService svc,
                     CancellationToken ct) =>
                 {
                     if (id <= 0)
                         return Results.BadRequest();
 
+                    if (!int.TryParse(
+                        usuario.FindFirstValue("sub"),
+                        out int idUsuario))
+                    {
+                        return Results.Unauthorized();
+                    }
+
                     var material =
-                        await svc.ModificarAsync(id, req, ct);
+                        await svc.ModificarAsync(
+                            id,
+                            req,
+                            idUsuario,
+                            ct);
 
                     return material is null
                         ? Results.NotFound()
@@ -119,7 +133,9 @@ namespace ClinicSyncServer.Features.Inventario
 
                     var cambiado =
                         await svc.CambiarEstadoAsync(
-                            id, req.Activo, ct);
+                            id,
+                            req.Activo,
+                            ct);
 
                     return cambiado
                         ? Results.NoContent()
@@ -139,7 +155,6 @@ namespace ClinicSyncServer.Features.Inventario
                 {
                     try
                     {
-                        // Verificar que la solicitud sea multipart/form-data.
                         if (!request.HasFormContentType)
                         {
                             return Results.BadRequest(new
@@ -149,7 +164,6 @@ namespace ClinicSyncServer.Features.Inventario
                             });
                         }
 
-                        // Leer el formulario y obtener el archivo.
                         var formulario =
                             await request.ReadFormAsync(ct);
 
@@ -166,10 +180,10 @@ namespace ClinicSyncServer.Features.Inventario
                             });
                         }
 
-                        // Guardar el archivo y obtener su referencia.
                         string referencia =
                             await almacenamiento.GuardarAsync(
-                                archivo, ct);
+                                archivo,
+                                ct);
 
                         return Results.Ok(new
                         {

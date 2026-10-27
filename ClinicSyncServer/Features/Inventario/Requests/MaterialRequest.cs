@@ -16,16 +16,30 @@ namespace ClinicSyncServer.Features.Inventario.Requests
         [StringLength(20, ErrorMessage = "La unidad de medida no puede superar los 20 caracteres.")]
         public string UnidadMedida { get; set; } = string.Empty;
 
-        [Range(typeof(decimal), "0", "9999999999.99", ErrorMessage = "El stock mínimo no puede ser negativo.")]
+        [Range(typeof(decimal), "0", "9999999999.99",
+            ErrorMessage = "El stock mínimo no puede ser negativo.")]
         public decimal StockMinimo { get; set; }
 
-        [Range(typeof(decimal), "0", "99999999.99", ErrorMessage = "El precio de compra no puede ser negativo.")]
+        [Range(typeof(decimal), "0", "9999999999.99",
+            ErrorMessage = "El stock actual no puede ser negativo.")]
+        public decimal? StockActual { get; set; }
+
+        public decimal? StockEsperado { get; set; }
+
+        [StringLength(200,
+            ErrorMessage = "El motivo no puede superar los 200 caracteres.")]
+        public string? Motivo { get; set; }
+
+        [Range(typeof(decimal), "0", "99999999.99",
+            ErrorMessage = "El precio de compra no puede ser negativo.")]
         public decimal PrecioCompra { get; set; }
 
-        [StringLength(255, ErrorMessage = "La ruta de la imagen no puede superar los 255 caracteres.")]
+        [StringLength(255,
+            ErrorMessage = "La ruta de la imagen no puede superar los 255 caracteres.")]
         public string? Imagen { get; set; }
 
-        [StringLength(200, ErrorMessage = "La descripción no puede superar los 200 caracteres.")]
+        [StringLength(200,
+            ErrorMessage = "La descripción no puede superar los 200 caracteres.")]
         public string? Descripcion { get; set; }
     }
 }

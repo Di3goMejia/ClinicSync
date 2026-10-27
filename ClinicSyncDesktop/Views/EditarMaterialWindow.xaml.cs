@@ -1,5 +1,4 @@
-﻿
-using ClinicSyncDesktop.Models;
+﻿using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
 using Microsoft.Win32;
 using System;
@@ -48,7 +47,6 @@ namespace ClinicSyncDesktop.Views
             txtUnidadMedida.Text = materialOriginal.UnidadMedida;
             txtDescripcion.Text = materialOriginal.Descripcion ?? "";
 
-            // CARGAR EL ESTADO ACTUAL
             chkActivo.IsChecked = materialOriginal.Activo;
 
             rutaImagen = materialOriginal.Imagen;
@@ -62,13 +60,12 @@ namespace ClinicSyncDesktop.Views
                 CargarVistaPrevia(rutaImagen);
             }
 
-            // BLOQUEAR LOS CAMPOS SI EL MATERIAL ESTÁ DESHABILITADO
             EstablecerEdicionHabilitada(materialOriginal.Activo);
 
             if (!materialOriginal.Activo)
             {
                 MostrarErrorValidacion(
-                    "⚠ El material está deshabilitado. " +
+                    "El material está deshabilitado. " +
                     "Habilítalo para poder modificar sus datos.");
             }
         }
@@ -80,17 +77,20 @@ namespace ClinicSyncDesktop.Views
             txtCodigo.IsEnabled = habilitada;
             txtPrecioCompra.IsEnabled = habilitada;
             txtStockMinimo.IsEnabled = habilitada;
-            txtUnidadMedida.IsEnabled = habilitada;
             txtDescripcion.IsEnabled = habilitada;
 
-            // EL STOCK ACTUAL SIEMPRE ES DE SOLO LECTURA
-            txtStockActual.IsEnabled = true;
+            // El stock puede editarse si el material está habilitado.
+            txtStockActual.IsEnabled = habilitada;
 
-            // PERMITIR CAMBIAR LA IMAGEN SOLO SI ESTÁ HABILITADO
+            // La unidad de medida siempre permanece bloqueada.
+            txtUnidadMedida.IsReadOnly = true;
+            txtUnidadMedida.Focusable = false;
+
+            // El motivo solo puede editarse si el material está habilitado.
+            txtMotivoAjuste.IsEnabled = habilitada;
+
             btnQuitarImagen.IsEnabled = habilitada;
 
-            // EL BOTÓN PARA SELECCIONAR IMAGEN NO TIENE NOMBRE
-            // EN EL XAML, POR ESO SE LOCALIZA POR SU EVENTO.
             foreach (var boton in BuscarBotonesImagen())
             {
                 boton.IsEnabled = habilitada;
@@ -158,8 +158,7 @@ namespace ClinicSyncDesktop.Views
                 }
                 else if (File.Exists(ruta))
                 {
-                    imagen.UriSource = new Uri(
-                        Path.GetFullPath(ruta));
+                    imagen.UriSource = new Uri(Path.GetFullPath(ruta));
                 }
                 else
                 {
@@ -244,7 +243,7 @@ namespace ClinicSyncDesktop.Views
             LimpiarErrorValidacion();
         }
 
-        // MOSTRAR MENSAJES EN ROJO
+        // MOSTRAR MENSAJES DE VALIDACIÓN
         private void MostrarErrorValidacion(string mensaje)
         {
             txtAvisoValidacion.Text = mensaje;
@@ -257,6 +256,7 @@ namespace ClinicSyncDesktop.Views
             txtAvisoValidacion.Visibility = Visibility.Collapsed;
         }
 
+        // LEER DECIMALES SEGÚN LA CONFIGURACIÓN REGIONAL
         private static bool TryLeerDecimal(
             string texto,
             out decimal valor)
@@ -282,43 +282,12 @@ namespace ClinicSyncDesktop.Views
         // COMPROBAR SI SE CAMBIÓ ALGÚN DATO
         private bool TieneCambios()
         {
-            decimal.TryParse(
-                txtPrecioCompra.Text,
-                NumberStyles.Number,
-                CultureInfo.CurrentCulture,
-                out decimal precioActual);
+            TryLeerDecimal(txtPrecioCompra.Text, out decimal precioActual);
+            TryLeerDecimal(txtStockMinimo.Text, out decimal minimoActual);
 
-            if (!decimal.TryParse(
-                txtPrecioCompra.Text,
-                NumberStyles.Number,
-                CultureInfo.InvariantCulture,
-                out precioActual))
-            {
-                decimal.TryParse(
-                    txtPrecioCompra.Text,
-                    NumberStyles.Number,
-                    CultureInfo.CurrentCulture,
-                    out precioActual);
-            }
-
-            decimal.TryParse(
-                txtStockMinimo.Text,
-                NumberStyles.Number,
-                CultureInfo.CurrentCulture,
-                out decimal minimoActual);
-
-            if (!decimal.TryParse(
-                txtStockMinimo.Text,
-                NumberStyles.Number,
-                CultureInfo.InvariantCulture,
-                out minimoActual))
-            {
-                decimal.TryParse(
-                    txtStockMinimo.Text,
-                    NumberStyles.Number,
-                    CultureInfo.CurrentCulture,
-                    out minimoActual);
-            }
+            bool stockValido = TryLeerDecimal(
+                txtStockActual.Text,
+                out decimal stockActual);
 
             return
                 txtNombre.Text.Trim() != materialOriginal.Nombre ||
@@ -327,6 +296,9 @@ namespace ClinicSyncDesktop.Views
                 txtDescripcion.Text.Trim() != (materialOriginal.Descripcion ?? "") ||
                 precioActual != materialOriginal.PrecioCompra ||
                 minimoActual != materialOriginal.StockMinimo ||
+                !stockValido ||
+                stockActual != materialOriginal.StockActual ||
+                !string.IsNullOrWhiteSpace(txtMotivoAjuste.Text) ||
                 imagenModificada ||
                 chkActivo.IsChecked != materialOriginal.Activo;
         }
@@ -362,14 +334,13 @@ namespace ClinicSyncDesktop.Views
 
             bool activoNuevo = chkActivo.IsChecked == true;
 
-            // MATERIAL ORIGINALMENTE DESHABILITADO
-            // SOLO SE PERMITE REACTIVARLO
+            // SI ESTABA DESHABILITADO, SOLO SE PERMITE REACTIVARLO
             if (!materialOriginal.Activo)
             {
                 if (!activoNuevo)
                 {
                     MostrarErrorValidacion(
-                        "⚠ El material está deshabilitado. " +
+                        "El material está deshabilitado. " +
                         "Habilítalo para poder modificar sus datos.");
 
                     return;
@@ -406,16 +377,16 @@ namespace ClinicSyncDesktop.Views
             string codigo = txtCodigo.Text.Trim();
             string unidadMedida = txtUnidadMedida.Text.Trim();
             string descripcion = txtDescripcion.Text.Trim();
+            string motivoAjuste = txtMotivoAjuste.Text.Trim();
 
             decimal precioCompra;
             decimal stockMinimo;
+            decimal stockActual;
 
             // 1. NOMBRE
             if (string.IsNullOrWhiteSpace(nombre))
             {
-                MostrarErrorValidacion(
-                    "Ingresa el nombre del material.");
-
+                MostrarErrorValidacion("Ingresa el nombre del material.");
                 txtNombre.Focus();
                 return;
             }
@@ -424,7 +395,6 @@ namespace ClinicSyncDesktop.Views
             if (string.IsNullOrWhiteSpace(codigo))
             {
                 MostrarErrorValidacion("Ingresa un código.");
-
                 txtCodigo.Focus();
                 return;
             }
@@ -432,20 +402,14 @@ namespace ClinicSyncDesktop.Views
             // 3. PRECIO
             if (string.IsNullOrWhiteSpace(txtPrecioCompra.Text))
             {
-                MostrarErrorValidacion(
-                    "Ingresa el precio por unidad.");
-
+                MostrarErrorValidacion("Ingresa el precio por unidad.");
                 txtPrecioCompra.Focus();
                 return;
             }
 
-            if (!TryLeerDecimal(
-                txtPrecioCompra.Text,
-                out precioCompra))
+            if (!TryLeerDecimal(txtPrecioCompra.Text, out precioCompra))
             {
-                MostrarErrorValidacion(
-                    "Ingresa un precio válido.");
-
+                MostrarErrorValidacion("Ingresa un precio válido.");
                 txtPrecioCompra.Focus();
                 return;
             }
@@ -453,35 +417,70 @@ namespace ClinicSyncDesktop.Views
             // 4. CANTIDAD MÍNIMA
             if (string.IsNullOrWhiteSpace(txtStockMinimo.Text))
             {
-                MostrarErrorValidacion(
-                    "Ingresa la cantidad mínima.");
-
+                MostrarErrorValidacion("Ingresa la cantidad mínima.");
                 txtStockMinimo.Focus();
                 return;
             }
 
-            if (!TryLeerDecimal(
-                txtStockMinimo.Text,
-                out stockMinimo))
+            if (!TryLeerDecimal(txtStockMinimo.Text, out stockMinimo))
+            {
+                MostrarErrorValidacion("Ingresa una cantidad mínima válida.");
+                txtStockMinimo.Focus();
+                return;
+            }
+
+            // 5. STOCK ACTUAL
+            if (string.IsNullOrWhiteSpace(txtStockActual.Text))
+            {
+                MostrarErrorValidacion("Ingresa el stock actual.");
+                txtStockActual.Focus();
+                return;
+            }
+
+            if (!TryLeerDecimal(txtStockActual.Text, out stockActual))
+            {
+                MostrarErrorValidacion("Ingresa una cantidad de stock válida.");
+                txtStockActual.Focus();
+                return;
+            }
+
+            if (stockActual < 0)
+            {
+                MostrarErrorValidacion("El stock actual no puede ser negativo.");
+                txtStockActual.Focus();
+                return;
+            }
+
+            if (stockActual > 9999999999.99m)
             {
                 MostrarErrorValidacion(
-                    "Ingresa una cantidad mínima válida.");
+                    "El stock actual supera el máximo permitido.");
 
-                txtStockMinimo.Focus();
+                txtStockActual.Focus();
                 return;
             }
 
-            // 5. UNIDAD DE MEDIDA
+            // 6. MOTIVO OBLIGATORIO SI CAMBIA EL STOCK
+            bool cambioStock = stockActual != materialOriginal.StockActual;
+
+            if (cambioStock && string.IsNullOrWhiteSpace(motivoAjuste))
+            {
+                MostrarErrorValidacion(
+                    "Indica el motivo del ajuste de stock.");
+
+                txtMotivoAjuste.Focus();
+                return;
+            }
+
+            // 7. UNIDAD DE MEDIDA
             if (string.IsNullOrWhiteSpace(unidadMedida))
             {
-                MostrarErrorValidacion(
-                    "Ingresa una unidad de medida.");
-
+                MostrarErrorValidacion("Ingresa una unidad de medida.");
                 txtUnidadMedida.Focus();
                 return;
             }
 
-            // 6. VALORES NEGATIVOS
+            // 8. VALORES NEGATIVOS
             if (precioCompra < 0 || stockMinimo < 0)
             {
                 MostrarErrorValidacion(
@@ -490,13 +489,22 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
-            // 7. LÍMITES ADMITIDOS
+            // 9. LÍMITES ADMITIDOS
             if (stockMinimo > 9999999999.99m ||
                 precioCompra > 99999999.99m)
             {
                 MostrarErrorValidacion(
                     "Uno de los valores supera el máximo permitido.");
 
+                return;
+            }
+
+            if (motivoAjuste.Length > 200)
+            {
+                MostrarErrorValidacion(
+                    "El motivo no puede superar los 200 caracteres.");
+
+                txtMotivoAjuste.Focus();
                 return;
             }
 
@@ -515,7 +523,10 @@ namespace ClinicSyncDesktop.Views
                     rutaImagen,
                     string.IsNullOrWhiteSpace(descripcion)
                         ? null
-                        : descripcion);
+                        : descripcion,
+                    stockActual,
+                    materialOriginal.StockActual,
+                    cambioStock ? motivoAjuste : null);
 
                 // CAMBIAR EL ESTADO SI CAMBIÓ
                 if (activoNuevo != materialOriginal.Activo)
@@ -532,7 +543,6 @@ namespace ClinicSyncDesktop.Views
             {
                 string mensajeError = ex.Message;
 
-                // NOMBRE DUPLICADO
                 if (mensajeError.Contains(
                         "Ya existe otro material con ese nombre",
                         StringComparison.OrdinalIgnoreCase) ||
