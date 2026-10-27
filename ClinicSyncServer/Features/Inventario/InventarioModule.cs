@@ -1,4 +1,5 @@
 using ClinicSyncServer.Features.Inventario.Data;
+using ClinicSyncServer.Features.Inventario.Imagenes;
 
 namespace ClinicSyncServer.Features.Inventario
 {
@@ -8,6 +9,7 @@ namespace ClinicSyncServer.Features.Inventario
         {
             services.AddScoped<InventarioRepository>();
             services.AddScoped<IInventarioService, InventarioService>();
+            services.AddSingleton<IAlmacenamientoImagenesService, AlmacenamientoImagenesService>();
             return services;
         }
 

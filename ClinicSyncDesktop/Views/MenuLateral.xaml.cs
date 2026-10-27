@@ -88,7 +88,7 @@ namespace ClinicSync.Views
 
                 case "Inventario":
                     ContenidoPrincipal.Content =
-                        CrearVistaTemporal("Inventario");
+                        new InventarioView();
                     break;
 
                 case "Finanzas":

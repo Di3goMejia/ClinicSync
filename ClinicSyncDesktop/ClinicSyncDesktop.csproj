@@ -26,6 +26,10 @@
     <None Remove="Resources\ImagenesAvisos\IconoAviso.png" />
     <None Remove="Resources\ImagenesAvisos\IconoCheque.png" />
     <None Remove="Resources\ImagenesAvisos\IconoError.png" />
+    <None Remove="Resources\ImagenesInventario\IconoBasurero.png" />
+    <None Remove="Resources\ImagenesInventario\IconoImagen.png" />
+    <None Remove="Resources\ImagenesInventario\IconoLupa.png" />
+    <None Remove="Resources\ImagenesInventario\IconoSinImagen.png" />
     <None Remove="Resources\ImagenesLogin\mostrar-contraseña.png" />
     <None Remove="Resources\ImagenesPacientes\calendario.png" />
     <None Remove="Resources\ImagenesPacientes\cerrar-ventana.png" />
@@ -91,6 +95,10 @@
     <Resource Include="Resources\ImagenesAvisos\IconoError.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\ImagenesInventario\IconoBasurero.png" />
+    <Resource Include="Resources\ImagenesInventario\IconoImagen.png" />
+    <Resource Include="Resources\ImagenesInventario\IconoLupa.png" />
+    <Resource Include="Resources\ImagenesInventario\IconoSinImagen.png" />
     <Resource Include="Resources\ImagenesLogin\mostrar-contraseña.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

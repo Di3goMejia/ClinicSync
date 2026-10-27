@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAntiforgery();
 // TEMPORAL: crear contraseña para usuario de prueba
 
 /* Servicios */
@@ -73,6 +75,7 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAntiforgery();
 
 /* Endpoints */
 app.MapAuth();
