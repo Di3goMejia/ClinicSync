@@ -295,7 +295,7 @@ namespace ClinicSyncDesktop.Data
         public static async Task<int> CrearVisitaCompletaAsync<T>(T request)
         {
             using var respuesta = await PostAutenticadoAsync(
-                "api/expedientes/visitas/completa", request);
+                "api/visitas/completa", request);
 
             await VerificarRespuestaAsync(respuesta);
 
@@ -312,7 +312,7 @@ namespace ClinicSyncDesktop.Data
                 throw new ArgumentOutOfRangeException(nameof(idVisita));
 
             using var respuesta = await PutAutenticadoAsync(
-                $"api/expedientes/visitas/{idVisita}/completa", request);
+                $"api/visitas/{idVisita}/completa", request);
 
             await VerificarRespuestaAsync(respuesta);
         }
@@ -326,6 +326,7 @@ namespace ClinicSyncDesktop.Data
         public static async Task SubirArchivoVisitaAsync(
             int idVisita,
             string rutaArchivo,
+            string? descripcion = null,
             CancellationToken ct = default)
         {
             if (idVisita <= 0)
@@ -342,7 +343,7 @@ namespace ClinicSyncDesktop.Data
             {
                 using var solicitud = new HttpRequestMessage(
                     HttpMethod.Post,
-                    $"api/expedientes/visitas/{idVisita}/archivos");
+                    $"api/visitas/{idVisita}/archivos");
 
                 solicitud.Headers.Authorization =
                     new AuthenticationHeaderValue("Bearer", token);
@@ -371,6 +372,10 @@ namespace ClinicSyncDesktop.Data
                     contenido,
                     "archivo",
                     Path.GetFileName(rutaArchivo));
+
+                formulario.Add(
+                    new StringContent(descripcion ?? string.Empty),
+                    "descripcion");
 
                 solicitud.Content = formulario;
 
@@ -403,6 +408,89 @@ namespace ClinicSyncDesktop.Data
 
             using var reintento = await EnviarAsync(tokenNuevo);
 
+            await VerificarRespuestaAsync(reintento);
+        }
+
+        public static async Task SubirArchivoExpedienteAsync(
+            int idExpediente,
+            string rutaArchivo,
+            string? descripcion = null,
+            CancellationToken ct = default)
+        {
+            if (idExpediente <= 0)
+                throw new ArgumentException("Expediente inválido.");
+
+            if (!File.Exists(rutaArchivo))
+                throw new FileNotFoundException(
+                    "No se encontró el archivo.",
+                    rutaArchivo);
+
+            string tokenAnterior = accessToken ??
+                throw new InvalidOperationException(
+                    "No hay una sesión iniciada.");
+
+            async Task<HttpResponseMessage> EnviarAsync(string token)
+            {
+                using var solicitud = new HttpRequestMessage(
+                    HttpMethod.Post,
+                    $"api/expedientes/{idExpediente}/archivos");
+
+                solicitud.Headers.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+                solicitud.Headers.Add(
+                    "X-Equipo",
+                    Environment.MachineName);
+
+                using var formulario = new MultipartFormDataContent();
+                await using var archivo = File.OpenRead(rutaArchivo);
+                using var contenido = new StreamContent(archivo);
+
+                contenido.Headers.ContentType =
+                    new MediaTypeHeaderValue(
+                        Path.GetExtension(rutaArchivo).ToLowerInvariant() switch
+                        {
+                            ".jpg" or ".jpeg" => "image/jpeg",
+                            ".png" => "image/png",
+                            ".pdf" => "application/pdf",
+                            _ => "application/octet-stream"
+                        });
+
+                formulario.Add(
+                    contenido,
+                    "archivo",
+                    Path.GetFileName(rutaArchivo));
+                formulario.Add(
+                    new StringContent(descripcion ?? string.Empty),
+                    "descripcion");
+
+                solicitud.Content = formulario;
+                return await cliente.SendAsync(solicitud, ct);
+            }
+
+            using var respuesta = await EnviarAsync(tokenAnterior);
+
+            if (respuesta.StatusCode != HttpStatusCode.Unauthorized)
+            {
+                await VerificarRespuestaAsync(respuesta);
+                return;
+            }
+
+            await bloqueoRenovacion.WaitAsync(ct);
+            try
+            {
+                if (accessToken == tokenAnterior)
+                    await RenovarSesionAsync();
+            }
+            finally
+            {
+                bloqueoRenovacion.Release();
+            }
+
+            string tokenNuevo = accessToken ??
+                throw new InvalidOperationException(
+                    "La sesión terminó.");
+
+            using var reintento = await EnviarAsync(tokenNuevo);
             await VerificarRespuestaAsync(reintento);
         }
 
@@ -516,20 +604,37 @@ namespace ClinicSyncDesktop.Data
             int idVisita)
         {
             return await ObtenerAutenticadoAsync<T>(
-                $"api/expedientes/visitas/{idVisita}/archivos");
+                $"api/visitas/{idVisita}/archivos");
+        }
+
+        public static async Task<T> ObtenerArchivosExpedienteAsync<T>(
+            int idExpediente)
+        {
+            return await ObtenerAutenticadoAsync<T>(
+                $"api/expedientes/{idExpediente}/archivos");
+        }
+
+        public static async Task ModificarNotasExpedienteAsync(
+            int idPaciente,
+            string? notas,
+            CancellationToken ct = default)
+        {
+            if (idPaciente <= 0)
+                throw new ArgumentOutOfRangeException(nameof(idPaciente));
+
+            using var respuesta = await PatchAutenticadoAsync(
+                $"api/pacientes/{idPaciente}/expediente",
+                new { Notas = notas },
+                ct);
+
+            await VerificarRespuestaAsync(respuesta);
         }
 
 
-        public static async Task DesactivarArchivoAsync(int idArchivo)
+        public static async Task DesactivarArchivoAsync(Guid idArchivo)
         {
-            if (idArchivo <= 0)
-            {
-                throw new ArgumentException(
-                    "El identificador del archivo no es válido.");
-            }
-
             await PutAutenticadoAsync<object>(
-                $"api/expedientes/archivos/{idArchivo}/estado",
+                $"api/archivos/{idArchivo}/estado",
                 new
                 {
                     Activo = false
@@ -784,5 +889,20 @@ namespace ClinicSyncDesktop.Data
             return await respuesta.Content.ReadAsByteArrayAsync();
         }
 
+        public static async Task<byte[]> DescargarArchivoAsync(Guid idArchivo)
+        {
+            if (idArchivo == Guid.Empty)
+                throw new ArgumentException(
+                    "El identificador del archivo no es válido.",
+                    nameof(idArchivo));
+
+            using var respuesta = await EnviarAutenticadoAsync(
+                HttpMethod.Get,
+                $"api/archivos/{idArchivo}/contenido");
+
+            await VerificarRespuestaAsync(respuesta);
+
+            return await respuesta.Content.ReadAsByteArrayAsync();
+        }
     }
 }

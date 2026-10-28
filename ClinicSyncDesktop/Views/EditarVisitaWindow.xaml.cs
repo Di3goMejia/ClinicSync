@@ -76,7 +76,7 @@ namespace ClinicSyncDesktop.Views
 
         public class ArchivoExpedienteApi
         {
-            public int IdArchivo { get; set; }
+            public Guid IdArchivo { get; set; }
             public string NombreArchivo { get; set; } = "";
             public DateTime FechaSubida { get; set; }
         }
@@ -169,7 +169,7 @@ namespace ClinicSyncDesktop.Views
             VisitaDetalle visita =
                 await ClienteApi.ObtenerAutenticadoAsync<
                     VisitaDetalle>(
-                    $"api/expedientes/visitas/{idVisita}");
+                    $"api/visitas/{idVisita}");
 
             idEmpleado = visita.IdEmpleado;
 
@@ -199,7 +199,7 @@ namespace ClinicSyncDesktop.Views
             TratamientoRegistrado[] registrados =
                 await ClienteApi.ObtenerAutenticadoAsync<
                     TratamientoRegistrado[]>(
-                    $"api/expedientes/visitas/{idVisita}/tratamientos");
+                    $"api/visitas/{idVisita}/tratamientos");
 
             tratamientos.Clear();
 
@@ -544,15 +544,16 @@ namespace ClinicSyncDesktop.Views
                             UriKind.Absolute))
                 };
 
-                TextBlock nombre = new TextBlock
+                Button botonAbrir = new()
                 {
-                    Text = archivo.NombreArchivo,
+                    Content = archivo.NombreArchivo,
+                    Tag = archivo,
+                    Background = Brushes.Transparent,
+                    BorderThickness = new Thickness(0),
                     Foreground = new SolidColorBrush(
                         Color.FromRgb(23, 71, 90)),
-                    FontSize = 13,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    TextTrimming = TextTrimming.CharacterEllipsis,
-                    MaxWidth = 350
+                    Cursor = Cursors.Hand,
+                    ToolTip = "Abrir archivo"
                 };
 
                 Button botonBorrar = new Button
@@ -578,9 +579,10 @@ namespace ClinicSyncDesktop.Views
                 };
 
                 botonBorrar.Click += BorrarArchivo_Click;
+                botonAbrir.Click += AbrirArchivo_Click;
 
                 fila.Children.Add(icono);
-                fila.Children.Add(nombre);
+                fila.Children.Add(botonAbrir);
                 fila.Children.Add(botonBorrar);
 
                 PanelArchivos.Children.Add(fila);
@@ -619,7 +621,7 @@ namespace ClinicSyncDesktop.Views
             RoutedEventArgs e)
         {
             if (sender is not Button boton ||
-                boton.Tag is not int idArchivo)
+                boton.Tag is not Guid idArchivo)
                 return;
 
             // VENTANA PERSONALIZADA DE CONFIRMACIÓN
@@ -653,6 +655,48 @@ namespace ClinicSyncDesktop.Views
 
                 MostrarMensajeArchivo(
                     "Hubo un error al eliminar el archivo.",
+                    false);
+            }
+        }
+
+        // ABRIR ARCHIVO
+        private async void AbrirArchivo_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            if (sender is not Button boton ||
+                boton.Tag is not ArchivoExpedienteApi archivo)
+            {
+                return;
+            }
+
+            SaveFileDialog dialogo = new()
+            {
+                FileName = archivo.NombreArchivo,
+                Filter = "Todos los archivos|*.*"
+            };
+
+            if (dialogo.ShowDialog() != true)
+                return;
+
+            try
+            {
+                byte[] datos =
+                    await ClienteApi.DescargarArchivoAsync(
+                        archivo.IdArchivo);
+
+                await File.WriteAllBytesAsync(
+                    dialogo.FileName,
+                    datos);
+
+                MostrarMensajeArchivo(
+                    "Archivo descargado correctamente.",
+                    true);
+            }
+            catch (Exception ex)
+            {
+                MostrarMensajeArchivo(
+                    "No se pudo descargar el archivo: " + ex.Message,
                     false);
             }
         }

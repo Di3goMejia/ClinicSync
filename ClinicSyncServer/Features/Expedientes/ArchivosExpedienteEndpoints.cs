@@ -1,6 +1,8 @@
 ﻿
+using ClinicSyncServer.Common;
 using ClinicSyncServer.Common.Data;
 using ClinicSyncServer.Features.Expedientes.Data;
+using ClinicSyncServer.Features.Expedientes.Requests;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,53 +17,99 @@ namespace ClinicSyncServer.Features.Expedientes
 {
     public static class ArchivosExpedienteEndpoints
     {
-        private const long TamanoMaximo = 10 * 1024 * 1024;
-
         public static void MapArchivosExpedienteEndpoints(
             this WebApplication app)
         {
-            var grupo = app.MapGroup("/api/expedientes")
+            var grupo = app.MapGroup("/api/")
                 .RequireAuthorization();
+
+            // LISTAR ARCHIVOS GENERALES DEL EXPEDIENTE
+            grupo.MapGet(
+                "/expedientes/{idExpediente:int}/archivos",
+                async (
+                    int idExpediente,
+                    IExpedientesService expedientes,
+                    IArchivosExpedienteService archivos,
+                    CancellationToken ct) =>
+                {
+                    var expediente = await expedientes.ObtenerPorIdAsync(
+                        idExpediente,
+                        null,
+                        ct);
+
+                    if (expediente is null)
+                        return Results.NotFound();
+
+                    var registros = await archivos.ListarAsync(
+                        expediente.IdPaciente,
+                        null,
+                        ct);
+
+                    return Results.Ok(
+                        registros.Where(r =>
+                            r.Activo && r.IdVisita is null));
+                })
+                .RequireAuthorization(PermisosSeguridad.ArchivosLeer);
+
+            // SUBIR ARCHIVO GENERAL AL EXPEDIENTE
+            grupo.MapPost(
+                "/expedientes/{idExpediente:int}/archivos",
+                async (
+                    int idExpediente,
+                    IFormFile archivo,
+                    [FromForm] string? descripcion,
+                    ClaimsPrincipal usuario,
+                    IArchivosExpedienteService archivos,
+                    CancellationToken ct) =>
+                {
+                    if (!int.TryParse(
+                        usuario.FindFirstValue("sub"),
+                        out int idUsuario))
+                    {
+                        return Results.Unauthorized();
+                    }
+
+                    var subido = await archivos.SubirExpedienteAsync(
+                        idUsuario,
+                        idExpediente,
+                        archivo,
+                        descripcion,
+                        ct);
+
+                    return subido is null
+                        ? Results.BadRequest()
+                        : Results.Created(
+                            $"/api/archivos/{subido.IdArchivo}",
+                            subido);
+                })
+                .RequireAuthorization(PermisosSeguridad.ArchivosSubir)
+                .DisableAntiforgery();
 
             // LISTAR ARCHIVOS ACTIVOS DE UNA VISITA
             grupo.MapGet(
                 "/visitas/{idVisita:int}/archivos",
                 async (
                     int idVisita,
-                    ClaimsPrincipal usuario,
-                    ExpedientesRepository expedientes,
-                    SqlConnectionFactory factory) =>
+                    IVisitasService visitas,
+                    IExpedientesService expedientes,
+                    IArchivosExpedienteService archivos) =>
                 {
-                    if (idVisita <= 0)
-                        return Results.BadRequest();
-
-                    var visita =
-                        await expedientes.ObtenerVisitaAsync(idVisita);
-
-                    if (visita == null)
+                    var visita = await visitas.ObtenerPorIdAsync(idVisita);
+                    if (visita is null) 
                         return Results.NotFound();
 
-                    await using var db = factory.Crear();
-                    await db.OpenAsync();
+                    var expediente = await expedientes.ObtenerPorIdAsync(visita.IdExpediente, null);
+                    if (expediente is null)
+                        return Results.NotFound();
 
-                    var archivos = await db.QueryAsync(
-                        @"SELECT
-                            IdArchivo,
-                            NombreArchivo,
-                            FechaSubida
-                          FROM dbo.ArchivosExpediente
-                          WHERE IdVisita = @IdVisita
-                            AND Activo = 1
-                          ORDER BY FechaSubida DESC",
-                        new
-                        {
-                            IdVisita = idVisita
-                        });
+                    var registros = await archivos.ListarAsync(
+                        expediente.IdPaciente,
+                        idVisita);
 
-                    return Results.Ok(archivos);
-                })
-                .RequireAuthorization(
-                    PermisosSeguridad.ArchivosLeer);
+                    return Results.Ok(
+                        registros.Where(r => r.Activo));
+                }
+            ).RequireAuthorization(PermisosSeguridad.ArchivosLeer);
 
             // SUBIR ARCHIVO A UNA VISITA
             grupo.MapPost(
@@ -69,14 +117,10 @@ namespace ClinicSyncServer.Features.Expedientes
                 async (
                     int idVisita,
                     IFormFile archivo,
+                    [FromForm] string? descripcion,
                     ClaimsPrincipal usuario,
-                    ExpedientesRepository expedientes,
-                    SqlConnectionFactory factory,
-                    IWebHostEnvironment entorno) =>
+                    IArchivosExpedienteService archivos) =>
                 {
-                    if (idVisita <= 0)
-                        return Results.BadRequest();
-
                     // OBTENER USUARIO AUTENTICADO
                     if (!int.TryParse(
                         usuario.FindFirstValue("sub"),
@@ -85,236 +129,52 @@ namespace ClinicSyncServer.Features.Expedientes
                         return Results.Unauthorized();
                     }
 
-                    // COMPROBAR QUE LA VISITA EXISTA
-                    var visita =
-                        await expedientes.ObtenerVisitaAsync(idVisita);
+                    var subido = await archivos.SubirAsync(idUsuario, idVisita, archivo, descripcion);
+                    if (subido is null) 
+                        return Results.BadRequest();
 
-                    if (visita == null)
-                        return Results.NotFound();
-
-                    // VALIDAR TAMAÑO
-                    if (archivo.Length == 0 ||
-                        archivo.Length > TamanoMaximo)
-                    {
-                        return Results.BadRequest(new
-                        {
-                            mensaje =
-                                "El archivo está vacío o supera los 10 MB."
-                        });
-                    }
-
-                    // VALIDAR EXTENSIÓN
-                    string extension =
-                        Path.GetExtension(archivo.FileName)
-                            .ToLowerInvariant();
-
-                    if (extension != ".jpg" &&
-                        extension != ".jpeg" &&
-                        extension != ".png" &&
-                        extension != ".pdf")
-                    {
-                        return Results.BadRequest(new
-                        {
-                            mensaje =
-                                "Solo se permiten archivos JPG, PNG y PDF."
-                        });
-                    }
-
-                    // LEER CONTENIDO
-                    byte[] contenido;
-
-                    using (var memoria = new MemoryStream())
-                    {
-                        await archivo.CopyToAsync(memoria);
-
-                        contenido = memoria.ToArray();
-                    }
-
-                    // VALIDAR CONTENIDO REAL
-                    if (!TipoValido(contenido, extension))
-                    {
-                        return Results.BadRequest(new
-                        {
-                            mensaje =
-                                "El contenido no corresponde al tipo de archivo."
-                        });
-                    }
-
-                    string tipoMime = extension switch
-                    {
-                        ".png" => "image/png",
-                        ".pdf" => "application/pdf",
-                        _ => "image/jpeg"
-                    };
-
-                    // GENERAR HASH SHA256
-                    byte[] hash =
-                        SHA256.HashData(contenido);
-
-                    // CARPETA PRIVADA DEL SERVIDOR
-                    string carpeta = Path.Combine(
-                        entorno.ContentRootPath,
-                        "ArchivosPrivados",
-                        "Expedientes");
-
-                    Directory.CreateDirectory(carpeta);
-
-                    // NOMBRE ÚNICO
-                    string nombreFisico =
-                        Guid.NewGuid().ToString("N") +
-                        extension;
-
-                    string rutaFisica =
-                        Path.Combine(carpeta, nombreFisico);
-
-                    await using var db = factory.Crear();
-                    await db.OpenAsync();
-
-                    // OBTENER PACIENTE DE LA VISITA
-                    int? idPaciente =
-                        await db.QueryFirstOrDefaultAsync<int?>(
-                            @"SELECT IdPaciente
-                              FROM dbo.Expedientes
-                              WHERE IdExpediente = @IdExpediente",
-                            new
-                            {
-                                visita.IdExpediente
-                            });
-
-                    if (idPaciente == null)
-                        return Results.NotFound();
-
-                    try
-                    {
-                        // GUARDAR ARCHIVO FÍSICO
-                        await File.WriteAllBytesAsync(
-                            rutaFisica,
-                            contenido);
-
-                        // REGISTRAR EN SQL SERVER
-                        await db.ExecuteAsync(
-                            "api.usp_ArchivosExpediente_Insertar",
-                            new
-                            {
-                                IdPaciente = idPaciente.Value,
-                                IdVisita = idVisita,
-                                IdUsuario = idUsuario,
-                                NombreArchivo =
-                                    Path.GetFileName(archivo.FileName),
-                                Ruta = rutaFisica,
-                                Descripcion = (string?)null,
-                                HashArchivo = hash,
-                                TipoMime = tipoMime,
-                                TamanoBytes = contenido.Length
-                            },
-                            commandType:
-                                CommandType.StoredProcedure);
-
-                        return Results.Ok(new
-                        {
-                            mensaje =
-                                "El archivo se subió exitosamente."
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        if (File.Exists(rutaFisica))
-                            File.Delete(rutaFisica);
-
-                        Console.WriteLine(
-                            "ERROR AL SUBIR ARCHIVO: " + ex.ToString()
-                        );
-
-                        throw;
-                    }
-
+                    return Results.Created($"/api/archivos/{subido.IdArchivo}", subido);
                 })
-                .DisableAntiforgery()
-                .RequireAuthorization(
-                    PermisosSeguridad.ArchivosSubir);
+                .RequireAuthorization(PermisosSeguridad.ArchivosSubir)
+                .DisableAntiforgery();
+
+            // DESCARGAR ARCHIVO
+            grupo.MapGet("/archivos/{idArchivo:guid}/contenido",
+                async (Guid idArchivo, HttpContext ctx, ClaimsPrincipal user, IArchivosExpedienteService svc, CancellationToken ct) =>
+                {
+                    var idActor = int.Parse(user.FindFirstValue("sub")!);
+                    var contenido = await svc.AbrirContenidoAsync(idArchivo, ct);
+
+                    if (contenido is null) return Results.NotFound();
+
+                    using (contenido.Propietario)
+                    {
+                        ctx.Response.ContentType = contenido.TipoContenido;
+                        ctx.Response.Headers.CacheControl = "private, no-store";
+                        await contenido.Stream.CopyToAsync(ctx.Response.Body, ct);
+                    }
+
+                    return Results.Empty;
+                })
+                .RequireAuthorization(PermisosSeguridad.ArchivosLeer);
 
             // DESACTIVAR ARCHIVO
             grupo.MapPut(
-                "/archivos/{idArchivo:int}/estado",
+                "/archivos/{idArchivo:guid}/estado",
                 async (
-                    int idArchivo,
+                    Guid idArchivo,
                     [FromBody] CambiarEstadoArchivoRequest request,
-                    ClaimsPrincipal usuario,
-                    SqlConnectionFactory factory) =>
+                    IArchivosExpedienteService svc,
+                    ClaimsPrincipal usuario) =>
                 {
-                    if (idArchivo <= 0)
-                        return Results.BadRequest();
-
-                    // SOLO PERMITIR DESACTIVACIÓN
                     if (request.Activo)
-                    {
-                        return Results.BadRequest(new
-                        {
-                            mensaje =
-                                "Esta operación solamente permite desactivar archivos."
-                        });
-                    }
+                        throw new ReglaNegocioException("Solo se permite desactivar el archivo.", 0);
 
-                    await using var db = factory.Crear();
-                    await db.OpenAsync();
-
-                    // DESACTIVACIÓN LÓGICA
-                    int filas = await db.ExecuteAsync(
-                        @"UPDATE dbo.ArchivosExpediente
-                          SET Activo = 0
-                          WHERE IdArchivo = @IdArchivo
-                            AND Activo = 1",
-                        new
-                        {
-                            IdArchivo = idArchivo
-                        });
-
-                    if (filas == 0)
-                        return Results.NotFound();
-
+                    await svc.CambiarEstadoAsync(idArchivo, request.Activo);
                     return Results.NoContent();
                 })
                 .RequireAuthorization(
                     PermisosSeguridad.ArchivosDesactivar);
         }
-
-        // VALIDAR FIRMA DEL ARCHIVO
-        private static bool TipoValido(
-            byte[] datos,
-            string extension)
-        {
-            if (extension == ".pdf")
-            {
-                return datos.Length >= 5 &&
-                    datos[0] == 0x25 &&
-                    datos[1] == 0x50 &&
-                    datos[2] == 0x44 &&
-                    datos[3] == 0x46 &&
-                    datos[4] == 0x2D;
-            }
-
-            if (extension == ".png")
-            {
-                byte[] firma =
-                {
-                    137, 80, 78, 71, 13, 10, 26, 10
-                };
-
-                return datos.Length >= firma.Length &&
-                    datos.Take(8).SequenceEqual(firma);
-            }
-
-            // JPG / JPEG
-            return datos.Length >= 4 &&
-                datos[0] == 0xFF &&
-                datos[1] == 0xD8 &&
-                datos[2] == 0xFF;
-        }
-    }
-
-    // MODELO PARA CAMBIAR ESTADO
-    public class CambiarEstadoArchivoRequest
-    {
-        public bool Activo { get; set; }
     }
 }

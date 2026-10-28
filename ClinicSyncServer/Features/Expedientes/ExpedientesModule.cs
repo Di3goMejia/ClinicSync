@@ -12,6 +12,11 @@ namespace ClinicSyncServer.Features.Expedientes
             this IServiceCollection services)
         {
             services.AddScoped<ExpedientesRepository>();
+            services.AddScoped<ArchivosExpedienteRepository>();
+            services.AddScoped<VisitasRepository>();
+            services.AddScoped<IExpedientesService, ExpedientesService>();
+            services.AddScoped<IArchivosExpedienteService, ArchivosExpedienteService>();
+            services.AddScoped<IVisitasService, VisitasService>();
 
             return services;
         }
@@ -21,9 +26,8 @@ namespace ClinicSyncServer.Features.Expedientes
             this WebApplication app)
         {
             app.MapExpedientesEndpoints();
-
-            // ENDPOINTS DE ARCHIVOS
             app.MapArchivosExpedienteEndpoints();
+            app.MapVisitasEndpoints();
 
             return app;
         }

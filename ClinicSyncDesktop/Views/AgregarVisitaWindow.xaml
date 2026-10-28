@@ -559,8 +559,11 @@
                         </Button>
                     </Grid>
 
-                    <StackPanel x:Name="PanelArchivos"
-                                Grid.Row="3"/>
+                    <ScrollViewer Grid.Row="3"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel x:Name="PanelArchivos"/>
+                    </ScrollViewer>
                 </Grid>
             </Grid>
 

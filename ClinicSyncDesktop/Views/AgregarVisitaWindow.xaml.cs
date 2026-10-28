@@ -1,9 +1,11 @@
 ﻿
 using ClinicSyncDesktop.Data;
+using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,6 +30,9 @@ namespace ClinicSyncDesktop.Views
             tratamientos = new();
 
         private ICollectionView vistaTratamientos = null!;
+
+        private readonly ObservableCollection<string>
+            archivosPendientes = new();
 
         // CONSTRUCTOR
         public AgregarVisitaWindow(int idPaciente)
@@ -133,13 +138,7 @@ namespace ClinicSyncDesktop.Views
             // OBTENER EMPLEADO DE LA SESIÓN
             try
             { 
-                PerfilActual perfil =
-                    await ClienteApi.ObtenerPerfilAsync();
-                MessageBox.Show(
-    "Usuario: " + perfil.NombreUsuario +
-    "\nIdEmpleado: " + perfil.IdEmpleado +
-    "\nNombreEmpleado: " + perfil.NombreEmpleado,
-    "Verificar perfil");
+                PerfilActual perfil = await ClienteApi.ObtenerPerfilAsync();
 
                 // GUARDAR ID DEL EMPLEADO
                 idEmpleadoActual = perfil.IdEmpleado;
@@ -607,50 +606,17 @@ namespace ClinicSyncDesktop.Views
                     Tratamientos = tratamientosSeleccionados
                 };
 
-                // ENVIAR AL SERVIDOR
-                using var respuesta =
-                    await ClienteApi.PostAutenticadoAsync(
-                        "api/expedientes/visitas/completa",
+                int idVisita =
+                    await ClienteApi.CrearVisitaCompletaAsync(
                         nuevaVisita);
 
-                // COMPROBAR RESULTADO
-
-                if (!respuesta.IsSuccessStatusCode)
+                foreach (string rutaArchivo in archivosPendientes)
                 {
-                    string detalle =
-                        await respuesta.Content.ReadAsStringAsync();
-
-                    string mensaje = "No se pudo guardar la visita.";
-
-                    try
-                    {
-                        using var json =
-                            System.Text.Json.JsonDocument.Parse(detalle);
-
-                        if (json.RootElement.TryGetProperty(
-                            "mensaje", out var propiedad))
-                        {
-                            mensaje = propiedad.GetString() ?? mensaje;
-                        }
-                        else if (json.RootElement.TryGetProperty(
-                            "message", out propiedad))
-                        {
-                            mensaje = propiedad.GetString() ?? mensaje;
-                        }
-                    }
-                    catch
-                    {
-                        // MANTENER MENSAJE GENERAL SI NO ES JSON
-                    }
-
-                    MostrarPaso(0);
-                    MostrarError(mensaje);
-
-                    return;
+                    await ClienteApi.SubirArchivoVisitaAsync(
+                        idVisita,
+                        rutaArchivo);
                 }
 
-
-                // GUARDADO CONFIRMADO POR EL SERVIDOR
                 DialogResult = true;
             }
             catch (Exception ex)
@@ -669,16 +635,107 @@ namespace ClinicSyncDesktop.Views
         }
 
 
-        // SUBIR ARCHIVOS
+        // SUBIR ARCHIVOS PENDIENTES
         private void SubirArchivo_Click(
             object sender,
             RoutedEventArgs e)
         {
-            MessageBox.Show(
-                "La subida de archivos todavía está pendiente.",
-                "ClinicSync",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            OpenFileDialog explorador = new()
+            {
+                Title = "Seleccionar archivos del expediente",
+                Filter = "Archivos permitidos|*.jpg;*.jpeg;*.png;*.pdf",
+                Multiselect = true
+            };
+
+            if (explorador.ShowDialog() != true)
+                return;
+
+            foreach (string ruta in explorador.FileNames)
+            {
+                FileInfo archivo = new(ruta);
+
+                if (!archivo.Exists || archivo.Length == 0)
+                {
+                    MostrarErrorArchivo(
+                        $"El archivo {archivo.Name} está vacío o no existe.");
+                    continue;
+                }
+
+                if (archivo.Length > 10 * 1024 * 1024)
+                {
+                    MostrarErrorArchivo(
+                        $"El archivo {archivo.Name} supera los 10 MB.");
+                    continue;
+                }
+
+                if (archivosPendientes.Contains(
+                    ruta,
+                    StringComparer.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                archivosPendientes.Add(ruta);
+                AgregarArchivoPendiente(archivo);
+            }
+        }
+
+        private void AgregarArchivoPendiente(FileInfo archivo)
+        {
+            StackPanel fila = new()
+            {
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness(5, 4, 0, 4),
+                Tag = archivo.FullName
+            };
+
+            TextBlock nombre = new()
+            {
+                Text = archivo.Name,
+                Foreground = new SolidColorBrush(Color.FromRgb(23, 71, 90)),
+                FontSize = 13,
+                Width = 330,
+                TextTrimming = TextTrimming.CharacterEllipsis,
+                ToolTip = archivo.FullName
+            };
+
+            Button quitar = new()
+            {
+                Content = "×",
+                Width = 22,
+                Height = 22,
+                Background = Brushes.Transparent,
+                BorderThickness = new Thickness(0),
+                Foreground = new SolidColorBrush(Color.FromRgb(227, 68, 98)),
+                Cursor = System.Windows.Input.Cursors.Hand,
+                Tag = fila
+            };
+
+            quitar.Click += QuitarArchivoPendiente_Click;
+            fila.Children.Add(nombre);
+            fila.Children.Add(quitar);
+            PanelArchivos.Children.Add(fila);
+        }
+
+        private void QuitarArchivoPendiente_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            if (sender is not Button boton ||
+                boton.Tag is not StackPanel fila ||
+                fila.Tag is not string ruta)
+            {
+                return;
+            }
+
+            archivosPendientes.Remove(ruta);
+            PanelArchivos.Children.Remove(fila);
+        }
+
+        private void MostrarErrorArchivo(string mensaje)
+        {
+            MostrarError(mensaje);
+            MostrarPaso(1);
         }
 
         // CERRAR CON CONFIRMACIÓN DE DESCARTE
