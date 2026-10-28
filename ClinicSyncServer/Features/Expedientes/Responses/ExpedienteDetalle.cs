@@ -1,6 +1,4 @@
 ﻿
-using System;
-
 namespace ClinicSyncServer.Features.Expedientes.Responses
 {
     public class ExpedienteDetalle

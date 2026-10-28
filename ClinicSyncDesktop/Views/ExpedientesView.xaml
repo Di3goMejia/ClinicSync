@@ -224,12 +224,36 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0"
-                                       Text="Notas:"
-                                       FontWeight="Bold"
-                                       Foreground="#17475A"
-                                       FontSize="13"
-                                       Margin="0,0,0,5"/>
+                            <Grid Grid.Row="0"
+                                  Margin="0,0,0,5">
+                                <TextBlock Text="Notas:"
+                                           FontWeight="Bold"
+                                           Foreground="#17475A"
+                                           FontSize="13"
+                                           VerticalAlignment="Center"/>
+
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Right">
+                                    <Button x:Name="btnEditarNotas"
+                                            Content="Editar"
+                                            Padding="8,2"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Foreground="#138DAA"
+                                            Cursor="Hand"
+                                            Click="EditarNotas_Click"/>
+
+                                    <Button x:Name="btnGuardarNotas"
+                                            Content="Guardar"
+                                            Padding="8,2"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Foreground="#138DAA"
+                                            Cursor="Hand"
+                                            Visibility="Collapsed"
+                                            Click="GuardarNotas_Click"/>
+                                </StackPanel>
+                            </Grid>
 
                             <Border Grid.Row="1"
                                     Background="#F5F7F4"
@@ -238,10 +262,17 @@
                                 <ScrollViewer Margin="8,5"
                                               VerticalScrollBarVisibility="Auto">
 
-                                    <TextBlock x:Name="txtNotasExpediente"
-                                               TextWrapping="Wrap"
-                                               Foreground="#17475A"
-                                               FontSize="12"/>
+                                    <TextBox x:Name="txtNotasExpediente"
+                                             TextWrapping="Wrap"
+                                             AcceptsReturn="True"
+                                             VerticalContentAlignment="Top"
+                                             Foreground="#17475A"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             FontSize="12"
+                                             MaxLength="500"
+                                             IsReadOnly="True"
+                                             VerticalScrollBarVisibility="Auto"/>
                                 </ScrollViewer>
                             </Border>
                         </Grid>
@@ -327,7 +358,7 @@
                                   GridLinesVisibility="Horizontal"
                                   HorizontalGridLinesBrush="#C5CBC5"
                                   FontSize="13"
-                                  SelectionMode="Single">
+                                   SelectionMode="Single">
 
                             <DataGrid.RowStyle>
                                 <Style TargetType="DataGridRow">
@@ -343,11 +374,23 @@
 
                                 <DataGridTextColumn Header="Fecha"
                                                     Binding="{Binding Fecha, StringFormat=yyyy/MM/dd}"
-                                                    Width="1*"/>
+                                                    Width="1*">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="VerticalAlignment" Value="Center" />
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Motivo"
                                                     Binding="{Binding Motivo}"
-                                                    Width="2*"/>
+                                                    Width="2*">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="VerticalAlignment" Value="Center" />
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
 
                                 <DataGridTemplateColumn Header=""
                                                         Width="55"

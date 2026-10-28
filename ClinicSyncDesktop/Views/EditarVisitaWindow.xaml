@@ -468,7 +468,10 @@
                             Background="#D9DDD8"
                             CornerRadius="12"
                             Padding="12">
-                        <StackPanel x:Name="PanelArchivos"/>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel x:Name="PanelArchivos"/>
+                        </ScrollViewer>
                     </Border>
                 </Grid>
 

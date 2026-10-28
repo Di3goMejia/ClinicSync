@@ -52,8 +52,9 @@ builder.Services
 builder.Services.Configure< Microsoft.AspNetCore.Http.Features.FormOptions>(
     opciones =>
     {
+        // 10 MB más un margen adicional para la descripción.
         opciones.MultipartBodyLengthLimit =
-            10 * 1024 * 1024;
+            10 * 1024 * 1024 + 64 * 1024;
     });
 
 var app = builder.Build();
