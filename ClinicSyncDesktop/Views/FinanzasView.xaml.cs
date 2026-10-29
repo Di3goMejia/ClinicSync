@@ -8,15 +8,15 @@ namespace ClinicSyncDesktop.Views
 {
     public partial class FinanzasView : UserControl
     {
-        // BOTÓN SELECCIONADO
+        // BOTÓN ACTUALMENTE SELECCIONADO
         private Button? botonSeleccionado;
 
-        // COLOR DEL BOTÓN ACTIVO
+        // COLOR ACTIVO
         private readonly Brush colorActivo =
             new SolidColorBrush(
                 Color.FromRgb(134, 197, 208));
 
-        // COLOR DE LOS BOTONES INACTIVOS
+        // COLOR INACTIVO
         private readonly Brush colorInactivo =
             new SolidColorBrush(
                 Color.FromRgb(247, 249, 247));
@@ -29,12 +29,12 @@ namespace ClinicSyncDesktop.Views
         {
             InitializeComponent();
 
-            // SELECCIONAR INGRESOS AL INICIAR
+            // INGRESOS SELECCIONADO POR DEFECTO
             SeleccionarPestana(BtnIngresos);
         }
 
         // ====================================
-        // EVENTO DE LOS BOTONES
+        // EVENTO DE BOTONES
         // ====================================
 
         private void Pestana_Click(
@@ -48,7 +48,7 @@ namespace ClinicSyncDesktop.Views
         }
 
         // ====================================
-        // SELECCIONAR PESTAÑA
+        // CAMBIAR PESTAÑA
         // ====================================
 
         private void SeleccionarPestana(
@@ -61,50 +61,46 @@ namespace ClinicSyncDesktop.Views
                     colorInactivo;
             }
 
-            // COLOREAR BOTÓN ACTUAL
-            boton.Background = colorActivo;
+            // ACTIVAR NUEVO BOTÓN
+            boton.Background =
+                colorActivo;
 
-            // GUARDAR BOTÓN SELECCIONADO
-            botonSeleccionado = boton;
+            botonSeleccionado =
+                boton;
 
-            // OBTENER NOMBRE DEL MÓDULO
+            // OBTENER MÓDULO
             string modulo =
                 boton.Tag?.ToString() ?? "";
 
-            // ABRIR MÓDULO SELECCIONADO
             AbrirModulo(modulo);
         }
 
         // ====================================
-        // NAVEGACIÓN DE FINANZAS
+        // NAVEGACIÓN INTERNA DE FINANZAS
         // ====================================
 
         private void AbrirModulo(string modulo)
         {
             switch (modulo)
             {
-                // RESUMEN
                 case "Resumen":
 
                     ContenidoFinanzas.Content = null;
 
                     break;
 
-                // INGRESOS
                 case "Ingresos":
 
                     ContenidoFinanzas.Content = null;
 
                     break;
 
-                // EGRESOS
                 case "Egresos":
 
                     ContenidoFinanzas.Content = null;
 
                     break;
 
-                // GRÁFICOS
                 case "Graficos":
 
                     ContenidoFinanzas.Content = null;
