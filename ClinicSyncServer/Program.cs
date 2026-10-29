@@ -9,6 +9,7 @@ using ClinicSyncServer.Features.Tratamientos;
 using ClinicSyncServer.Features.Inventario;
 using ClinicSyncServer.Features.Pacientes;
 using ClinicSyncServer.Features.Expedientes;
+using ClinicSyncServer.Features.Egresos;
 using ClinicSyncServer.Infrastructure;
 using ClinicSyncServer.Infrastructure.Auth;
 using Microsoft.AspNetCore.Localization;
@@ -47,7 +48,8 @@ builder.Services
     .AddTratamientos()
     .AddInventario()
     .AddPacientes()
-    .AddExpedientes();
+    .AddExpedientes()
+    .AddEgresos();
 
 builder.Services.Configure< Microsoft.AspNetCore.Http.Features.FormOptions>(
     opciones =>
@@ -85,5 +87,7 @@ app.MapTratamientos();
 app.MapInventario();
 app.MapPacientesModule();
 app.MapExpedientesModule();
+app.MapEgresosModule();
 
 app.Run();
+
