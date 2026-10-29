@@ -10,6 +10,57 @@
 
     <Window.Resources>
 
+        <!-- BOTONES REDONDEADOS -->
+        <Style x:Key="BotonRedondeado"
+           TargetType="Button">
+
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Background" Value="#0789AB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+
+                    <ControlTemplate TargetType="Button">
+
+                        <Border
+                        x:Name="BordeBoton"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="10">
+
+                            <ContentPresenter
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <!-- EFECTO AL PASAR EL MOUSE -->
+                            <Trigger
+                            Property="IsMouseOver"
+                            Value="True">
+
+                                <Setter
+                                TargetName="BordeBoton"
+                                Property="Opacity"
+                                Value="0.85"/>
+
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
         <!-- ESTILO PARA MENSAJES DE ERROR -->
         <Style x:Key="EstiloError"
                TargetType="TextBlock">
@@ -97,6 +148,7 @@
                             Margin="0,20,0,0"
                             Background="#087FA4"
                             Foreground="White"
+                            Style="{StaticResource BotonRedondeado}"
                             Click="BtnEnviarCodigo_Click"/>
 
                 </StackPanel>
@@ -132,11 +184,13 @@
                             Margin="0,20,0,0"
                             Background="#087FA4"
                             Foreground="White"
+                            Style="{StaticResource BotonRedondeado}"
                             Click="BtnContinuar_Click"/>
 
                     <Button x:Name="BtnReenviar"
                             Content="Enviar otro código"
                             Margin="0,10,0,0"
+                            Style="{StaticResource BotonRedondeado}"
                             Click="BtnReenviar_Click"/>
 
                 </StackPanel>
@@ -185,6 +239,7 @@
                             Height="38"
                             Margin="0,20,0,0"
                             Background="#087FA4"
+                            Style="{StaticResource BotonRedondeado}"
                             Foreground="White"
                             Click="BtnGuardarPassword_Click"/>
 
@@ -200,6 +255,8 @@
 
                 <Button Content="Regresar"
                         Margin="0,15,0,0"
+                        Background="#0789AB"
+                        Style="{StaticResource BotonRedondeado}"
                         Click="BtnRegresar_Click"/>
 
             </StackPanel>
