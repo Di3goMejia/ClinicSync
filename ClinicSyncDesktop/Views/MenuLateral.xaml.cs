@@ -93,7 +93,7 @@ namespace ClinicSync.Views
 
                 case "Finanzas":
                     ContenidoPrincipal.Content =
-                        CrearVistaTemporal("Finanzas");
+                        new FinanzasView();
                     break;
 
                 case "Agenda":
