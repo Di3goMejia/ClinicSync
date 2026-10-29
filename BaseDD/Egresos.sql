@@ -77,7 +77,7 @@ BEGIN
     INSERT INTO dbo.Egresos (IdUsuario, Tipo, Fecha, Concepto, MedioPago, Monto)
     VALUES (@IdUsuario, @Tipo, @Fecha, @Concepto, @MedioPago, @Monto);
 
-    SELECT SCOPE_IDENTITY() AS IdEgreso;
+    SELECT CAST(SCOPE_IDENTITY() AS INT) AS IdEgreso;
 END
 GO
 
