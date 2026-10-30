@@ -1,0 +1,208 @@
+﻿<UserControl x:Class="ClinicSyncDesktop.Views.FinanzasView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#F0F3EF">
+
+    <!-- RECURSOS Y ESTILOS -->
+    <UserControl.Resources>
+
+        <!-- ESTILO DE LAS PESTAÑAS -->
+        <Style x:Key="EstiloPestanas"
+               TargetType="Button">
+
+            <!-- TAMAÑO -->
+            <Setter Property="Width" Value="125"/>
+            <Setter Property="Height" Value="35"/>
+
+            <!-- COLORES -->
+            <Setter Property="Background"
+                    Value="#F7F9F7"/>
+
+            <Setter Property="Foreground"
+                    Value="#17475A"/>
+
+            <!-- TEXTO -->
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight"
+                    Value="SemiBold"/>
+
+            <!-- BORDES -->
+            <Setter Property="BorderThickness"
+                    Value="0"/>
+
+            <!-- SEPARACIÓN -->
+            <Setter Property="Margin"
+                    Value="10,0"/>
+
+            <!-- CURSOR -->
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+
+            <!-- PLANTILLA DEL BOTÓN -->
+            <Setter Property="Template">
+
+                <Setter.Value>
+
+                    <ControlTemplate TargetType="Button">
+
+                        <!-- CONTENEDOR DEL BOTÓN -->
+                        <Border
+                            x:Name="BordeBoton"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="20">
+
+                            <!-- SOMBRA DIFUMINADA -->
+                            <Border.Effect>
+
+                                <DropShadowEffect
+                                    Color="#647A80"
+                                    Direction="270"
+                                    ShadowDepth="2"
+                                    BlurRadius="12"
+                                    Opacity="0.25"/>
+
+                            </Border.Effect>
+
+                            <!-- CONTENIDO -->
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+
+                        </Border>
+
+                        <!-- EFECTOS -->
+                        <ControlTemplate.Triggers>
+
+                            <!-- AL PASAR EL MOUSE -->
+                            <Trigger
+                                Property="IsMouseOver"
+                                Value="True">
+
+                                <Setter
+                                    TargetName="BordeBoton"
+                                    Property="Effect">
+
+                                    <Setter.Value>
+
+                                        <DropShadowEffect
+                                            Color="#647A80"
+                                            Direction="270"
+                                            ShadowDepth="3"
+                                            BlurRadius="15"
+                                            Opacity="0.40"/>
+
+                                    </Setter.Value>
+
+                                </Setter>
+
+                            </Trigger>
+
+                            <!-- BOTÓN PRESIONADO -->
+                            <Trigger
+                                Property="IsPressed"
+                                Value="True">
+
+                                <Setter
+                                    TargetName="BordeBoton"
+                                    Property="Opacity"
+                                    Value="0.85"/>
+
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+
+                </Setter.Value>
+
+            </Setter>
+
+        </Style>
+
+    </UserControl.Resources>
+
+    <!-- ===================================== -->
+    <!-- CONTENEDOR PRINCIPAL DE FINANZAS      -->
+    <!-- ===================================== -->
+
+    <Grid Margin="16,-25,16,15">
+
+        <Grid.RowDefinitions>
+
+            <!-- FILA DE BOTONES -->
+            <RowDefinition Height="Auto"/>
+
+            <!-- ÁREA DE CONTENIDO -->
+            <RowDefinition Height="*"/>
+
+        </Grid.RowDefinitions>
+
+        <!-- ===================================== -->
+        <!-- BOTONES SUPERIORES                    -->
+        <!-- ===================================== -->
+
+        <StackPanel
+            Grid.Row="0"
+            Orientation="Horizontal"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Margin="-600,8,0,18">
+            
+
+            <!-- RESUMEN -->
+            <Button
+                x:Name="BtnResumen"
+                Content="Resumen"
+                Tag="Resumen"
+                Style="{StaticResource EstiloPestanas}"
+                Click="Pestana_Click"/>
+
+            <!-- INGRESOS -->
+            <Button
+                x:Name="BtnIngresos"
+                Content="Ingresos"
+                Tag="Ingresos"
+                Background="#86C5D0"
+                Style="{StaticResource EstiloPestanas}"
+                Click="Pestana_Click"/>
+
+            <!-- EGRESOS -->
+            <Button
+                x:Name="BtnEgresos"
+                Content="Egresos"
+                Tag="Egresos"
+                Style="{StaticResource EstiloPestanas}"
+                Click="Pestana_Click"/>
+
+            <!-- GRÁFICOS -->
+            <Button
+                x:Name="BtnGraficos"
+                Content="Gráficos"
+                Tag="Graficos"
+                Style="{StaticResource EstiloPestanas}"
+                Click="Pestana_Click"/>
+
+        </StackPanel>
+
+        <!-- ===================================== -->
+        <!-- CONTENEDOR DE LOS MÓDULOS             -->
+        <!-- ===================================== -->
+
+        <Border
+            Grid.Row="1"
+            Background="#D9DDDA"
+            CornerRadius="13"
+            Margin="2,0,0,0">
+
+            <!-- CONTENIDO DINÁMICO -->
+            <ContentControl
+                x:Name="ContenidoFinanzas"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"/>
+
+        </Border>
+
+    </Grid>
+
+</UserControl>
+
