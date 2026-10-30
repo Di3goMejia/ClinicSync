@@ -78,39 +78,30 @@ namespace ClinicSyncDesktop.Views
         // ====================================
         // NAVEGACIÓN INTERNA DE FINANZAS
         // ====================================
-
         private void AbrirModulo(string modulo)
         {
             switch (modulo)
             {
                 case "Resumen":
-
                     ContenidoFinanzas.Content = null;
-
                     break;
 
                 case "Ingresos":
-
-                    ContenidoFinanzas.Content = null;
-
+                    ContenidoFinanzas.Content = new IngresosView();
                     break;
 
                 case "Egresos":
-
                     ContenidoFinanzas.Content =
                        new EgresosView(
                            new ClinicSyncDesktop.Services.EgresosApiService());
-
-
                     break;
 
                 case "Graficos":
-
                     ContenidoFinanzas.Content = null;
-
                     break;
             }
         }
+
     }
 }
 

@@ -10,6 +10,7 @@ using ClinicSyncServer.Features.Inventario;
 using ClinicSyncServer.Features.Pacientes;
 using ClinicSyncServer.Features.Expedientes;
 using ClinicSyncServer.Features.Egresos;
+using ClinicSyncServer.Features.Finanzas;
 using ClinicSyncServer.Infrastructure;
 using ClinicSyncServer.Infrastructure.Auth;
 using Microsoft.AspNetCore.Localization;
@@ -86,6 +87,7 @@ app.MapUsuarios();
 app.MapTratamientos();
 app.MapInventario();
 app.MapPacientesModule();
+app.MapFinanzasEndpoints();
 app.MapExpedientesModule();
 app.MapEgresosModule();
 
