@@ -4,6 +4,7 @@ using ClinicSyncServer.Features.Egresos.Responses;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Text.Json;
 
 namespace ClinicSyncServer.Features.Egresos.Data
 {
@@ -20,6 +21,16 @@ namespace ClinicSyncServer.Features.Egresos.Data
 
             try
             {
+                string? materiales =
+                    req.Materiales is { Count: > 0 }
+                        ? JsonSerializer.Serialize(
+                            req.Materiales.Select(m => new
+                            {
+                                m.IdMaterial,
+                                m.Cantidad
+                            }))
+                        : null;
+
                 var p = new DynamicParameters();
 
                 p.Add("@IdUsuario", idUsuario, DbType.Int32);
@@ -29,6 +40,10 @@ namespace ClinicSyncServer.Features.Egresos.Data
                 p.Add("@MedioPago", req.MedioPago, DbType.String, size: 20);
                 p.Add("@Monto", req.Monto,
                     DbType.Decimal, precision: 10, scale: 2);
+                p.Add("@Materiales", materiales, DbType.String, size: -1);
+                p.Add("@IdEgreso",
+                    dbType: DbType.Int32,
+                    direction: ParameterDirection.Output);
 
                 var cmd = new CommandDefinition(
                     "api.usp_Egresos_Insertar",
@@ -36,7 +51,9 @@ namespace ClinicSyncServer.Features.Egresos.Data
                     commandType: CommandType.StoredProcedure,
                     cancellationToken: ct);
 
-                return await db.QuerySingleAsync<int>(cmd);
+                await db.ExecuteAsync(cmd);
+
+                return p.Get<int>("@IdEgreso");
             }
             catch (SqlException ex) when (SqlErrorTranslator.EsTraducible(ex))
             {

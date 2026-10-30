@@ -108,14 +108,34 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
-        private void btnAgregar_Click(
+        private async void btnAgregar_Click(
             object sender,
             RoutedEventArgs e)
         {
-            // PENDIENTE: abrir AgregarEgresoWindow (siguiente paso).
-            MostrarAviso(
-                "El formulario de egresos se agregará en el siguiente paso.",
-                false);
+            if (_egresosService is null)
+                {
+                    MostrarAviso(
+                        "La conexión con la API todavía no está configurada.",
+                    false);
+
+                     return;
+                 }
+
+            var ventana = new AgregarEgresoWindow(_egresosService)
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            bool? resultado = ventana.ShowDialog();
+
+            if (resultado == true)
+            {
+                await CargarEgresosAsync();
+
+                MostrarAviso(
+                    "El egreso se agregó con éxito.",
+                    true);
+            }
         }
     }
 }

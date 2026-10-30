@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ClinicSyncDesktop.Data;
+using System.Linq;
 using ClinicSyncDesktop.Models;
 
 namespace ClinicSyncDesktop.Services
@@ -44,6 +45,7 @@ namespace ClinicSyncDesktop.Services
             string concepto,
             string medioPago,
             decimal monto,
+            IEnumerable<(int IdMaterial, decimal Cantidad)>? materiales = null,
             CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
@@ -56,7 +58,10 @@ namespace ClinicSyncDesktop.Services
                     CultureInfo.InvariantCulture),
                 Concepto = concepto,
                 MedioPago = medioPago,
-                Monto = monto
+                Monto = monto,
+                Materiales = materiales?
+                    .Select(m => new { m.IdMaterial, m.Cantidad })
+                    .ToList()
             };
 
             using var respuesta =
@@ -83,6 +88,7 @@ namespace ClinicSyncDesktop.Services
                 ?? throw new HttpRequestException(
                     "La API no devolvió el identificador del egreso.");
         }
+
 
         // LEER MENSAJE DE ERROR DE LA API
         private static async Task<string> ObtenerMensajeErrorAsync(
