@@ -21,5 +21,15 @@ namespace ClinicSyncDesktop.Models
         public bool Activo { get; set; }
 
         public int? IdCompra { get; set; }
+
+        public string TipoTexto => Capitalizar(Tipo);
+
+        public string MedioPagoTexto => Capitalizar(MedioPago);
+
+        private static string Capitalizar(string texto) =>
+            string.IsNullOrEmpty(texto)
+                ? ""
+                : char.ToUpper(texto[0]) + texto[1..].ToLower();
+
     }
 }
