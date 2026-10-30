@@ -30,6 +30,12 @@ namespace ClinicSyncServer.Common.Seguridad
         public const string ArchivosSubir = "ARCHIVOS_SUBIR";
         public const string ArchivosDesactivar = "ARCHIVOS_DESACTIVAR";
 
+
+        // EGRESOS
+        public const string EgresosCrear = "EGRESOS_CREAR";
+        public const string EgresosLeer = "EGRESOS_LEER";
+        public const string EgresosModificar = "EGRESOS_MODIFICAR";
+
         public static readonly IReadOnlyList<string> Todos =
         [
             // USUARIOS
@@ -57,7 +63,12 @@ namespace ClinicSyncServer.Common.Seguridad
             // ARCHIVOS
             ArchivosLeer,
             ArchivosSubir,
-            ArchivosDesactivar
+            ArchivosDesactivar,
+
+            // EGRESOS
+            EgresosCrear,
+            EgresosLeer,
+            EgresosModificar
         ];
     }
 

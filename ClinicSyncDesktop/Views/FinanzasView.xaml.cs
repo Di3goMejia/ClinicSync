@@ -91,7 +91,9 @@ namespace ClinicSyncDesktop.Views
                     break;
 
                 case "Egresos":
-                    ContenidoFinanzas.Content = null;
+                    ContenidoFinanzas.Content =
+                       new EgresosView(
+                           new ClinicSyncDesktop.Services.EgresosApiService());
                     break;
 
                 case "Graficos":
