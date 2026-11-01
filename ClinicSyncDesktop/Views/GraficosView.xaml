@@ -1,0 +1,143 @@
+﻿<UserControl x:Class="ClinicSyncDesktop.Views.GraficosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClinicSyncDesktop.Views"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             mc:Ignorable="d" Loaded="GraficosView_Loaded">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="ColorTexto" Color="#17465A"/>
+        <SolidColorBrush x:Key="ColorFondo" Color="#D9DEDA"/>
+        <SolidColorBrush x:Key="ColorFondoTarjeta" Color="#E4E8E2" />
+        <SolidColorBrush x:Key="ColorBordeTarjeta" Color="#C8CCC6" />
+
+        <Style x:Key="EstiloFiltro" TargetType="Button">
+            <Setter Property="Width" Value="78"/>
+            <Setter Property="Height" Value="29"/>
+            <Setter Property="Margin" Value="5,0,0,0"/>
+            <Setter Property="Padding" Value="7,0"/>
+            <Setter Property="Background" Value="#E8F0F0"/>
+            <Setter Property="Foreground" Value="#17465A"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="FondoBoton"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="16">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="FondoBoton"
+                                        Property="Opacity"
+                                        Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Border Background="{StaticResource ColorFondo}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="42" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0"
+                   CornerRadius="12,12,0,0">
+
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0"
+                                         EndPoint="1,0">
+                        <GradientStop Color="#32A8B0"
+                                      Offset="0"/>
+                        <GradientStop Color="#168FA7"
+                                      Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <Grid Margin="14,0,12,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- FILTROS -->
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center">
+
+                        <TextBlock Text="Filtrar:"
+                                   Foreground="White"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+
+                        <Button x:Name="BtnHoy"
+                                Content="Hoy"
+                                Width="65"
+                                Style="{StaticResource EstiloFiltro}"
+                                Click="Hoy_Click"/>
+
+                        <Button x:Name="BtnSemana"
+                                Content="Semana"
+                                Width="84"
+                                Style="{StaticResource EstiloFiltro}"
+                                Click="Semana_Click"/>
+
+                        <Button x:Name="BtnMes"
+                                Content="Mes"
+                                Width="65"
+                                Style="{StaticResource EstiloFiltro}"
+                                Click="Mes_Click"/>
+
+                        <Button x:Name="BtnTodos"
+                            Content="Todos"
+                            Width="65"
+                            Style="{StaticResource EstiloFiltro}"
+                            Click="Todos_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            
+            <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,20">
+                <Border Background="{StaticResource ColorFondoTarjeta}" BorderBrush="{StaticResource ColorBordeTarjeta}" BorderThickness="1" CornerRadius="8" Padding="15" Margin="5">
+                    <StackPanel>
+                        <TextBlock Text="TOTAL INGRESOS" FontSize="12" FontWeight="Bold" Foreground="{StaticResource ColorTexto}"/>
+                        <TextBlock x:Name="TxtTotalIngresos" Text="L 0.00" FontSize="22" FontWeight="Bold" Foreground="{StaticResource ColorTexto}" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{StaticResource ColorFondoTarjeta}" BorderBrush="{StaticResource ColorBordeTarjeta}" BorderThickness="1" CornerRadius="8" Padding="15" Margin="5">
+                    <StackPanel>
+                        <TextBlock Text="TOTAL EGRESOS" FontSize="12" FontWeight="Bold" Foreground="{StaticResource ColorTexto}"/>
+                        <TextBlock x:Name="TxtTotalEgresos" Text="L 0.00" FontSize="22" FontWeight="Bold" Foreground="{StaticResource ColorTexto}" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{StaticResource ColorFondoTarjeta}" BorderBrush="{StaticResource ColorBordeTarjeta}" BorderThickness="1" CornerRadius="8" Padding="15" Margin="5">
+                    <StackPanel>
+                        <TextBlock Text="SALDO NETO" FontSize="12" FontWeight="Bold" Foreground="{StaticResource ColorTexto}"/>
+                        <TextBlock x:Name="TxtSaldoNeto" Text="L 0.00" FontSize="22" FontWeight="Bold" Foreground="{StaticResource ColorTexto}" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+            
+            <lvc:CartesianChart x:Name="ChartIngresosEgresos"
+                            Grid.Row="2"
+                            LegendPosition="Right"/>
+        </Grid>
+    </Border>
+</UserControl>

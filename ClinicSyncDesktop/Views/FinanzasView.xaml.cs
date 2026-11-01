@@ -97,7 +97,8 @@ namespace ClinicSyncDesktop.Views
                     break;
 
                 case "Graficos":
-                    ContenidoFinanzas.Content = null;
+                    ContenidoFinanzas.Content = new GraficosView(
+                        new ClinicSyncDesktop.Services.GraficosApiService());
                     break;
             }
         }
