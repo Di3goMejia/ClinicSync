@@ -169,6 +169,21 @@ namespace ClinicSyncServer.Features.Finanzas
                     string? identificador =
                         usuario.FindFirst("sub")?.Value;
 
+
+                    if (request.IdsTratamientosVisita is null ||
+                        request.IdsTratamientosVisita.Count == 0 ||
+                        request.IdsTratamientosVisita.Any(id => id <= 0) ||
+                        request.IdsTratamientosVisita.Distinct().Count()
+                            != request.IdsTratamientosVisita.Count)
+                    {
+                        return Results.BadRequest(new
+                        {
+                            mensaje = "Seleccione tratamientos válidos " +
+                                      "del expediente del paciente."
+                        });
+                    }
+
+
                     if (!int.TryParse(identificador, out int idUsuario))
                     {
                         Console.WriteLine(
@@ -197,7 +212,7 @@ namespace ClinicSyncServer.Features.Finanzas
                     try
                     {
                         int idIngreso = await db.ExecuteScalarAsync<int>(
-                            "api.usp_Finanzas_Ingreso_Crear",
+                            "api.usp_Finanzas_Ingreso_CrearDesdeVisita",
                             new
                             {
                                 request.IdPaciente,

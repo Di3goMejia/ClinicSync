@@ -264,6 +264,13 @@
                                 Width="65"
                                 Style="{StaticResource EstiloFiltro}"
                                 Click="Mes_Click"/>
+
+                        <Button x:Name="BtnTodos"
+                                Content="Todos"
+                                Width="85"
+                                Style="{StaticResource EstiloFiltro}"
+                                Click="BtnTodos_Click"/>    
+
                     </StackPanel>
                 </Grid>
             </Border>
