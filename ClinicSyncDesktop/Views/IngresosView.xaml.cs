@@ -1,47 +1,55 @@
-﻿
-using ClinicSyncDesktop.Models;
+﻿using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace ClinicSyncDesktop.Views
 {
     public partial class IngresosView : UserControl
     {
+        // SERVICIO DE INGRESOS
         private readonly IngresosApiService servicio = new();
 
+        // LISTA COMPLETA DE INGRESOS
         private IngresoListado[] ingresos =
             Array.Empty<IngresoListado>();
 
+        // FILTRO SELECCIONADO
         private string filtroActual = "Todos";
 
-        // Permite conectar el engranaje con la edición.
+        // EVENTO PARA EDICIÓN
         public event Action<IngresoListado>? EditarIngresoSolicitado;
 
+        // EVITA CARGAS SIMULTÁNEAS
         private bool cargandoIngresos = false;
 
+        // CONSTRUCTOR
         public IngresosView()
         {
             InitializeComponent();
 
+            // Al abrir, seleccionar Todos.
             filtroActual = "Todos";
 
-            Loaded += IngresosView_Loaded;
-
+            // Actualizar colores de los botones.
             ActualizarBotones();
+
+            // Cargar ingresos cuando aparezca la pantalla.
+            Loaded += IngresosView_Loaded;
         }
 
+        // CARGAR INGRESOS AL ABRIR LA PANTALLA
         private async void IngresosView_Loaded(
             object sender, RoutedEventArgs e)
         {
             await CargarIngresosAsync();
         }
 
-
-
+        // OBTENER INGRESOS DESDE LA API
         private async Task CargarIngresosAsync()
         {
             if (cargandoIngresos)
@@ -54,12 +62,16 @@ namespace ClinicSyncDesktop.Views
 
             try
             {
-                var resultado = await servicio.ObtenerIngresosAsync();
+                var resultado =
+                    await servicio.ObtenerIngresosAsync();
 
-                ingresos = resultado ?? Array.Empty<IngresoListado>();
+                ingresos = resultado ??
+                    Array.Empty<IngresoListado>();
 
+                // Aplicar el filtro activo a los nuevos datos.
                 AplicarFiltro();
 
+                // Actualizar la tabla.
                 DgIngresos.Items.Refresh();
             }
             catch (Exception ex)
@@ -74,15 +86,14 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
-
+        // MOSTRAR ERRORES EN PANTALLA
         private void MostrarError(string mensaje)
         {
             ErrorListado.Text = mensaje;
             ErrorListado.Visibility = Visibility.Visible;
         }
 
-
-
+        // FILTRAR LOS INGRESOS SEGÚN LA FECHA
         private void AplicarFiltro()
         {
             DateTime hoy = DateTime.Today;
@@ -91,6 +102,10 @@ namespace ClinicSyncDesktop.Views
 
             switch (filtroActual)
             {
+                case "Todos":
+                    // Mostrar todos sin filtrar por fecha.
+                    break;
+
                 case "Hoy":
                     consulta = consulta.Where(i =>
                         i.Fecha.Date == hoy);
@@ -118,7 +133,6 @@ namespace ClinicSyncDesktop.Views
                     break;
 
                 default:
-                    // Al entrar, mostrar todos los ingresos.
                     break;
             }
 
@@ -128,54 +142,79 @@ namespace ClinicSyncDesktop.Views
                 .ToList();
         }
 
-
-
+        // CAMBIAR FILTRO Y ACTUALIZAR LA TABLA
         private void CambiarFiltro(string filtro)
         {
             filtroActual = filtro;
+
+            // Oscurecer el botón seleccionado.
             ActualizarBotones();
+
+            // Mostrar los ingresos correspondientes.
             AplicarFiltro();
         }
 
+        // ACTUALIZAR LOS COLORES DE LOS CUATRO BOTONES
         private void ActualizarBotones()
         {
+            // Color del botón seleccionado.
+            Brush colorSeleccionado =
+                new SolidColorBrush(
+                    Color.FromRgb(124, 194, 207));
+
+            // Color de los botones no seleccionados.
+            Brush colorNormal = Brushes.WhiteSmoke;
+
             BtnHoy.Background =
                 filtroActual == "Hoy"
-                    ? new System.Windows.Media.SolidColorBrush(
-                        System.Windows.Media.Color.FromRgb(124, 194, 207))
-                    : System.Windows.Media.Brushes.WhiteSmoke;
+                    ? colorSeleccionado
+                    : colorNormal;
 
             BtnSemana.Background =
                 filtroActual == "Semana"
-                    ? new System.Windows.Media.SolidColorBrush(
-                        System.Windows.Media.Color.FromRgb(124, 194, 207))
-                    : System.Windows.Media.Brushes.WhiteSmoke;
+                    ? colorSeleccionado
+                    : colorNormal;
 
             BtnMes.Background =
                 filtroActual == "Mes"
-                    ? new System.Windows.Media.SolidColorBrush(
-                        System.Windows.Media.Color.FromRgb(124, 194, 207))
-                    : System.Windows.Media.Brushes.WhiteSmoke;
+                    ? colorSeleccionado
+                    : colorNormal;
+
+            BtnTodos.Background =
+                filtroActual == "Todos"
+                    ? colorSeleccionado
+                    : colorNormal;
         }
 
+        // BOTÓN HOY
         private void Hoy_Click(
             object sender, RoutedEventArgs e)
         {
             CambiarFiltro("Hoy");
         }
 
+        // BOTÓN SEMANA
         private void Semana_Click(
             object sender, RoutedEventArgs e)
         {
             CambiarFiltro("Semana");
         }
 
+        // BOTÓN MES
         private void Mes_Click(
             object sender, RoutedEventArgs e)
         {
             CambiarFiltro("Mes");
         }
 
+        // BOTÓN TODOS
+        private void BtnTodos_Click(
+            object sender, RoutedEventArgs e)
+        {
+            CambiarFiltro("Todos");
+        }
+
+        // AGREGAR NUEVO INGRESO
         private async void AgregarNuevo_Click(
             object sender, RoutedEventArgs e)
         {
@@ -186,33 +225,35 @@ namespace ClinicSyncDesktop.Views
 
             if (ventana.ShowDialog() == true)
             {
+                // Recargar la tabla después de guardar.
                 await CargarIngresosAsync();
             }
         }
 
-
-
+        // EDITAR INGRESO CON EL BOTÓN ENGRANAJE
         private async void EditarIngreso_Click(
             object sender, RoutedEventArgs e)
         {
             if (sender is not Button boton ||
                 boton.Tag is not IngresoListado ingreso)
+            {
                 return;
+            }
 
-            // Abrir la ventana de edición del ingreso seleccionado
-            var ventana = new EditarIngresoWindow(ingreso.IdIngreso)
+            // Abrir la ventana de edición.
+            var ventana = new EditarIngresoWindow(
+                ingreso.IdIngreso)
             {
                 Owner = Window.GetWindow(this)
             };
 
-            // Si se guardaron cambios, actualizar el DataGrid
+            // Recargar cuando se guarden los cambios.
             if (ventana.ShowDialog() == true)
             {
                 await CargarIngresosAsync();
             }
         }
-
-
     }
 }
+
 

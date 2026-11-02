@@ -11,14 +11,17 @@ using System.Windows.Data;
 
 namespace ClinicSyncDesktop.Views
 {
+
     public class TratamientoFila
     {
         public TratamientoIngreso Tratamiento { get; set; } = new();
-        public int IdTratamiento => Tratamiento.IdTratamiento;
+        public int IdTratamientoVisita =>
+            Tratamiento.IdTratamientoVisita;
         public string Nombre => Tratamiento.Nombre;
         public decimal Precio => Tratamiento.Precio;
         public bool Seleccionado { get; set; }
     }
+
 
     public class MaterialFila
     {
@@ -82,23 +85,24 @@ namespace ClinicSyncDesktop.Views
 
             tipo = TipoSeleccion.Tratamientos;
             TxtTitulo.Text = "Seleccionar tratamientos";
-
             var ids = seleccionados
-                .Select(t => t.IdTratamiento)
+                .Select(t => t.IdTratamientoVisita)
                 .ToHashSet();
 
             tratamientos = catalogo
-                .GroupBy(t => t.IdTratamiento)
+                .GroupBy(t => t.IdTratamientoVisita)
                 .Select(g => g.First())
                 .Select(t => new TratamientoFila
                 {
                     Tratamiento = t,
-                    Seleccionado = ids.Contains(t.IdTratamiento)
+                    Seleccionado =
+                        ids.Contains(t.IdTratamientoVisita)
                 })
                 .ToList();
 
             ContenedorTratamientos.Visibility = Visibility.Visible;
             LstTratamientos.ItemsSource = tratamientos;
+
         }
 
         // CONSTRUCTOR PARA MATERIALES

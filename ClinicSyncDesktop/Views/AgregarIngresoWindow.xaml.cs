@@ -55,17 +55,6 @@ namespace ClinicSyncDesktop.Views
                     .OrderBy(p => p.NombreCompleto)
                     .ToList();
 
-                // El catálogo no se filtra por fecha ni paciente.
-                var tratamientos =
-                    await servicio.ObtenerTratamientosAsync(
-                        0, DateTime.Today);
-
-                catalogoTratamientos = tratamientos
-                    .GroupBy(t => t.IdTratamiento)
-                    .Select(g => g.First())
-                    .OrderBy(t => t.Nombre)
-                    .ToList();
-
                 var materiales = await servicio.ObtenerMaterialesAsync();
 
                 catalogoMateriales = materiales
@@ -85,8 +74,63 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        private int versionConsulta = 0;
+        private async Task CargarTratamientosPacienteAsync()
+        {
+            int versionActual = ++versionConsulta;
+
+            catalogoTratamientos.Clear();
+            tratamientosElegidos.Clear();
+
+            TxtTratamientos.Text = "Seleccione tratamientos";
+            ErrorTratamientos.Text = "";
+
+            RecalcularTotal();
+
+            if (pacienteSeleccionado == null ||
+                DpFecha.SelectedDate == null)
+                return;
+
+            int idPaciente = pacienteSeleccionado.IdPaciente;
+            DateTime fecha = DpFecha.SelectedDate.Value.Date;
+
+            try
+            {
+                var resultado =
+                    await servicio.ObtenerTratamientosAsync(
+                        idPaciente, fecha);
+
+                // Evitar que una consulta anterior sobrescriba
+                // los resultados del paciente o fecha actual.
+                if (versionActual != versionConsulta)
+                    return;
+
+                catalogoTratamientos = resultado
+                    .OrderBy(t => t.Nombre)
+                    .ToList();
+
+                if (catalogoTratamientos.Count == 0)
+                {
+                    ErrorTratamientos.Text =
+                        "No existen tratamientos registrados " +
+                        "para este paciente en la fecha seleccionada.";
+                }
+            }
+            catch (Exception ex)
+            {
+                if (versionActual != versionConsulta)
+                    return;
+
+                ErrorTratamientos.Text =
+                    "No se pudieron consultar los tratamientos: " +
+                    ex.Message;
+            }
+        }
+
+
         // POPUP DE PACIENTES
-        private void SeleccionarPaciente_Click(
+
+        private async void SeleccionarPaciente_Click(
             object sender, RoutedEventArgs e)
         {
             ErrorPaciente.Text = "";
@@ -112,8 +156,19 @@ namespace ClinicSyncDesktop.Views
 
                 TxtPaciente.Text =
                     pacienteSeleccionado.NombreCompleto;
+
+                await CargarTratamientosPacienteAsync();
             }
         }
+        private async void DpFecha_SelectedDateChanged(
+            object sender, SelectionChangedEventArgs e)
+        {
+            if (!inicializado)
+                return;
+
+            await CargarTratamientosPacienteAsync();
+        }
+
 
         // POPUP DE TRATAMIENTOS
         private void SeleccionarTratamientos_Click(
@@ -121,12 +176,28 @@ namespace ClinicSyncDesktop.Views
         {
             ErrorTratamientos.Text = "";
 
+            if (pacienteSeleccionado == null)
+            {
+                ErrorTratamientos.Text =
+                    "Primero seleccione un paciente.";
+                return;
+            }
+
+            if (DpFecha.SelectedDate == null)
+            {
+                ErrorTratamientos.Text =
+                    "Primero seleccione una fecha.";
+                return;
+            }
+
             if (catalogoTratamientos.Count == 0)
             {
                 ErrorTratamientos.Text =
-                    "No hay tratamientos disponibles.";
+                    "No existen tratamientos registrados " +
+                    "para este paciente en la fecha seleccionada.";
                 return;
             }
+
 
             var popup = new SeleccionIngresoWindow(
                 catalogoTratamientos,
@@ -204,24 +275,58 @@ namespace ClinicSyncDesktop.Views
                 out descuento);
         }
 
+
         private void Recalcular_Click(
             object sender, TextChangedEventArgs e)
         {
-            if (inicializado)
-                RecalcularTotal();
+            if (!inicializado)
+                return;
+
+            ErrorDescuento.Text = "";
+
+            if (string.IsNullOrWhiteSpace(TxtDescuento.Text))
+            {
+                ErrorDescuento.Text =
+                    "Ingrese un descuento válido.";
+            }
+            else if (!LeerDescuento(out decimal descuento))
+            {
+                ErrorDescuento.Text =
+                    "Ingrese un descuento válido.";
+            }
+            else if (descuento < 0)
+            {
+                ErrorDescuento.Text =
+                    "El descuento no puede ser menor que 0.";
+            }
+            else if (descuento > ObtenerSubtotal())
+            {
+                ErrorDescuento.Text =
+                    "El descuento no puede superar el subtotal.";
+            }
+
+            RecalcularTotal();
         }
 
         private void RecalcularTotal()
         {
             decimal subtotal = ObtenerSubtotal();
 
-            decimal descuento =
-                LeerDescuento(out decimal valor) ? valor : 0m;
+            decimal descuento = 0;
+
+            if (LeerDescuento(out decimal valor) &&
+                valor >= 0 &&
+                valor <= subtotal)
+            {
+                descuento = valor;
+            }
+
+            decimal total = subtotal - descuento;
 
             TxtSubtotal.Text = $"L {subtotal:N2}";
-            TxtTotal.Text =
-                $"L {Math.Max(0m, subtotal - descuento):N2}";
+            TxtTotal.Text = $"L {total:N2}";
         }
+
 
         // VALIDACIONES EN ROJO
         private bool ValidarFormulario()
@@ -269,13 +374,20 @@ namespace ClinicSyncDesktop.Views
                     "Ingrese un descuento válido.";
                 valido = false;
             }
-            else if (descuento < 0 ||
-                     descuento > ObtenerSubtotal())
+
+            else if (descuento < 0)
             {
                 ErrorDescuento.Text =
-                    "El descuento debe estar entre 0 y el subtotal.";
+                    "El descuento no puede ser menor que 0.";
                 valido = false;
             }
+            else if (descuento > ObtenerSubtotal())
+            {
+                ErrorDescuento.Text =
+                    "El descuento no puede superar el subtotal.";
+                valido = false;
+            }
+
 
             if (CmbMedioPago.SelectedItem is not ComboBoxItem medio ||
                 (medio.Content?.ToString() != "Efectivo" &&
@@ -332,10 +444,11 @@ namespace ClinicSyncDesktop.Views
 
                     // Compatible con la API utilizada anteriormente:
                     // aquí se envían IDs del catálogo de tratamientos.
+
                     IdsTratamientosVisita = tratamientosElegidos
-                        .Select(t => t.IdTratamiento)
-                        .Distinct()
-                        .ToList(),
+                   .Select(t => t.IdTratamientoVisita)
+                   .Distinct()
+                   .ToList(),
 
                     Materiales = materialesElegidos.ToList()
                 };
