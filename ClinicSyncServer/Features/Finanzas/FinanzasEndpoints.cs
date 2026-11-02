@@ -1,10 +1,9 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Data;
 using Dapper;
 using ClinicSyncServer.Common.Data;
 using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicSyncServer.Features.Finanzas
 {
@@ -56,6 +55,59 @@ namespace ClinicSyncServer.Features.Finanzas
             bool Activo,
             List<int> IdsTratamientos
         );
+
+        public sealed class ResumenDto
+        {
+            public decimal TotalIngresos { get; set; }
+            public decimal TotalEgresos { get; set; }
+            public decimal SaldoNeto { get; set; }
+            public GraficoResumenDto? Grafico { get; set; }
+        }
+
+        public sealed class GraficoResumenDto
+        {
+            public string Periodo { get; set; } = "";
+            public string Agrupacion { get; set; } = "";
+            public string Desde { get; set; } = "";
+            public string Hasta { get; set; } = "";
+
+            public IReadOnlyList<string> Etiquetas { get; set; } = [];
+            public IReadOnlyList<decimal> Ingresos { get; set; } = [];
+            public IReadOnlyList<decimal> Egresos { get; set; } = [];
+        }
+
+        public sealed record PeriodoResumen(string Etiqueta, decimal Ingresos, decimal Egresos);
+
+        private static List<string> GenerarEtiquetas(DateOnly desde, DateOnly hasta, Agrupacion agrupacion)
+        {
+            var lista = new List<string>();
+
+            switch (agrupacion)
+            {
+                case Agrupacion.Hora:
+                    for (var h = 0; h < 24; h++)
+                        lista.Add($"{desde:yyyy-MM-dd}T{h:D2}");
+                    break;
+
+                case Agrupacion.Dia:
+                    for (var d = desde; d <= hasta; d = d.AddDays(1))
+                        lista.Add(d.ToString("yyyy-MM-dd"));
+                    break;
+
+                case Agrupacion.Semana:
+                    var lunes = desde.AddDays(-(((int)desde.DayOfWeek + 6) % 7));
+                    for (var s = lunes; s <= hasta; s = s.AddDays(7))
+                        lista.Add(s.ToString("yyyy-MM-dd"));
+                    break;
+
+                case Agrupacion.Mes:
+                    for (var m = new DateOnly(desde.Year, desde.Month, 1); m <= hasta; m = m.AddMonths(1))
+                        lista.Add(m.ToString("yyyy-MM"));
+                    break;
+            }
+
+            return lista;
+        }
 
         public static void MapFinanzasEndpoints(
             this WebApplication app)
@@ -218,7 +270,6 @@ namespace ClinicSyncServer.Features.Finanzas
                     return Results.Ok(ingreso);
                 });
 
-
             // GUARDAR EDICIÓN
             grupo.MapPut("/ingresos/{idIngreso:int}",
                 async (
@@ -297,6 +348,59 @@ namespace ClinicSyncServer.Features.Finanzas
                     }
                 });
 
+            // DATOS PARA EL GRÁFICO FINANCIERO
+            grupo.MapGet("/graficos", async (
+                [FromQuery] Periodo periodo,
+                [FromQuery] DateOnly? desde,
+                [FromQuery] DateOnly? hasta,
+                SqlConnectionFactory factory
+            ) =>
+            {
+                var rango = RangoFinanciero.Resolver(periodo, desde, hasta, DateTime.UtcNow);
+
+                await using var db = factory.Crear();
+
+                var filas = await db.QueryAsync<PeriodoResumen>(
+                    "api.usp_Finanzas_ResumenPorPeriodo",
+                    new { 
+                        rango.Desde, 
+                        Hasta = rango.Hasta!.Value, 
+                        Agrupacion = rango.Agrupacion.ToString().ToUpperInvariant()
+                    },
+                    commandType: CommandType.StoredProcedure
+                );
+
+                var inicio = rango.Desde ?? filas
+                    .Select(f => DateOnly.Parse(f.Etiqueta))
+                    .DefaultIfEmpty(rango.Hasta!.Value)
+                    .Min();
+
+                var etiquetas = GenerarEtiquetas(inicio, rango.Hasta!.Value, rango.Agrupacion);
+                var indice = filas.ToDictionary(f => f.Etiqueta);
+
+                var totalIngresos = filas.Sum(p => p.Ingresos);
+                var totalEgresos = filas.Sum(p => p.Egresos);
+                var saldoNeto = totalIngresos - totalEgresos;
+
+                return Results.Ok(
+                    new ResumenDto()
+                    {
+                        TotalIngresos = totalIngresos,
+                        TotalEgresos = totalEgresos,
+                        SaldoNeto = saldoNeto,
+                        Grafico = new()
+                        {
+                            Periodo = periodo.ToString().ToLowerInvariant(),
+                            Agrupacion = rango.Agrupacion.ToString().ToLowerInvariant(),
+                            Desde = inicio.ToString("yyyy-MM-dd"),
+                            Hasta = rango.Hasta!.Value.ToString("yyyy-MM-dd"),
+                            Etiquetas = etiquetas,
+                            Ingresos = [.. etiquetas.Select(e => indice.TryGetValue(e, out var f) ? f.Ingresos : 0m)],
+                            Egresos = [.. etiquetas.Select(e => indice.TryGetValue(e, out var f) ? f.Egresos : 0m)]
+                        }
+                    }
+                );
+            });
         }
     }
 }
