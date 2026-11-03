@@ -87,6 +87,7 @@
             <Setter Property="Background" Value="#D9DEDA"/>
             <Setter Property="Foreground" Value="#17465A"/>
             <Setter Property="Height" Value="38"/>
+            <Setter Property="Margin" Value="4,0"/>
             <Setter Property="BorderBrush" Value="#C4CBC8"/>
             <Setter Property="BorderThickness" Value="0,0,0,1"/>
             <Style.Triggers>
@@ -311,7 +312,7 @@
 
                     <!-- FECHA -->
                     <DataGridTextColumn Header="Fecha"
-                                        Binding="{Binding Fecha, StringFormat=yyyy/MM/dd}"
+                                        Binding="{Binding Fecha, StringFormat=yyyy/MM/dd HH:mm}"
                                         Width="115"
                                         ElementStyle="{StaticResource EstiloTextoCelda}"/>
 

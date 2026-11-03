@@ -103,7 +103,7 @@ namespace ClinicSync.Views
 
                 case "Seguridad":
                     ContenidoPrincipal.Content =
-                        CrearVistaTemporal("Seguridad");
+                         CrearVistaTemporal("Seguridad");
                     break;
 
                 case "Notificaciones":

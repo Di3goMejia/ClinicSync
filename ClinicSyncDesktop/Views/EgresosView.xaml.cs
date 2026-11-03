@@ -139,5 +139,30 @@ namespace ClinicSyncDesktop.Views
                     true);
             }
         }
+
+        private async void EditarEgreso_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            if (_egresosService is null ||
+                sender is not System.Windows.Controls.Button boton ||
+                boton.DataContext is not ClinicSyncDesktop.Models.Egreso egreso)
+            {
+                return;
+            }
+
+            var ventana = new EditarEgresoWindow(
+                egreso.IdEgreso,
+                _egresosService)
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            if (ventana.ShowDialog() == true)
+            {
+                await CargarEgresosAsync();
+                MostrarAviso("El egreso se actualizó con éxito.", true);
+            }
+        }
     }
 }

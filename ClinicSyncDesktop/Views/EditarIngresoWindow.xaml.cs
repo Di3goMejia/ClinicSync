@@ -77,14 +77,6 @@ namespace ClinicSyncDesktop.Views
                 pacientes = listaPacientes?.ToList()
                             ?? new List<PacienteIngreso>();
 
-                var listaTratamientos =
-                    await servicio.ObtenerTratamientosAsync(
-                        0, DateTime.Today);
-
-                catalogoTratamientos =
-                    listaTratamientos?.ToList()
-                    ?? new List<TratamientoIngreso>();
-
                 // 2. Obtener el ingreso seleccionado.
                 var ingreso =
                     await servicio.ObtenerIngresoPorIdAsync(idIngreso);
@@ -95,11 +87,20 @@ namespace ClinicSyncDesktop.Views
                 var paciente = pacientes.FirstOrDefault(
                     p => p.IdPaciente == ingreso.IdPaciente);
 
+                var listaTratamientos =
+                    await servicio.ObtenerTratamientosAsync(
+                        paciente!.IdPaciente, DateTime.Today);
+
+                catalogoTratamientos =
+                    listaTratamientos?.ToList()
+                    ?? new List<TratamientoIngreso>();
+
                 TxtPaciente.Text = paciente != null
                     ? paciente.NombreCompleto
                     : ingreso.Paciente;
 
                 DpFecha.SelectedDate = ingreso.Fecha;
+                TxtHora.Text = ingreso.Fecha.ToString("HH:mm");
 
                 TxtDescuento.Text =
                     ingreso.Descuento.ToString("0.00");
@@ -275,7 +276,7 @@ namespace ClinicSyncDesktop.Views
                 // Obtener el catálogo completo.
                 var resultado =
                     await servicio.ObtenerTratamientosAsync(
-                        0, DateTime.Today);
+                        idPacienteSeleccionado, DateTime.Today);
 
                 catalogoTratamientos =
                     resultado?.ToList()
@@ -360,6 +361,26 @@ namespace ClinicSyncDesktop.Views
         }
 
         // VALIDACIONES EN TEXTO ROJO
+        private bool TryObtenerFechaHora(out DateTime fecha)
+        {
+            fecha = default;
+
+            if (DpFecha.SelectedDate is not DateTime fechaSeleccionada)
+                return false;
+
+            if (!TimeSpan.TryParseExact(
+                    TxtHora.Text.Trim(),
+                    @"hh\:mm",
+                    CultureInfo.InvariantCulture,
+                    out TimeSpan hora))
+            {
+                return false;
+            }
+
+            fecha = fechaSeleccionada.Date.Add(hora);
+            return true;
+        }
+
         private bool ValidarFormulario()
         {
             ErrorPaciente.Text = "";
@@ -389,10 +410,14 @@ namespace ClinicSyncDesktop.Views
                 ErrorFecha.Text = "Seleccione una fecha.";
                 valido = false;
             }
-            else if (DpFecha.SelectedDate.Value.Date > DateTime.Today)
+            else if (!TryObtenerFechaHora(out DateTime fechaHora))
             {
-                ErrorFecha.Text =
-                    "La fecha no puede ser posterior a hoy.";
+                ErrorFecha.Text = "Ingrese una hora válida con formato HH:mm.";
+                valido = false;
+            }
+            else if (fechaHora > DateTime.Now)
+            {
+                ErrorFecha.Text = "La fecha y hora no pueden ser futuras.";
                 valido = false;
             }
 
@@ -440,11 +465,12 @@ namespace ClinicSyncDesktop.Views
                     (ComboBoxItem)CmbMedioPago.SelectedItem;
 
                 LeerDescuento(out decimal descuento);
+                TryObtenerFechaHora(out DateTime fechaHora);
 
                 var request = new EditarIngresoRequest
                 {
                     IdPaciente = idPacienteSeleccionado,
-                    Fecha = DpFecha.SelectedDate!.Value,
+                    Fecha = fechaHora,
                     Descuento = descuento,
                     MedioPago = medio.Content?.ToString() ?? "",
                     Activo = TglActivo.IsChecked == true,

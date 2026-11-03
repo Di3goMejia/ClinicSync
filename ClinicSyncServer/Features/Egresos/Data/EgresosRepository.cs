@@ -55,10 +55,50 @@ namespace ClinicSyncServer.Features.Egresos.Data
 
                 return p.Get<int>("@IdEgreso");
             }
+
             catch (SqlException ex) when (SqlErrorTranslator.EsTraducible(ex))
             {
                 throw SqlErrorTranslator.Traducir(ex);
             }
+        }
+
+        public async Task<EgresoListado?> ObtenerAsync(
+            int idEgreso,
+            CancellationToken ct = default)
+        {
+            await using var db = factory.Crear();
+            await db.OpenAsync(ct);
+
+            return await db.QuerySingleOrDefaultAsync<EgresoListado>(
+                new CommandDefinition(
+                    "api.usp_Egresos_Obtener",
+                    new { IdEgreso = idEgreso },
+                    commandType: CommandType.StoredProcedure,
+                    cancellationToken: ct));
+        }
+
+        public async Task ActualizarAsync(
+            int idEgreso,
+            ActualizarEgresoRequest req,
+            int idUsuario,
+            CancellationToken ct = default)
+        {
+            await using var db = factory.Crear();
+            await db.OpenAsync(ct);
+
+            await db.ExecuteAsync(new CommandDefinition(
+                "api.usp_Egresos_Editar",
+                new
+                {
+                    IdEgreso = idEgreso,
+                    req.Fecha,
+                    req.Concepto,
+                    req.MedioPago,
+                    req.Monto,
+                    IdUsuario = idUsuario
+                },
+                commandType: CommandType.StoredProcedure,
+                cancellationToken: ct));
         }
 
         // LISTAR EGRESOS POR RANGO DE FECHAS

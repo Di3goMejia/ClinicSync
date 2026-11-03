@@ -26,8 +26,8 @@ namespace ClinicSyncDesktop.Services
 
             string ruta =
                 "api/finanzas/egresos/" +
-                $"?fechaDesde={desde.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}" +
-                $"&fechaHasta={hasta.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}";
+                $"?fechaDesde={desde.Date.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture)}" +
+                $"&fechaHasta={hasta.Date.AddDays(1).AddSeconds(-1).ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture)}";
 
             if (activo.HasValue)
             {
@@ -54,7 +54,7 @@ namespace ClinicSyncDesktop.Services
             {
                 Tipo = tipo,
                 Fecha = fecha.ToString(
-                    "yyyy-MM-dd",
+                    "O",
                     CultureInfo.InvariantCulture),
                 Concepto = concepto,
                 MedioPago = medioPago,
@@ -87,6 +87,45 @@ namespace ClinicSyncDesktop.Services
             return resultado?.IdEgreso
                 ?? throw new HttpRequestException(
                     "La API no devolvió el identificador del egreso.");
+        }
+
+        public async Task<Egreso> ObtenerAsync(
+            int idEgreso,
+            CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            return await ClienteApi.ObtenerAutenticadoAsync<Egreso>(
+                $"api/finanzas/egresos/{idEgreso}");
+        }
+
+        public async Task ActualizarAsync(
+            int idEgreso,
+            DateTime fecha,
+            string concepto,
+            string medioPago,
+            decimal monto,
+            CancellationToken ct = default)
+        {
+            var solicitud = new
+            {
+                Fecha = fecha.ToString("O", CultureInfo.InvariantCulture),
+                Concepto = concepto,
+                MedioPago = medioPago,
+                Monto = monto
+            };
+
+            using var respuesta = await ClienteApi.PutAutenticadoAsync(
+                $"api/finanzas/egresos/{idEgreso}", solicitud, ct);
+
+            if (!respuesta.IsSuccessStatusCode)
+            {
+                string mensaje = await ObtenerMensajeErrorAsync(
+                    respuesta,
+                    "No fue posible actualizar el egreso.",
+                    ct);
+
+                throw new HttpRequestException(mensaje);
+            }
         }
 
 
