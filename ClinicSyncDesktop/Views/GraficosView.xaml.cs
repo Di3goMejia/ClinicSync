@@ -26,7 +26,7 @@ namespace ClinicSyncDesktop.Views
     public partial class GraficosView : UserControl
     {
         private readonly GraficosApiService? _graficosService;
-        private string filtroActual = "Todos";
+        private string filtroActual = "Hoy";
 
         public GraficosView()
         {
@@ -36,6 +36,7 @@ namespace ClinicSyncDesktop.Views
         public GraficosView(GraficosApiService service) : this()
         {
             _graficosService = service;
+            CambiarFiltro(filtroActual);
         }
 
         private async void CargarDatos()

@@ -42,7 +42,7 @@
             </Setter>
         </Style>
 
-        <!-- BOTONES DE FILTRO (HOY, SEMANA, MES, RANGO) -->
+        <!-- BOTONES DE FILTRO (HOY, SEMANA, MES, TODOS) -->
         <Style x:Key="BotonFiltro" TargetType="{x:Type RadioButton}">
             <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="FontSize" Value="14"/>
@@ -259,11 +259,10 @@
                                  Style="{StaticResource BotonFiltro}"
                                  Click="Filtro_Click"/>
 
-                    <RadioButton Content="Rango" Tag="Rango"
+                     <RadioButton Content="Todos" Tag="Todos"
                                  GroupName="FiltroEgresos"
-                                 IsEnabled="False"
-                                 ToolTip="Disponible próximamente"
-                                 Style="{StaticResource BotonFiltro}"/>
+                                  Style="{StaticResource BotonFiltro}"
+                                  Click="Filtro_Click"/>
                 </StackPanel>
             </Grid>
         </Border>
