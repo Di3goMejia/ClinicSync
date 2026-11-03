@@ -1,0 +1,87 @@
+<UserControl x:Class="ClinicSyncDesktop.Views.InicioView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="White">
+
+    <Border Padding="26,14,26,26" Background="White">
+        <Border CornerRadius="14" Background="{StaticResource ColorPanel}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Barra azul superior de bienvenida -->
+                <Border Grid.Row="0" Background="{StaticResource ColorAzul}"
+                        CornerRadius="14,14,0,0" Height="36" Padding="14,0">
+                    <TextBlock Text="PANEL PRINCIPAL - RESUMEN GENERAL"
+                               Foreground="White" FontSize="13" FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                </Border>
+
+                <!-- Tarjetas de métricas rápidas -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="20">
+                    <StackPanel>
+                        <!-- Tarjetas informativas en fila -->
+                        <WrapPanel Margin="0,0,0,20">
+                            <!-- Tarjeta 1: Tratamientos -->
+                            <Border Width="240" Height="110" Background="White" CornerRadius="12" Margin="0,0,16,16">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="12" ShadowDepth="2" Direction="270" Color="#1E4A63" Opacity="0.12"/>
+                                </Border.Effect>
+                                <Grid Margin="16">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Tratamientos Activos" Foreground="{StaticResource ColorTextoClaro}" FontSize="12.5" FontWeight="SemiBold"/>
+                                        <TextBlock Text="3 Registrados" Foreground="{StaticResource ColorTexto}" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
+                                        <TextBlock Text="1 Habilitado · 2 En espera" Foreground="{StaticResource ColorActivo}" FontSize="11" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Tarjeta 2: Pacientes -->
+                            <Border Width="240" Height="110" Background="White" CornerRadius="12" Margin="0,0,16,16">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="12" ShadowDepth="2" Direction="270" Color="#1E4A63" Opacity="0.12"/>
+                                </Border.Effect>
+                                <Grid Margin="16">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Pacientes Registrados" Foreground="{StaticResource ColorTextoClaro}" FontSize="12.5" FontWeight="SemiBold"/>
+                                        <TextBlock Text="3 Pacientes" Foreground="{StaticResource ColorTexto}" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
+                                        <TextBlock Text="Expedientes al día" Foreground="{StaticResource ColorAzul}" FontSize="11" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Tarjeta 3: Estado del Sistema -->
+                            <Border Width="240" Height="110" Background="White" CornerRadius="12" Margin="0,0,16,16">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="12" ShadowDepth="2" Direction="270" Color="#1E4A63" Opacity="0.12"/>
+                                </Border.Effect>
+                                <Grid Margin="16">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Estado del Sistema" Foreground="{StaticResource ColorTextoClaro}" FontSize="12.5" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Conectado" Foreground="{StaticResource ColorActivo}" FontSize="20" FontWeight="Bold" Margin="0,4,0,0"/>
+                                        <TextBlock Text="Base de datos operativa" Foreground="{StaticResource ColorTextoClaro}" FontSize="11" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </WrapPanel>
+
+                        <!-- Mensaje de bienvenida institucional -->
+                        <Border Background="White" CornerRadius="12" Padding="20">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="12" ShadowDepth="2" Direction="270" Color="#1E4A63" Opacity="0.10"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <TextBlock Text="Bienvenido al Sistema de Gestión Odontológica ClinicSync"
+                                           Foreground="{StaticResource ColorTexto}" FontSize="16" FontWeight="Bold" Margin="0,0,0,8"/>
+                                <TextBlock Text="Utilice el menú lateral para navegar entre las diferentes secciones: Pacientes, Tratamientos, Inventario, Finanzas y Agenda. Todas las vistas operan bajo el mismo diseño base institucional."
+                                           Foreground="{StaticResource ColorTextoClaro}" FontSize="13" TextWrapping="Wrap" LineHeight="20"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Border>
+</UserControl>

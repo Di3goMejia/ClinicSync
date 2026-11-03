@@ -1,0 +1,65 @@
+<UserControl x:Class="ClinicSyncDesktop.Controls.ModalErrorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="340">
+
+    <Border CornerRadius="16" Background="White" ClipToBounds="True">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="28" ShadowDepth="4" Direction="270" Color="#1E4A63" Opacity="0.35"/>
+        </Border.Effect>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="38"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="44"/>
+            </Grid.RowDefinitions>
+
+            <!-- Encabezado azul con título ERROR! y botón rojo de cerrar -->
+            <Grid Grid.Row="0" Background="{StaticResource ColorAzul}">
+                <TextBlock x:Name="TxtTitulo" Text="ERROR!" FontWeight="Bold" FontSize="15"
+                           Foreground="White" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                <Button Style="{StaticResource BotonCerrarRojo}" Margin="0,0,10,0"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Click="BtnCerrar_Click"/>
+            </Grid>
+
+            <!-- Cuerpo blanco con círculo rojo de error y mensaje centrado -->
+            <Border Grid.Row="1" Background="White" Padding="24,22,24,22">
+                <StackPanel HorizontalAlignment="Center">
+                    <!-- Icono circular rojo con X blanca -->
+                    <Border Width="64" Height="64" CornerRadius="32" Background="{StaticResource ColorRojoCerrar}"
+                            HorizontalAlignment="Center" Margin="0,0,0,14">
+                        <Path Data="M 20,20 L 44,44 M 44,20 L 20,44" Stroke="White" StrokeThickness="5"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+
+                    <!-- Mensaje principal -->
+                    <TextBlock x:Name="TxtMensaje"
+                               Text="Los cambios NO se&#x0a;guardaron."
+                               Foreground="{StaticResource ColorTexto}"
+                               FontWeight="Bold" FontSize="15.5"
+                               TextAlignment="Center" LineHeight="22"
+                               TextWrapping="Wrap"/>
+
+                    <!-- Mensaje de detalle secundario (opcional, como en Error de conexión) -->
+                    <TextBlock x:Name="TxtDetalle"
+                               Text="Error de conexión."
+                               Foreground="{StaticResource ColorTextoClaro}"
+                               FontSize="12.5"
+                               TextAlignment="Center"
+                               Margin="0,6,0,0"
+                               Visibility="Collapsed"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Pie azul con botón Aceptar -->
+            <Border Grid.Row="2" Background="{StaticResource ColorAzul}">
+                <Button Content="Aceptar" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Style="{StaticResource BotonOvalado}" Width="120" Height="27"
+                        Click="BtnAceptar_Click"/>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

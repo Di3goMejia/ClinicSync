@@ -1,0 +1,175 @@
+<UserControl x:Class="ClinicSyncDesktop.Controls.Finanzas.FinanzasResumenTablaControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Border CornerRadius="14" Background="{StaticResource ColorPanel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Barra azul con filtros de período (Hoy, Semana, Mes, Rango) -->
+            <Border Grid.Row="0" Background="{StaticResource ColorAzul}"
+                    CornerRadius="14,14,0,0" Height="36" Padding="14,0">
+                <Grid>
+                    <!-- Filtros a la derecha -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <TextBlock Text="Filtrar:" Foreground="White" FontSize="13" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                        <!-- Píldoras de filtro -->
+                        <Border x:Name="PillHoy" Background="#1E7D8A" CornerRadius="11" Height="22" Padding="12,0" Margin="0,0,6,0"
+                                Cursor="Hand" MouseLeftButtonDown="Filtro_Click">
+                            <TextBlock x:Name="TxtHoy" Text="Hoy" Foreground="White" FontWeight="Bold" FontSize="12"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+
+                        <Border x:Name="PillSemana" Background="White" CornerRadius="11" Height="22" Padding="12,0" Margin="0,0,6,0"
+                                Cursor="Hand" MouseLeftButtonDown="Filtro_Click">
+                            <TextBlock x:Name="TxtSemana" Text="Semana" Foreground="{StaticResource ColorTexto}" FontWeight="SemiBold" FontSize="12"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+
+                        <Border x:Name="PillMes" Background="White" CornerRadius="11" Height="22" Padding="12,0" Margin="0,0,6,0"
+                                Cursor="Hand" MouseLeftButtonDown="Filtro_Click">
+                            <TextBlock x:Name="TxtMes" Text="Mes" Foreground="{StaticResource ColorTexto}" FontWeight="SemiBold" FontSize="12"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+
+                        <Border x:Name="PillRango" Background="White" CornerRadius="11" Height="22" Padding="12,0"
+                                Cursor="Hand" MouseLeftButtonDown="Filtro_Click">
+                            <TextBlock x:Name="TxtRango" Text="Rango" Foreground="{StaticResource ColorTexto}" FontWeight="SemiBold" FontSize="12"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Encabezados de la tabla Resumen -->
+            <Border Grid.Row="1" BorderBrush="{StaticResource ColorLinea}"
+                    BorderThickness="0,0,0,1" Margin="0,14,0,0" Padding="22,0,22,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="110"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="#" FontWeight="Bold" FontSize="14"
+                               Foreground="{StaticResource ColorTexto}"/>
+                    <TextBlock Grid.Column="1" Text="Fecha" FontWeight="Bold" FontSize="14"
+                               Foreground="{StaticResource ColorTexto}"/>
+                    <TextBlock Grid.Column="2" Text="Concepto" FontWeight="Bold" FontSize="14"
+                               Foreground="{StaticResource ColorTexto}"/>
+                    <TextBlock Grid.Column="3" Text="Medio de pago" FontWeight="Bold" FontSize="14"
+                               Foreground="{StaticResource ColorTexto}"/>
+                    <TextBlock Grid.Column="4" Text="Total" FontWeight="Bold" FontSize="14"
+                               Foreground="{StaticResource ColorTexto}" HorizontalAlignment="Right"/>
+                </Grid>
+            </Border>
+
+            <!-- Filas de transacciones -->
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <ItemsControl x:Name="ListaResumen">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="{StaticResource ColorLinea}"
+                                    BorderThickness="0,0,0,1" Height="38" Padding="22,0"
+                                    Background="Transparent"
+                                    MouseLeftButtonDown="Fila_MouseLeftButtonDown">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="160"/>
+                                        <ColumnDefinition Width="110"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="{Binding Id}" FontSize="13.5"
+                                               Foreground="{StaticResource ColorTexto}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Fecha}" FontSize="13.5"
+                                               Foreground="{StaticResource ColorTexto}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding Concepto}" FontSize="13.5"
+                                               Foreground="{StaticResource ColorTexto}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="3" Text="{Binding MedioPago}" FontSize="13.5"
+                                               Foreground="{StaticResource ColorTexto}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="4" Text="{Binding TotalDisplay}" FontSize="13.5" FontWeight="SemiBold"
+                                               Foreground="{Binding ColorTotal}"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- ============ POPOVER FLOTANTE DE RANGO DE FECHAS ============ -->
+            <Border x:Name="PopoverRango" Grid.Row="0" Grid.RowSpan="3"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,38,18,0" Width="225"
+                    Background="White" CornerRadius="12" ClipToBounds="True"
+                    Visibility="Collapsed">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="18" ShadowDepth="4" Direction="270" Color="#1E4A63" Opacity="0.28"/>
+                </Border.Effect>
+                <StackPanel Margin="14,12,14,12">
+                    <!-- Fila Desde -->
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="46"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Desde" Foreground="{StaticResource ColorTexto}" FontWeight="SemiBold"
+                                   FontSize="12" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Background="#E4E9EC" CornerRadius="8" Height="25" Padding="8,0">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Right" Text="📅" FontSize="11" Foreground="#7A8B95"
+                                           VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                <TextBox x:Name="TxtFechaDesde" Text="YYYY/MM/DD" Foreground="#7A8B95"
+                                         FontSize="11" BorderThickness="0" Background="Transparent"
+                                         VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Fila Hasta -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="46"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Hasta" Foreground="{StaticResource ColorTexto}" FontWeight="SemiBold"
+                                   FontSize="12" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Background="#E4E9EC" CornerRadius="8" Height="25" Padding="8,0">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Right" Text="📅" FontSize="11" Foreground="#7A8B95"
+                                           VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                <TextBox x:Name="TxtFechaHasta" Text="YYYY/MM/DD" Foreground="#7A8B95"
+                                         FontSize="11" BorderThickness="0" Background="Transparent"
+                                         VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Botón Confirmar -->
+                    <Button Content="Confirmar" HorizontalAlignment="Right"
+                            Background="{StaticResource ColorAzul}" Foreground="White"
+                            FontWeight="Bold" FontSize="11.5" Height="24" Padding="14,0"
+                            BorderThickness="0" Cursor="Hand" Click="BtnConfirmarRango_Click">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

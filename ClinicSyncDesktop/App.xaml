@@ -1,15 +1,36 @@
-﻿<Application x:Class="ClinicSyncDesktop.App"
+<Application x:Class="ClinicSyncDesktop.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="Views/Login.xaml">
 
-
     <Application.Resources>
-        <Style x:Key="Interruptor"
-               TargetType="{x:Type ToggleButton}">
-            <Setter Property="Width" Value="28"/>
-            <Setter Property="Height" Value="15"/>
-            <Setter Property="Background" Value="#F1F3F0"/>
+
+        <!-- DEGRADADOS TURQUESA -->
+        <LinearGradientBrush x:Key="Turquesa" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#32A5AB" Offset="0"/>
+            <GradientStop Color="#138DAA" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="DegradadoTurquesa" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#32A5AB" Offset="0"/>
+            <GradientStop Color="#138DAA" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- COLORES BASE INSTITUCIONALES -->
+        <SolidColorBrush x:Key="ColorPanel" Color="#D9DDD8"/>
+        <SolidColorBrush x:Key="ColorAzul" Color="#138DAA"/>
+        <SolidColorBrush x:Key="ColorTexto" Color="#17475A"/>
+        <SolidColorBrush x:Key="ColorTextoClaro" Color="#647A80"/>
+        <SolidColorBrush x:Key="ColorLinea" Color="#C8CCC6"/>
+        <SolidColorBrush x:Key="ColorActivo" Color="#25AD9A"/>
+        <SolidColorBrush x:Key="ColorMenuSeleccionado" Color="#8BD4E0"/>
+        <SolidColorBrush x:Key="ColorRojoCerrar" Color="#D9435A"/>
+
+        <!-- ESTILO INTERRUPTOR (COMPATIBLE CON TOGGLEBUTTON Y CHECKBOX) -->
+        <Style x:Key="Interruptor" TargetType="{x:Type ToggleButton}">
+            <Setter Property="Width" Value="34"/>
+            <Setter Property="Height" Value="17"/>
+            <Setter Property="Background" Value="#EFF1EE"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
 
@@ -19,11 +40,11 @@
                         <Grid>
                             <Border x:Name="Pista"
                                     Background="{TemplateBinding Background}"
-                                    CornerRadius="8"/>
+                                    CornerRadius="9"/>
 
                             <Ellipse x:Name="Circulo"
-                                     Width="11"
-                                     Height="11"
+                                     Width="13"
+                                     Height="13"
                                      Fill="White"
                                      HorizontalAlignment="Left"
                                      Margin="2,0,0,0"/>
@@ -46,6 +67,130 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- BOTÓN ICONO TRANSPARENTE -->
+        <Style x:Key="BotonIcono" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BOTÓN OVALADO -->
+        <Style x:Key="BotonOvalado" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="#8BD4E0"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="14,4"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="BordeBoton"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="14"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BordeBoton" Property="Opacity" Value="0.88"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="BordeBoton" Property="Opacity" Value="0.75"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BOTÓN CERRAR ROJO CIRCULAR (X) -->
+        <Style x:Key="BotonCerrarRojo" TargetType="{x:Type Button}">
+            <Setter Property="Width" Value="22"/>
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="Background" Value="#D9435A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid>
+                            <Ellipse x:Name="CirculoFondo" Fill="{TemplateBinding Background}"/>
+                            <Path Data="M 6.5,6.5 L 15.5,15.5 M 15.5,6.5 L 6.5,15.5"
+                                  Stroke="White" StrokeThickness="2.2"
+                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.70"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- CHECKBOX CIRCULAR PARA SELECTOR DE MATERIALES -->
+        <Style x:Key="CheckBoxCircularMaterial" TargetType="{x:Type CheckBox}">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Border x:Name="Circulo"
+                                    Width="18"
+                                    Height="18"
+                                    CornerRadius="9"
+                                    BorderBrush="#17475A"
+                                    BorderThickness="1.5"
+                                    Background="White"/>
+                            <Path x:Name="CheckIcon"
+                                  Data="M 4,9 L 7.5,12.5 L 13.5,6"
+                                  Stroke="White"
+                                  StrokeThickness="2"
+                                  StrokeStartLineCap="Round"
+                                  StrokeEndLineCap="Round"
+                                  Visibility="Collapsed"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Circulo" Property="Background" Value="#138DAA"/>
+                                <Setter TargetName="Circulo" Property="BorderBrush" Value="#138DAA"/>
+                                <Setter TargetName="CheckIcon" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Application.Resources>
 
 </Application>

@@ -1,0 +1,209 @@
+<UserControl x:Class="ClinicSyncDesktop.Controls.Finanzas.FinanzasIngresosTablaControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Border CornerRadius="14" Background="{StaticResource ColorPanel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Barra azul con botón AGREGAR NUEVO y filtros -->
+            <Border Grid.Row="0" Background="{StaticResource ColorAzul}"
+                    CornerRadius="14,14,0,0" Height="36" Padding="14,0">
+                <Grid>
+                    <!-- Botón AGREGAR NUEVO con icono circular + -->
+                    <Button Style="{StaticResource BotonIcono}" HorizontalAlignment="Left"
+                            Foreground="White" Click="BtnAgregar_Click">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Path Data="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z"
+                                  Fill="White" Width="15" Height="15" Stretch="Uniform" Margin="0,0,7,0"
+                                  VerticalAlignment="Center"/>
+                            <TextBlock Text="AGREGAR NUEVO" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Filtros a la derecha -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <TextBlock Text="Filtrar:" Foreground="White" FontSize="13" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                        <Border x:Name="PillHoy" Background="#1E7D8A" CornerRadius="11" Height="22" Padding="12,0" Margin="0,0,6,0"
+                                Cursor="Hand" MouseLeftButtonDown="Filtro_Click">
+                            <TextBlock x:Name="TxtHoy" Text="Hoy" Foreground="White" FontWeight="Bold" FontSize="12"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+
+                        <Border x:Name="PillSemana" Background="White" CornerRadius="11" Height="22" Padding="12,0" Margin="0,0,6,0"
+                                Cursor="Hand" MouseLeftButtonDown="Filtro_Click">
+                            <TextBlock x:Name="TxtSemana" Text="Semana" Foreground="{StaticResource ColorTexto}" FontWeight="SemiBold" FontSize="12"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+
+                        <Border x:Name="PillMes" Background="White" CornerRadius="11" Height="22" Padding="12,0" Margin="0,0,6,0"
+                                Cursor="Hand" MouseLeftButtonDown="Filtro_Click">
+                            <TextBlock x:Name="TxtMes" Text="Mes" Foreground="{StaticResource ColorTexto}" FontWeight="SemiBold" FontSize="12"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+
+                        <Border x:Name="PillRango" Background="White" CornerRadius="11" Height="22" Padding="12,0"
+                                Cursor="Hand" MouseLeftButtonDown="Filtro_Click">
+                            <TextBlock x:Name="TxtRango" Text="Rango" Foreground="{StaticResource ColorTexto}" FontWeight="SemiBold" FontSize="12"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Encabezados de la tabla Ingresos -->
+            <Border Grid.Row="1" BorderBrush="{StaticResource ColorLinea}"
+                    BorderThickness="0,0,0,1" Margin="0,14,0,0" Padding="22,0,22,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="45"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="#" FontWeight="Bold" FontSize="14"
+                               Foreground="{StaticResource ColorTexto}"/>
+                    <TextBlock Grid.Column="1" Text="Fecha" FontWeight="Bold" FontSize="14"
+                               Foreground="{StaticResource ColorTexto}"/>
+                    <TextBlock Grid.Column="2" Text="Paciente" FontWeight="Bold" FontSize="14"
+                               Foreground="{StaticResource ColorTexto}"/>
+                    <TextBlock Grid.Column="3" Text="Tratamiento" FontWeight="Bold" FontSize="14"
+                               Foreground="{StaticResource ColorTexto}"/>
+                    <TextBlock Grid.Column="4" Text="Medio de pago" FontWeight="Bold" FontSize="14"
+                               Foreground="{StaticResource ColorTexto}"/>
+                    <TextBlock Grid.Column="5" Text="Descuento" FontWeight="Bold" FontSize="14"
+                               Foreground="{StaticResource ColorTexto}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="6" Text="Total" FontWeight="Bold" FontSize="14"
+                               Foreground="{StaticResource ColorTexto}" HorizontalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <!-- Filas de ingresos -->
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <ItemsControl x:Name="ListaIngresos">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="{StaticResource ColorLinea}"
+                                    BorderThickness="0,0,0,1" Height="38" Padding="22,0"
+                                    Background="Transparent"
+                                    MouseLeftButtonDown="Fila_MouseLeftButtonDown">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="45"/>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition Width="160"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="50"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="{Binding Id}" FontSize="13.5"
+                                               Foreground="{StaticResource ColorTexto}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Fecha}" FontSize="13.5"
+                                               Foreground="{StaticResource ColorTexto}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding Paciente}" FontSize="13.5"
+                                               Foreground="{StaticResource ColorTexto}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="3" Text="{Binding Tratamiento}" FontSize="13.5"
+                                               Foreground="{StaticResource ColorTexto}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="4" Text="{Binding MedioPago}" FontSize="13.5"
+                                               Foreground="{StaticResource ColorTexto}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="5" Text="{Binding DescuentoDisplay}" FontSize="13.5"
+                                               Foreground="{StaticResource ColorTexto}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="6" Text="{Binding TotalDisplay}" FontSize="13.5" FontWeight="SemiBold"
+                                               Foreground="{StaticResource ColorActivo}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                    <!-- Botón de engranaje para editar ingreso -->
+                                    <Button Grid.Column="7" Style="{StaticResource BotonIcono}"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            ToolTip="Editar ingreso"
+                                            Click="BtnEditar_Click">
+                                        <Path Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"
+                                              Fill="{StaticResource ColorTexto}" Width="19" Height="19" Stretch="Uniform"/>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- ============ POPOVER FLOTANTE DE RANGO DE FECHAS ============ -->
+            <Border x:Name="PopoverRango" Grid.Row="0" Grid.RowSpan="3"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,38,18,0" Width="225"
+                    Background="White" CornerRadius="12" ClipToBounds="True"
+                    Visibility="Collapsed">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="18" ShadowDepth="4" Direction="270" Color="#1E4A63" Opacity="0.28"/>
+                </Border.Effect>
+                <StackPanel Margin="14,12,14,12">
+                    <!-- Fila Desde -->
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="46"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Desde" Foreground="{StaticResource ColorTexto}" FontWeight="SemiBold"
+                                   FontSize="12" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Background="#E4E9EC" CornerRadius="8" Height="25" Padding="8,0">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Right" Text="📅" FontSize="11" Foreground="#7A8B95"
+                                           VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                <TextBox x:Name="TxtFechaDesde" Text="YYYY/MM/DD" Foreground="#7A8B95"
+                                         FontSize="11" BorderThickness="0" Background="Transparent"
+                                         VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Fila Hasta -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="46"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Hasta" Foreground="{StaticResource ColorTexto}" FontWeight="SemiBold"
+                                   FontSize="12" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Background="#E4E9EC" CornerRadius="8" Height="25" Padding="8,0">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Right" Text="📅" FontSize="11" Foreground="#7A8B95"
+                                           VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                <TextBox x:Name="TxtFechaHasta" Text="YYYY/MM/DD" Foreground="#7A8B95"
+                                         FontSize="11" BorderThickness="0" Background="Transparent"
+                                         VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Botón Confirmar -->
+                    <Button Content="Confirmar" HorizontalAlignment="Right"
+                            Background="{StaticResource ColorAzul}" Foreground="White"
+                            FontWeight="Bold" FontSize="11.5" Height="24" Padding="14,0"
+                            BorderThickness="0" Cursor="Hand" Click="BtnConfirmarRango_Click">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

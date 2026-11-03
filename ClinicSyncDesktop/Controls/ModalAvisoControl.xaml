@@ -1,0 +1,59 @@
+<UserControl x:Class="ClinicSyncDesktop.Controls.ModalAvisoControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="310">
+
+    <Border CornerRadius="16" Background="White" ClipToBounds="True">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="24" ShadowDepth="4" Direction="270" Color="#1E4A63" Opacity="0.32"/>
+        </Border.Effect>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="36"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="42"/>
+            </Grid.RowDefinitions>
+
+            <!-- Encabezado azul ClinicSync con título AVISO! y botón rojo de cerrar -->
+            <Grid Grid.Row="0" Background="{StaticResource ColorAzul}">
+                <TextBlock x:Name="TxtTitulo" Text="AVISO!" FontWeight="Bold" FontSize="15"
+                           Foreground="White" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                <Button Style="{StaticResource BotonCerrarRojo}" Margin="0,0,10,0"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Click="BtnCerrar_Click"/>
+            </Grid>
+
+            <!-- Cuerpo del popup con triángulo amarillo de advertencia y mensaje -->
+            <Border Grid.Row="1" Background="White" Padding="20,18,20,18">
+                <StackPanel HorizontalAlignment="Center">
+                    <!-- Triángulo amarillo de advertencia con signo de exclamación centrado -->
+                    <Viewbox Width="64" Height="56" HorizontalAlignment="Center" Margin="0,0,0,12">
+                        <Canvas Width="64" Height="56">
+                            <!-- Triángulo amarillo con esquinas redondeadas -->
+                            <Path Data="M 32,5 C 33.8,5 35.3,6.2 36.2,7.8 L 59.8,45.2 C 60.8,46.8 60.8,48.8 59.8,50.4 C 58.9,52 57.1,53 55.2,53 L 8.8,53 C 6.9,53 5.1,52 4.2,50.4 C 3.2,48.8 3.2,46.8 4.2,45.2 L 27.8,7.8 C 28.7,6.2 30.2,5 32,5 Z"
+                                  Fill="#F5BA31"/>
+                            <!-- Signo de exclamación oscuro (!) -->
+                            <Path Data="M 30,19 C 30,17.9 30.9,17 32,17 C 33.1,17 34,17.9 34,19 L 33.4,32 C 33.4,32.8 32.8,33.5 32,33.5 C 31.2,33.5 30.6,32.8 30.6,32 Z M 32,37.5 C 30.8,37.5 29.8,38.5 29.8,39.7 C 29.8,41 30.8,42 32,42 C 33.2,42 34.2,41 34.2,39.7 C 34.2,38.5 33.2,37.5 32,37.5 Z"
+                                  Fill="#222B34"/>
+                        </Canvas>
+                    </Viewbox>
+
+                    <!-- Mensaje de aviso en dos líneas -->
+                    <TextBlock x:Name="TxtMensaje"
+                               Text="Se deben llenar los&#x0a;campos obligatorios."
+                               Foreground="{StaticResource ColorTexto}"
+                               FontWeight="Bold" FontSize="15"
+                               TextAlignment="Center" LineHeight="21"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Pie azul con botón Aceptar -->
+            <Border Grid.Row="2" Background="{StaticResource ColorAzul}">
+                <Button Content="Aceptar" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Style="{StaticResource BotonOvalado}" Width="110" Height="26"
+                        Click="BtnAceptar_Click"/>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

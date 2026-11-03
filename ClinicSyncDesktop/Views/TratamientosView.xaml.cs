@@ -1,198 +1,160 @@
-﻿using ClinicSyncDesktop.Models;
-using ClinicSyncDesktop.Services;
 using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
+using ClinicSyncDesktop.Models;
+using ClinicSyncDesktop.Services;
 
 namespace ClinicSyncDesktop.Views
 {
     public partial class TratamientosView : UserControl
     {
-        private readonly TratamientosApiService? _tratamientosService;
-        private ICollectionView? _vista;
+        private List<Tratamiento> todos = new List<Tratamiento>();
+        private bool _esCreacionNueva = false;
 
-        public TratamientosView()
+        public TratamientosView() : this(null) { }
+
+        // Constructor que acepta el servicio de API (usado desde MenuLateral)
+        public TratamientosView(TratamientosApiService? tratamientosService)
         {
             InitializeComponent();
+
+            // Datos iniciales que replican exactamente la captura del diseño
+            todos.Add(new Tratamiento { Id = 1, Nombre = "Endodoncia", Precio = 0m, Activo = true });
+            todos.Add(new Tratamiento { Id = 2, Nombre = "Tartrectomías", Precio = 0m, Activo = false });
+            todos.Add(new Tratamiento { Id = 3, Nombre = "Implantología y Prótesis", Precio = 0m, Activo = false });
+
+            TablaTratamientos.CargarDatos(todos);
         }
 
-        public TratamientosView(
-            TratamientosApiService tratamientosService)
-            : this()
+        public IReadOnlyList<Tratamiento> TodosLosTratamientos => todos.AsReadOnly();
+
+        // Clic en AGREGAR NUEVO desde la tabla
+        private void Tabla_AgregarNuevoClick(object? sender, EventArgs e)
         {
-            _tratamientosService = tratamientosService;
-            Loaded += TratamientosView_Loaded;
-        }
+            _esCreacionNueva = true;
 
-        // Mostrar notificaciones con el mismo diseño que Pacientes.
-        private void MostrarAviso(string mensaje, bool exitoso)
-        {
-            PanelAvisos.Children.Clear();
-
-            AvisoPaciente aviso = new AvisoPaciente(
-                mensaje,
-                exitoso);
-
-            PanelAvisos.Children.Add(aviso);
-        }
-
-        private async void TratamientosView_Loaded(
-            object sender,
-            RoutedEventArgs e)
-        {
-            await CargarTratamientosAsync();
-        }
-
-        private async Task CargarTratamientosAsync()
-        {
-            if (_tratamientosService is null)
+            Tratamiento nuevo = new Tratamiento
             {
-                MostrarAviso(
-                    "La conexión con la API todavía no está configurada.",
-                    false);
-
-                return;
-            }
-
-            try
-            {
-                var listado =
-                    await _tratamientosService.ListarAsync();
-
-                var coleccion =
-                    new ObservableCollection<Tratamiento>(listado);
-
-                _vista =
-                    CollectionViewSource.GetDefaultView(coleccion);
-
-                _vista.Filter = FiltrarTratamiento;
-
-                dgTratamientos.ItemsSource = _vista;
-            }
-            catch (Exception)
-            {
-                MostrarAviso(
-                    "No fue posible cargar los tratamientos. Verifica el servidor y tus permisos.",
-                    false);
-            }
-        }
-
-        private async void BtnAgregar_Click(
-            object sender,
-            RoutedEventArgs e)
-        {
-            if (_tratamientosService is null)
-            {
-                MostrarAviso(
-                    "La conexión con la API todavía no está configurada.",
-                    false);
-
-                return;
-            }
-
-            var ventana = new AgregarTratamientoWindow(
-                _tratamientosService)
-            {
-                Owner = Window.GetWindow(this)
+                Id = todos.Count + 1,
+                Precio = 0m,
+                Activo = true
             };
 
-            bool? resultado = ventana.ShowDialog();
-
-            if (resultado == true)
-            {
-                await CargarTratamientosAsync();
-
-                MostrarAviso(
-                    "Tratamiento registrado exitosamente.",
-                    true);
-            }
-            else if (ventana.ErrorAlRegistrar)
-            {
-                MostrarAviso(
-                    ventana.MensajeError,
-                    false);
-            }
+            CtrlFormulario.CargarTratamiento(nuevo, "Nuevo tratamiento:", todos);
+            MostrarSoloModal(CtrlFormulario);
         }
 
-        public event EventHandler? VolverAlMenuSolicitado;
-
-        private void BtnVolver_Click(
-            object sender,
-            RoutedEventArgs e)
+        // Clic en el botón del engranaje para editar
+        private void Tabla_EditarClick(object? sender, Tratamiento seleccionado)
         {
-            VolverAlMenuSolicitado?.Invoke(
-                this,
-                EventArgs.Empty);
+            if (seleccionado == null) return;
+            _esCreacionNueva = false;
+
+            CtrlFormulario.CargarTratamiento(seleccionado, "Editar información:", todos);
+            MostrarSoloModal(CtrlFormulario);
         }
 
-        private bool FiltrarTratamiento(object obj)
+        // Se guardó exitosamente desde el formulario
+        private void Formulario_Guardado(object? sender, Tratamiento guardado)
         {
-            if (obj is not Tratamiento tratamiento)
-                return false;
+            if (_esCreacionNueva && !todos.Contains(guardado))
+            {
+                todos.Add(guardado);
+            }
 
-            string texto = TxtBuscar.Text.Trim();
-
-            if (string.IsNullOrEmpty(texto))
-                return true;
-
-            return tratamiento.Nombre.Contains(
-                texto,
-                StringComparison.OrdinalIgnoreCase);
+            TablaTratamientos.Refrescar(todos);
+            MostrarPopupExito();
         }
 
-        private void TxtBuscar_TextChanged(
-            object sender,
-            TextChangedEventArgs e)
+        // Se canceló o cerró el formulario
+        private void Formulario_Cerrado(object? sender, EventArgs e)
         {
-            _vista?.Refresh();
+            OcultarModales();
         }
 
-        private async void BtnOpciones_Click(
-            object sender,
-            RoutedEventArgs e)
+        // El formulario requiere mostrar aviso de validación
+        private void Formulario_AvisoRequerido(object? sender, string mensaje)
         {
-            if (sender is not Button boton ||
-                boton.DataContext is not Tratamiento tratamiento)
-            {
-                return;
-            }
+            CtrlAviso.Mensaje = mensaje;
+            CtrlAviso.Visibility = Visibility.Visible;
+            // No ocultamos el formulario para que permanezca visible debajo
+        }
 
-            if (_tratamientosService is null)
-            {
-                MostrarAviso(
-                    "La conexión con la API todavía no está configurada.",
-                    false);
+        // El formulario solicita confirmación para descartar cambios
+        private void Formulario_ConfirmarDescarte(object? sender, string mensaje)
+        {
+            CtrlCuidado.Mensaje = mensaje;
+            CtrlCuidado.Visibility = Visibility.Visible;
+            // No ocultamos el formulario para que permanezca visible debajo
+        }
 
-                return;
-            }
+        // Confirmar descarte: Sí
+        private void ModalCuidado_SiClick(object? sender, EventArgs e)
+        {
+            CtrlCuidado.Visibility = Visibility.Collapsed;
+            CtrlFormulario.ForzarCierre();
+            OcultarModales();
+        }
 
-            var ventana = new EditarTratamientoWindow(
-                tratamiento,
-                _tratamientosService)
-            {
-                Owner = Window.GetWindow(this)
-            };
+        // Confirmar descarte: No
+        private void ModalCuidado_NoClick(object? sender, EventArgs e)
+        {
+            CtrlCuidado.Visibility = Visibility.Collapsed;
+        }
 
-            bool? resultado = ventana.ShowDialog();
+        // Aceptar en popup de aviso
+        private void ModalAviso_AceptarClick(object? sender, EventArgs e)
+        {
+            CtrlAviso.Visibility = Visibility.Collapsed;
+        }
 
-            if (resultado == true)
-            {
-                await CargarTratamientosAsync();
+        // Aceptar / Cerrar en popup de éxito
+        private void ModalExito_AceptarClick(object? sender, EventArgs e)
+        {
+            OcultarModales();
+        }
 
-                MostrarAviso(
-                    "Tratamiento actualizado exitosamente.",
-                    true);
-            }
-            else if (ventana.ErrorAlGuardar)
-            {
-                MostrarAviso(
-                    ventana.MensajeError,
-                    false);
-            }
+        // Aceptar / Cerrar en popup de error
+        private void ModalError_AceptarClick(object? sender, EventArgs e)
+        {
+            OcultarModales();
+        }
+
+        // Muestra el popup de éxito
+        public void MostrarPopupExito(string mensaje = "Los cambios se\nguardaron éxitosamente.")
+        {
+            CtrlExito.Mensaje = mensaje;
+            MostrarSoloModal(CtrlExito);
+        }
+
+        // Muestra el popup de error
+        public void MostrarPopupError(string mensaje = "Los cambios NO se\nguardaron.")
+        {
+            CtrlError.Mensaje = mensaje;
+            MostrarSoloModal(CtrlError);
+        }
+
+        private void MostrarSoloModal(FrameworkElement modal)
+        {
+            OverlayModal.Visibility = Visibility.Visible;
+            CtrlFormulario.Visibility = Visibility.Collapsed;
+            CtrlExito.Visibility = Visibility.Collapsed;
+            CtrlError.Visibility = Visibility.Collapsed;
+            CtrlAviso.Visibility = Visibility.Collapsed;
+            CtrlCuidado.Visibility = Visibility.Collapsed;
+
+            modal.Visibility = Visibility.Visible;
+        }
+
+        private void OcultarModales()
+        {
+            OverlayModal.Visibility = Visibility.Collapsed;
+            CtrlFormulario.Visibility = Visibility.Collapsed;
+            CtrlExito.Visibility = Visibility.Collapsed;
+            CtrlError.Visibility = Visibility.Collapsed;
+            CtrlAviso.Visibility = Visibility.Collapsed;
+            CtrlCuidado.Visibility = Visibility.Collapsed;
         }
     }
 }

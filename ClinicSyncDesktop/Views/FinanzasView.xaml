@@ -1,208 +1,166 @@
-﻿<UserControl x:Class="ClinicSyncDesktop.Views.FinanzasView"
+<UserControl x:Class="ClinicSyncDesktop.Views.FinanzasView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="#F0F3EF">
+             xmlns:controls="clr-namespace:ClinicSyncDesktop.Controls"
+             xmlns:finanzas="clr-namespace:ClinicSyncDesktop.Controls.Finanzas"
+             Background="White">
 
-    <!-- RECURSOS Y ESTILOS -->
-    <UserControl.Resources>
+    <Grid>
+        <!-- Estructura principal de la vista Finanzas -->
+        <Grid Margin="26,14,26,26">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <!-- ESTILO DE LAS PESTAÑAS -->
-        <Style x:Key="EstiloPestanas"
-               TargetType="Button">
+            <!-- ============ SUBMENÚ SUPERIOR: Resumen, Ingresos, Egresos, Gráficos ============ -->
+            <Grid Grid.Row="0" Margin="0,0,0,16">
+                <!-- Pestañas redondeadas tipo cápsula -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Border x:Name="TabResumen" CornerRadius="16" Height="32" Padding="20,0" Margin="0,0,10,0"
+                            Background="{StaticResource ColorMenuSeleccionado}" Cursor="Hand" MouseLeftButtonDown="Tab_Click">
+                        <TextBlock x:Name="TxtTabResumen" Text="Resumen" Foreground="{StaticResource ColorTexto}"
+                                   FontWeight="Bold" FontSize="13.5" VerticalAlignment="Center"/>
+                    </Border>
 
-            <!-- TAMAÑO -->
-            <Setter Property="Width" Value="125"/>
-            <Setter Property="Height" Value="35"/>
+                    <Border x:Name="TabIngresos" CornerRadius="16" Height="32" Padding="20,0" Margin="0,0,10,0"
+                            Background="#F0F1EE" Cursor="Hand" MouseLeftButtonDown="Tab_Click">
+                        <TextBlock x:Name="TxtTabIngresos" Text="Ingresos" Foreground="{StaticResource ColorTexto}"
+                                   FontWeight="SemiBold" FontSize="13.5" VerticalAlignment="Center"/>
+                    </Border>
 
-            <!-- COLORES -->
-            <Setter Property="Background"
-                    Value="#F7F9F7"/>
+                    <Border x:Name="TabEgresos" CornerRadius="16" Height="32" Padding="20,0" Margin="0,0,10,0"
+                            Background="#F0F1EE" Cursor="Hand" MouseLeftButtonDown="Tab_Click">
+                        <TextBlock x:Name="TxtTabEgresos" Text="Egresos" Foreground="{StaticResource ColorTexto}"
+                                   FontWeight="SemiBold" FontSize="13.5" VerticalAlignment="Center"/>
+                    </Border>
 
-            <Setter Property="Foreground"
-                    Value="#17475A"/>
+                    <Border x:Name="TabGraficos" CornerRadius="16" Height="32" Padding="20,0"
+                            Background="#F0F1EE" Cursor="Hand" MouseLeftButtonDown="Tab_Click">
+                        <TextBlock x:Name="TxtTabGraficos" Text="Gráficos" Foreground="{StaticResource ColorTexto}"
+                                   FontWeight="SemiBold" FontSize="13.5" VerticalAlignment="Center"/>
+                    </Border>
+                </StackPanel>
 
-            <!-- TEXTO -->
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontWeight"
-                    Value="SemiBold"/>
+                <!-- Botón Exportar reporte financiero a la derecha -->
+                <Button x:Name="BtnExportarSuperior" HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Style="{StaticResource BotonOvalado}" Height="30" Padding="16,0"
+                        Click="BtnAbrirExportar_Click" ToolTip="Exportar reporte financiero en PDF o Excel">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Icono documento de reporte -->
+                        <Path Data="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M12,19L8,15H11V11H13V15H16L12,19M13,9V3.5L18.5,9H13Z"
+                              Fill="{StaticResource ColorTexto}" Width="13" Height="13" Stretch="Uniform" Margin="0,0,6,0"/>
+                        <TextBlock Text="Exportar reporte" FontSize="12.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
 
-            <!-- BORDES -->
-            <Setter Property="BorderThickness"
-                    Value="0"/>
+            <!-- ============ CONTENEDOR DE LA SUBVISTA ACTIVA ============ -->
+            <ContentControl x:Name="ContenedorSubvista" Grid.Row="1"/>
+        </Grid>
 
-            <!-- SEPARACIÓN -->
-            <Setter Property="Margin"
-                    Value="10,0"/>
+        <!-- ============ CAPA MODAL INTEGRADA ============ -->
+        <Grid x:Name="OverlayModal" Visibility="Collapsed" Background="#33000000">
 
-            <!-- CURSOR -->
-            <Setter Property="Cursor"
-                    Value="Hand"/>
+            <!-- Modal 1: Selección de Formato PDF / Excel -->
+            <finanzas:ModalExportarReporteControl x:Name="CtrlExportar"
+                                                 Visibility="Collapsed"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 ExportarClick="CtrlExportar_ExportarClick"
+                                                 CerrarClick="Modal_CerrarClick"/>
 
-            <!-- PLANTILLA DEL BOTÓN -->
-            <Setter Property="Template">
+            <!-- Modal 2: Progreso Generando el reporte... -->
+            <finanzas:ModalGenerandoReporteControl x:Name="CtrlGenerando"
+                                                  Visibility="Collapsed"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  CancelarClick="Modal_CerrarClick"
+                                                  GeneracionCompletada="CtrlGenerando_GeneracionCompletada"/>
 
-                <Setter.Value>
+            <!-- Modal 3: Agregar Nuevo Ingreso -->
+            <finanzas:ModalAgregarIngresoControl x:Name="CtrlAgregarIngreso"
+                                                Visibility="Collapsed"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                IngresoAgregado="CtrlAgregarIngreso_IngresoAgregado"
+                                                CerrarClick="CtrlFormulario_Cerrado"
+                                                ConfirmarDescarte="CtrlFormulario_ConfirmarDescarte"
+                                                AbrirSelectorMateriales="CtrlAgregarIngreso_AbrirSelectorMateriales"
+                                                AvisoRequerido="CtrlFormulario_AvisoRequerido"/>
 
-                    <ControlTemplate TargetType="Button">
+            <!-- Modal 4: Editar Información de Ingreso (Imagen 3) -->
+            <finanzas:ModalEditarIngresoControl x:Name="CtrlEditarIngreso"
+                                                Visibility="Collapsed"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                GuardarClick="CtrlEditarIngreso_GuardarClick"
+                                                CerrarClick="CtrlFormulario_Cerrado"
+                                                ConfirmarDescarte="CtrlFormulario_ConfirmarDescarte"
+                                                ImprimirFacturaClick="CtrlEditarIngreso_ImprimirFacturaClick"
+                                                AvisoRequerido="CtrlFormulario_AvisoRequerido"/>
 
-                        <!-- CONTENEDOR DEL BOTÓN -->
-                        <Border
-                            x:Name="BordeBoton"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="20">
+            <!-- Modal 5: Agregar Nuevo Egreso (Egresos Imágenes 1, 2, 4 y 5) -->
+            <finanzas:ModalAgregarEgresoControl x:Name="CtrlAgregarEgreso"
+                                                Visibility="Collapsed"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                EgresoAgregado="CtrlAgregarEgreso_EgresoAgregado"
+                                                CerrarClick="CtrlFormulario_Cerrado"
+                                                ConfirmarDescarte="CtrlFormulario_ConfirmarDescarte"
+                                                AbrirSelectorMateriales="CtrlAgregarEgreso_AbrirSelectorMateriales"
+                                                AvisoRequerido="CtrlFormulario_AvisoRequerido"/>
 
-                            <!-- SOMBRA DIFUMINADA -->
-                            <Border.Effect>
+            <!-- Modal 6: Editar Información de Egreso (Egresos Imágenes 1, 2, 3 y 4) -->
+            <finanzas:ModalEditarEgresoControl x:Name="CtrlEditarEgreso"
+                                               Visibility="Collapsed"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               GuardarClick="CtrlEditarEgreso_GuardarClick"
+                                               CerrarClick="CtrlFormulario_Cerrado"
+                                               ConfirmarDescarte="CtrlFormulario_ConfirmarDescarte"
+                                               AbrirSelectorMateriales="CtrlEditarEgreso_AbrirSelectorMateriales"
+                                               AvisoRequerido="CtrlFormulario_AvisoRequerido"/>
 
-                                <DropShadowEffect
-                                    Color="#647A80"
-                                    Direction="270"
-                                    ShadowDepth="2"
-                                    BlurRadius="12"
-                                    Opacity="0.25"/>
+            <!-- Sub-Modal: Selector de Materiales -->
+            <finanzas:ModalMaterialesControl x:Name="CtrlMateriales"
+                                            Visibility="Collapsed"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Confirmado="CtrlMateriales_Confirmado"
+                                            Cerrado="CtrlMateriales_Cerrado"/>
 
-                            </Border.Effect>
+            <!-- Pop-up de Aviso / Validación (Imagen 1) -->
+            <controls:ModalAvisoControl x:Name="CtrlAviso"
+                                        Visibility="Collapsed"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        AceptarClick="ModalAviso_AceptarClick"
+                                        CerrarClick="ModalAviso_AceptarClick"/>
 
-                            <!-- CONTENIDO -->
-                            <ContentPresenter
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"/>
+            <!-- Pop-up Cuidado / Descartar Registro (Imagen 2) -->
+            <controls:ModalCuidadoControl x:Name="CtrlCuidado"
+                                          Visibility="Collapsed"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          SiClick="ModalCuidado_SiClick"
+                                          NoClick="ModalCuidado_NoClick"/>
 
-                        </Border>
+            <!-- Pop-up Éxito (Imágenes 4 y 5) -->
+            <controls:ModalExitoControl x:Name="CtrlExito"
+                                        Visibility="Collapsed"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        AceptarClick="Modal_CerrarClick"
+                                        CerrarClick="Modal_CerrarClick"/>
 
-                        <!-- EFECTOS -->
-                        <ControlTemplate.Triggers>
-
-                            <!-- AL PASAR EL MOUSE -->
-                            <Trigger
-                                Property="IsMouseOver"
-                                Value="True">
-
-                                <Setter
-                                    TargetName="BordeBoton"
-                                    Property="Effect">
-
-                                    <Setter.Value>
-
-                                        <DropShadowEffect
-                                            Color="#647A80"
-                                            Direction="270"
-                                            ShadowDepth="3"
-                                            BlurRadius="15"
-                                            Opacity="0.40"/>
-
-                                    </Setter.Value>
-
-                                </Setter>
-
-                            </Trigger>
-
-                            <!-- BOTÓN PRESIONADO -->
-                            <Trigger
-                                Property="IsPressed"
-                                Value="True">
-
-                                <Setter
-                                    TargetName="BordeBoton"
-                                    Property="Opacity"
-                                    Value="0.85"/>
-
-                            </Trigger>
-
-                        </ControlTemplate.Triggers>
-
-                    </ControlTemplate>
-
-                </Setter.Value>
-
-            </Setter>
-
-        </Style>
-
-    </UserControl.Resources>
-
-    <!-- ===================================== -->
-    <!-- CONTENEDOR PRINCIPAL DE FINANZAS      -->
-    <!-- ===================================== -->
-
-    <Grid Margin="16,-25,16,15">
-
-        <Grid.RowDefinitions>
-
-            <!-- FILA DE BOTONES -->
-            <RowDefinition Height="Auto"/>
-
-            <!-- ÁREA DE CONTENIDO -->
-            <RowDefinition Height="*"/>
-
-        </Grid.RowDefinitions>
-
-        <!-- ===================================== -->
-        <!-- BOTONES SUPERIORES                    -->
-        <!-- ===================================== -->
-
-        <StackPanel
-            Grid.Row="0"
-            Orientation="Horizontal"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Margin="-600,8,0,18">
-            
-
-            <!-- RESUMEN -->
-            <Button
-                x:Name="BtnResumen"
-                Content="Resumen"
-                Tag="Resumen"
-                Style="{StaticResource EstiloPestanas}"
-                Click="Pestana_Click"/>
-
-            <!-- INGRESOS -->
-            <Button
-                x:Name="BtnIngresos"
-                Content="Ingresos"
-                Tag="Ingresos"
-                Background="#86C5D0"
-                Style="{StaticResource EstiloPestanas}"
-                Click="Pestana_Click"/>
-
-            <!-- EGRESOS -->
-            <Button
-                x:Name="BtnEgresos"
-                Content="Egresos"
-                Tag="Egresos"
-                Style="{StaticResource EstiloPestanas}"
-                Click="Pestana_Click"/>
-
-            <!-- GRÁFICOS -->
-            <Button
-                x:Name="BtnGraficos"
-                Content="Gráficos"
-                Tag="Graficos"
-                Style="{StaticResource EstiloPestanas}"
-                Click="Pestana_Click"/>
-
-        </StackPanel>
-
-        <!-- ===================================== -->
-        <!-- CONTENEDOR DE LOS MÓDULOS             -->
-        <!-- ===================================== -->
-
-        <Border
-            Grid.Row="1"
-            Background="#D9DDDA"
-            CornerRadius="13"
-            Margin="2,0,0,0">
-
-            <!-- CONTENIDO DINÁMICO -->
-            <ContentControl
-                x:Name="ContenidoFinanzas"
-                HorizontalContentAlignment="Stretch"
-                VerticalContentAlignment="Stretch"/>
-
-        </Border>
-
+            <!-- Pop-up Error (Imagen 5) -->
+            <controls:ModalErrorControl x:Name="CtrlError"
+                                        Visibility="Collapsed"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        AceptarClick="Modal_CerrarClick"
+                                        CerrarClick="Modal_CerrarClick"/>
+        </Grid>
     </Grid>
-
 </UserControl>
-

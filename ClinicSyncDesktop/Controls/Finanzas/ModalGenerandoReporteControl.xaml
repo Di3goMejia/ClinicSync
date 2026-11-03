@@ -1,0 +1,56 @@
+<UserControl x:Class="ClinicSyncDesktop.Controls.Finanzas.ModalGenerandoReporteControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="420">
+
+    <Border CornerRadius="16" Background="White" ClipToBounds="True">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="28" ShadowDepth="4" Direction="270" Color="#1E4A63" Opacity="0.32"/>
+        </Border.Effect>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="46"/>
+            </Grid.RowDefinitions>
+
+            <!-- Encabezado azul ClinicSync con botón rojo de cerrar -->
+            <Grid Grid.Row="0" Background="{StaticResource ColorAzul}">
+                <TextBlock Text="Exportar reporte financiero" FontWeight="Bold" FontSize="15"
+                           Foreground="White" VerticalAlignment="Center" Margin="18,0,0,0"/>
+                <Button Style="{StaticResource BotonCerrarRojo}" Margin="0,0,10,0"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Click="BtnCancelar_Click"/>
+            </Grid>
+
+            <!-- Cuerpo con barra de progreso -->
+            <StackPanel Grid.Row="1" Background="White" Margin="26,24,26,26">
+                <!-- Título Generando el reporte... -->
+                <TextBlock Text="Generando el reporte..." Foreground="{StaticResource ColorTexto}"
+                           FontWeight="Bold" FontSize="15.5" Margin="0,0,0,14"/>
+
+                <!-- Barra de progreso con esquinas redondeadas -->
+                <Border Height="18" Background="#E0E6E8" CornerRadius="9" ClipToBounds="True">
+                    <Grid>
+                        <ProgressBar x:Name="BarraProgreso" Minimum="0" Maximum="100" Value="0"
+                                     Height="18" BorderThickness="0" Background="Transparent"
+                                     Foreground="{StaticResource ColorMenuSeleccionado}"/>
+                        <Border x:Name="ProgresoAnimado" HorizontalAlignment="Left" Width="0"
+                                Background="{StaticResource ColorMenuSeleccionado}" CornerRadius="9"/>
+                    </Grid>
+                </Border>
+
+                <!-- Tiempo estimado: 2 minutos -->
+                <TextBlock Text="Tiempo estimado: 2 minutos" Foreground="{StaticResource ColorTexto}"
+                           FontSize="13.5" Margin="0,14,0,0"/>
+            </StackPanel>
+
+            <!-- Pie azul con botón Cancelar -->
+            <Border Grid.Row="2" Background="{StaticResource ColorAzul}">
+                <Button Content="Cancelar" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Style="{StaticResource BotonOvalado}" Width="124" Height="28"
+                        Click="BtnCancelar_Click"/>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,4 +1,4 @@
-ï»¿
+
 using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
 using System;
@@ -38,9 +38,7 @@ namespace ClinicSyncDesktop.Views
 
             TxtNombre.Text = _tratamiento.Nombre;
 
-            TxtPrecio.Text = _tratamiento.Precio.ToString(
-                "0.00",
-                CultureInfo.InvariantCulture);
+            TxtPrecio.Text = (_tratamiento.Precio ?? 0m).ToString("0.00", CultureInfo.InvariantCulture);
 
             TxtDescripcion.Text =
                 _tratamiento.Descripcion ?? "";
@@ -59,7 +57,7 @@ namespace ClinicSyncDesktop.Views
                 : "Deshabilitado";
         }
 
-        // ACTUALIZAR CAMPOS SEGÃšN EL ESTADO GUARDADO
+        // ACTUALIZAR CAMPOS SEGÚN EL ESTADO GUARDADO
         private void ActualizarControlesEstado()
         {
             // El estado inicial determina si se pueden editar los datos.
@@ -73,7 +71,7 @@ namespace ClinicSyncDesktop.Views
             // El interruptor siempre debe poder utilizarse.
             ChkActivo.IsEnabled = true;
 
-            // Evitar varios guardados simultÃ¡neos.
+            // Evitar varios guardados simultáneos.
             BtnGuardar.IsEnabled = !_guardando;
 
             // Mostrar el aviso si el tratamiento ya estaba deshabilitado
@@ -113,7 +111,7 @@ namespace ClinicSyncDesktop.Views
             OcultarError();
         }
 
-        // CAMBIOS EN LA DESCRIPCIÃ“N
+        // CAMBIOS EN LA DESCRIPCIÓN
         private void TxtDescripcion_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -133,9 +131,7 @@ namespace ClinicSyncDesktop.Views
 
             bool tieneCambios =
                 nombre != _tratamiento.Nombre ||
-                precio != _tratamiento.Precio.ToString(
-                    "0.00",
-                    CultureInfo.InvariantCulture) ||
+                precio != (_tratamiento.Precio ?? 0m).ToString("0.00", CultureInfo.InvariantCulture) ||
                 descripcion != (_tratamiento.Descripcion ?? "") ||
                 activo != _tratamiento.Activo;
 
@@ -143,7 +139,7 @@ namespace ClinicSyncDesktop.Views
             {
                 bool descartar = MensajeWindow.MostrarConfirmacion(
                     this,
-                    "Â¿Seguro que desea descartar esta ediciÃ³n?");
+                    "¿Seguro que desea descartar esta edición?");
 
                 if (!descartar)
                     return;
@@ -198,7 +194,7 @@ namespace ClinicSyncDesktop.Views
                 out precio))
             {
                 MostrarError(
-                    "Ingresa un precio vÃ¡lido, por ejemplo: 350.00.");
+                    "Ingresa un precio válido, por ejemplo: 350.00.");
 
                 TxtPrecio.Focus();
                 return false;
@@ -216,7 +212,7 @@ namespace ClinicSyncDesktop.Views
             if (precio > 99999999.99m)
             {
                 MostrarError(
-                    "El precio supera el lÃ­mite permitido.");
+                    "El precio supera el límite permitido.");
 
                 TxtPrecio.Focus();
                 return false;
@@ -234,7 +230,7 @@ namespace ClinicSyncDesktop.Views
             if (descripcion.Length > 200)
             {
                 MostrarError(
-                    "La descripciÃ³n no puede superar los 200 caracteres.");
+                    "La descripción no puede superar los 200 caracteres.");
 
                 TxtDescripcion.Focus();
                 return false;
@@ -258,7 +254,7 @@ namespace ClinicSyncDesktop.Views
             // Por defecto, conservar los datos originales.
             string nombre = _tratamiento.Nombre;
             string descripcion = _tratamiento.Descripcion ?? "";
-            decimal precio = _tratamiento.Precio;
+            decimal precio = _tratamiento.Precio ?? 0m;
 
             // Solo permitir modificar datos si el tratamiento estaba
             // habilitado al abrir la ventana.
@@ -300,7 +296,7 @@ namespace ClinicSyncDesktop.Views
                         descripcion);
                 }
 
-                // Guardar la activaciÃ³n o desactivaciÃ³n.
+                // Guardar la activación o desactivación.
                 if (cambioEstado)
                 {
                     await _tratamientosService.CambiarEstadoAsync(
@@ -308,7 +304,7 @@ namespace ClinicSyncDesktop.Views
                         activo);
                 }
 
-                // Actualizar el objeto local despuÃ©s de guardar.
+                // Actualizar el objeto local después de guardar.
                 _tratamiento.Nombre = nombre;
                 _tratamiento.Descripcion = descripcion;
                 _tratamiento.Precio = precio;
@@ -333,7 +329,7 @@ namespace ClinicSyncDesktop.Views
                 {
                     MensajeError =
                         "No se pudo actualizar el tratamiento. " +
-                        "Verifica la conexiÃ³n e intÃ©ntalo nuevamente.";
+                        "Verifica la conexión e inténtalo nuevamente.";
 
                     MostrarError(MensajeError);
                 }
