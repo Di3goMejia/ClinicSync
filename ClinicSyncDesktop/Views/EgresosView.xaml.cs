@@ -58,6 +58,8 @@ namespace ClinicSyncDesktop.Views
 
             return _filtro switch
             {
+                "Todos" => (DateTime.MinValue, hoy),
+
                 "Semana" => (hoy.AddDays(-6), hoy),
 
                 "Mes" => (

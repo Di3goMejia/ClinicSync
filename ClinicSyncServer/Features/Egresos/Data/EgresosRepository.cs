@@ -35,7 +35,7 @@ namespace ClinicSyncServer.Features.Egresos.Data
 
                 p.Add("@IdUsuario", idUsuario, DbType.Int32);
                 p.Add("@Tipo", req.Tipo, DbType.String, size: 20);
-                p.Add("@Fecha", req.Fecha, DbType.Date);
+                p.Add("@Fecha", req.Fecha, DbType.DateTime2);
                 p.Add("@Concepto", req.Concepto, DbType.String, size: 255);
                 p.Add("@MedioPago", req.MedioPago, DbType.String, size: 20);
                 p.Add("@Monto", req.Monto,
@@ -75,8 +75,8 @@ namespace ClinicSyncServer.Features.Egresos.Data
             {
                 var p = new DynamicParameters();
 
-                p.Add("@FechaDesde", desde, DbType.Date);
-                p.Add("@FechaHasta", hasta, DbType.Date);
+                p.Add("@FechaDesde", desde, DbType.DateTime2);
+                p.Add("@FechaHasta", hasta, DbType.DateTime2);
                 p.Add("@Activo", activo, DbType.Boolean);
 
                 var cmd = new CommandDefinition(
