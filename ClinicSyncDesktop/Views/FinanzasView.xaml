@@ -162,7 +162,6 @@
                 x:Name="BtnIngresos"
                 Content="Ingresos"
                 Tag="Ingresos"
-                Background="#86C5D0"
                 Style="{StaticResource EstiloPestanas}"
                 Click="Pestana_Click"/>
 

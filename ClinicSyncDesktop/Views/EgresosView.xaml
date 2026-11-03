@@ -280,7 +280,7 @@
                                     ElementStyle="{StaticResource CeldaCentrada}"/>
 
                 <DataGridTextColumn Header="Fecha"
-                                    Binding="{Binding Fecha, StringFormat=\{0:yyyy/MM/dd\}}"
+                                    Binding="{Binding Fecha, StringFormat=\{0:yyyy/MM/dd HH:mm\}}"
                                     Width="1.1*"
                                     ElementStyle="{StaticResource CeldaCentrada}"/>
 
@@ -304,13 +304,13 @@
                                     Width="1.2*"
                                     ElementStyle="{StaticResource CeldaTotal}"/>
 
-                <!-- ENGRANAJE (EDITAR: SE HARÁ EN OTRA TARJETA) -->
+                <!-- EDITAR -->
                 <DataGridTemplateColumn Header="" Width="0.5*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Style="{StaticResource BotonEngranaje}"
-                                    ToolTip="Opciones del egreso"
-                                    IsEnabled="False">
+                                    ToolTip="Editar egreso"
+                                    Click="EditarEgreso_Click">
                                 <Image Source="/Resources/ImagenesTabla/IconoEngranaje.png"
                                        Width="25"
                                        Height="25"

@@ -15,4 +15,12 @@
         public decimal Monto { get; set; }
         public List<MaterialEgresoRequest>? Materiales { get; set; }
     }
+
+    public sealed class ActualizarEgresoRequest
+    {
+        public DateTime Fecha { get; set; }
+        public string Concepto { get; set; } = "";
+        public string MedioPago { get; set; } = "";
+        public decimal Monto { get; set; }
+    }
 }

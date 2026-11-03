@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Agregar nuevo egreso"
         Width="460"
-        Height="420"
+        Height="452"
         WindowStartupLocation="CenterOwner"
         WindowStyle="None"
         ResizeMode="NoResize"
@@ -261,7 +261,7 @@
                   Margin="22,17,22,10">
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="58"/>
+                    <RowDefinition Height="90"/>
                     <RowDefinition Height="102"/>
                     <RowDefinition Height="58"/>
                     <RowDefinition Height="*"/>
@@ -360,6 +360,18 @@
                                         SelectedDateChanged="dpFecha_SelectedDateChanged"
                                         Panel.ZIndex="-1"/>
                         </Grid>
+
+                        <TextBox x:Name="txtHora"
+                                 Margin="0,5,0,0"
+                                 Height="25"
+                                 Background="#D9DDD8"
+                                 Foreground="#17475A"
+                                 BorderThickness="0"
+                                 Padding="10,0"
+                                 MaxLength="5"
+                                 VerticalContentAlignment="Center"
+                                 Text="00:00"
+                                 ToolTip="HH:mm"/>
                     </StackPanel>
                 </Grid>
 

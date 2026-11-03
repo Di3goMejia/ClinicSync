@@ -29,8 +29,8 @@ namespace ClinicSyncDesktop.Views
         {
             InitializeComponent();
 
-            // INGRESOS SELECCIONADO POR DEFECTO
-            SeleccionarPestana(BtnIngresos);
+            // RESUMEN SELECCIONADO POR DEFECTO
+            SeleccionarPestana(BtnResumen);
         }
 
         // ====================================
@@ -83,7 +83,8 @@ namespace ClinicSyncDesktop.Views
             switch (modulo)
             {
                 case "Resumen":
-                    ContenidoFinanzas.Content = null;
+                    ContenidoFinanzas.Content = new ResumenFinanzasView(
+                        new ClinicSyncDesktop.Services.ResumenFinanzasApiService());
                     break;
 
                 case "Ingresos":

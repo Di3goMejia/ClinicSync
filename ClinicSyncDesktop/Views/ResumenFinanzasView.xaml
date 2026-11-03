@@ -1,0 +1,138 @@
+<UserControl x:Class="ClinicSyncDesktop.Views.ResumenFinanzasView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#D9DEDA"
+             Loaded="ResumenFinanzasView_Loaded">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="ColorTexto" Color="#17465A"/>
+        <SolidColorBrush x:Key="ColorFondo" Color="#D9DEDA"/>
+
+        <Style x:Key="EstiloFiltro" TargetType="Button">
+            <Setter Property="Height" Value="29"/>
+            <Setter Property="Margin" Value="5,0,0,0"/>
+            <Setter Property="Padding" Value="7,0"/>
+            <Setter Property="Background" Value="#E8F0F0"/>
+            <Setter Property="Foreground" Value="#17465A"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="FondoBoton"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="16">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="FondoBoton" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#D9DEDA"/>
+            <Setter Property="Foreground" Value="#17465A"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Setter Property="Background" Value="#D9DEDA"/>
+            <Setter Property="Foreground" Value="#17465A"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Margin" Value="4,0"/>
+            <Setter Property="BorderBrush" Value="#C4CBC8"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#C9DEDF"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#B8DBDF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="#17465A"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="EstiloTextoCelda" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="EstiloMonto" TargetType="TextBlock" BasedOn="{StaticResource EstiloTextoCelda}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Tipo}" Value="INGRESO">
+                    <Setter Property="Foreground" Value="#187A3D"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tipo}" Value="EGRESO">
+                    <Setter Property="Foreground" Value="#B3261E"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Border Background="{StaticResource ColorFondo}"
+            CornerRadius="0,0,13,13"
+            ClipToBounds="True">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="42"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" CornerRadius="10,10,0,0">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#32A8B0" Offset="0"/>
+                        <GradientStop Color="#168FA7" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Grid Margin="14,0,12,0">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <TextBlock Text="Filtrar:" Foreground="White" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <Button x:Name="BtnHoy" Content="Hoy" Width="65" Style="{StaticResource EstiloFiltro}" Click="Hoy_Click"/>
+                        <Button x:Name="BtnSemana" Content="Semana" Width="84" Style="{StaticResource EstiloFiltro}" Click="Semana_Click"/>
+                        <Button x:Name="BtnMes" Content="Mes" Width="65" Style="{StaticResource EstiloFiltro}" Click="Mes_Click"/>
+                        <Button x:Name="BtnTodos" Content="Todos" Width="85" Style="{StaticResource EstiloFiltro}" Click="Todos_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1">
+                <TextBlock x:Name="TxtError" TextWrapping="Wrap" Foreground="#B3261E" Margin="4,8,4,4" Visibility="Collapsed"/>
+
+                <DataGrid x:Name="DgResumen" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeRows="False" HeadersVisibility="Column" RowHeaderWidth="0" RowHeight="38" ColumnHeaderHeight="38" GridLinesVisibility="None" BorderThickness="0" Background="#D9DEDA" SelectionMode="Single" SelectionUnit="FullRow" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" ColumnHeaderStyle="{StaticResource {x:Type DataGridColumnHeader}}" RowStyle="{StaticResource {x:Type DataGridRow}}" CellStyle="{StaticResource {x:Type DataGridCell}}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="110" ElementStyle="{StaticResource EstiloTextoCelda}"/>
+                    <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat={}{0:dd/MM/yyyy HH:mm}}" Width="145" ElementStyle="{StaticResource EstiloTextoCelda}"/>
+                    <DataGridTextColumn Header="Concepto" Binding="{Binding Concepto}" Width="*" ElementStyle="{StaticResource EstiloTextoCelda}"/>
+                    <DataGridTextColumn Header="Medio de pago" Binding="{Binding MedioPago}" Width="150" ElementStyle="{StaticResource EstiloTextoCelda}"/>
+                    <DataGridTextColumn Header="Monto" Binding="{Binding Monto, StringFormat={}{0:L 0.00}}" Width="130" ElementStyle="{StaticResource EstiloMonto}"/>
+                </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

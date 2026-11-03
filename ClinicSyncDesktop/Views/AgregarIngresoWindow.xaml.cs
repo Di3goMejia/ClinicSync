@@ -31,6 +31,7 @@ namespace ClinicSyncDesktop.Views
             InitializeComponent();
 
             DpFecha.SelectedDate = DateTime.Today;
+            TxtHora.Text = DateTime.Now.ToString("HH:mm");
             inicializado = true;
 
             Loaded += AgregarIngresoWindow_Loaded;
@@ -329,6 +330,26 @@ namespace ClinicSyncDesktop.Views
 
 
         // VALIDACIONES EN ROJO
+        private bool TryObtenerFechaHora(out DateTime fecha)
+        {
+            fecha = default;
+
+            if (DpFecha.SelectedDate is not DateTime fechaSeleccionada)
+                return false;
+
+            if (!TimeSpan.TryParseExact(
+                    TxtHora.Text.Trim(),
+                    @"hh\:mm",
+                    CultureInfo.InvariantCulture,
+                    out TimeSpan hora))
+            {
+                return false;
+            }
+
+            fecha = fechaSeleccionada.Date.Add(hora);
+            return true;
+        }
+
         private bool ValidarFormulario()
         {
             ErrorPaciente.Text = "";
@@ -354,10 +375,14 @@ namespace ClinicSyncDesktop.Views
                     "Seleccione una fecha.";
                 valido = false;
             }
-            else if (DpFecha.SelectedDate.Value.Date > DateTime.Today)
+            else if (!TryObtenerFechaHora(out DateTime fechaHora))
             {
-                ErrorFecha.Text =
-                    "La fecha no puede ser futura.";
+                ErrorFecha.Text = "Ingrese una hora válida con formato HH:mm.";
+                valido = false;
+            }
+            else if (fechaHora > DateTime.Now)
+            {
+                ErrorFecha.Text = "La fecha y hora no pueden ser futuras.";
                 valido = false;
             }
 
@@ -434,11 +459,12 @@ namespace ClinicSyncDesktop.Views
                     (ComboBoxItem)CmbMedioPago.SelectedItem;
 
                 LeerDescuento(out decimal descuento);
+                TryObtenerFechaHora(out DateTime fechaHora);
 
                 var request = new RegistrarIngresoRequest
                 {
                     IdPaciente = pacienteSeleccionado!.IdPaciente,
-                    Fecha = DpFecha.SelectedDate!.Value,
+                    Fecha = fechaHora,
                     Descuento = descuento,
                     MedioPago = medio.Content?.ToString() ?? "",
 

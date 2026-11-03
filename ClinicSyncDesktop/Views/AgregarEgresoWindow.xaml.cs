@@ -27,6 +27,7 @@ namespace ClinicSyncDesktop.Views
             // FECHA DE HOY POR DEFECTO
             dpFecha.SelectedDate = DateTime.Today;
             txtFecha.Text = DateTime.Today.ToString("yyyy/MM/dd", Cultura);
+            txtHora.Text = DateTime.Now.ToString("HH:mm", Cultura);
         }
 
         // MOVER LA VENTANA DESDE EL ENCABEZADO
@@ -149,6 +150,24 @@ namespace ClinicSyncDesktop.Views
                 DateTimeStyles.None,
                 out fecha);
 
+        private bool TryObtenerFechaHora(out DateTime fecha)
+        {
+            fecha = default;
+
+            if (!TryObtenerFecha(out DateTime fechaSeleccionada) ||
+                !TimeSpan.TryParseExact(
+                    txtHora.Text.Trim(),
+                    @"hh\:mm",
+                    Cultura,
+                    out TimeSpan hora))
+            {
+                return false;
+            }
+
+            fecha = fechaSeleccionada.Date.Add(hora);
+            return true;
+        }
+
         // ESCRIBE SOLO DÍGITOS Y PONE LAS DIAGONALES SOLAS
         private void txtFecha_TextChanged(
             object sender,
@@ -263,10 +282,16 @@ namespace ClinicSyncDesktop.Views
             }
 
             // FECHA VÁLIDA
-            if (!TryObtenerFecha(out DateTime fecha))
+            if (!TryObtenerFechaHora(out DateTime fecha))
             {
                 MostrarError(
-                    "La fecha no es válida. Usa el formato AAAA/MM/DD.");
+                    "La fecha u hora no es válida. Usa AAAA/MM/DD y HH:mm.");
+                return;
+            }
+
+            if (fecha > DateTime.Now)
+            {
+                MostrarError("La fecha y hora no pueden ser futuras.");
                 return;
             }
 
