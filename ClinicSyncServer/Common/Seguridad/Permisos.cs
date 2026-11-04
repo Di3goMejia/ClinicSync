@@ -36,6 +36,12 @@ namespace ClinicSyncServer.Common.Seguridad
         public const string EgresosLeer = "EGRESOS_LEER";
         public const string EgresosModificar = "EGRESOS_MODIFICAR";
 
+
+        // AGENDA
+        public const string AgendaCrear = "AGENDA_CREAR";
+        public const string AgendaLeer = "AGENDA_LEER";
+        public const string AgendaModificar = "AGENDA_MODIFICAR";
+
         public static readonly IReadOnlyList<string> Todos =
         [
             // USUARIOS
@@ -68,9 +74,15 @@ namespace ClinicSyncServer.Common.Seguridad
             // EGRESOS
             EgresosCrear,
             EgresosLeer,
-            EgresosModificar
+            EgresosModificar,
+
+            // AGENDA
+            AgendaCrear,
+            AgendaLeer,
+            AgendaModificar
+        
         ];
-    }
+    } 
 
     public static class ClaimsPersonalizados
     {

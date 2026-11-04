@@ -13,6 +13,7 @@ using ClinicSyncServer.Features.Egresos;
 using ClinicSyncServer.Features.Finanzas;
 using ClinicSyncServer.Infrastructure;
 using ClinicSyncServer.Infrastructure.Auth;
+using ClinicSyncServer.Features.Agenda;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
@@ -50,7 +51,8 @@ builder.Services
     .AddInventario()
     .AddPacientes()
     .AddExpedientes()
-    .AddEgresos();
+    .AddEgresos()
+    .AddAgenda();
 
 builder.Services.Configure< Microsoft.AspNetCore.Http.Features.FormOptions>(
     opciones =>
@@ -90,6 +92,6 @@ app.MapPacientesModule();
 app.MapFinanzasEndpoints();
 app.MapExpedientesModule();
 app.MapEgresosModule();
-
+app.MapAgendaModule();
 app.Run();
 
