@@ -132,9 +132,80 @@
         </Border>
 
         <!-- AQUÍ IRÁ EL CALENDARIO (paso 2) -->
+        <!-- CALENDARIO -->
         <Border Grid.Column="2"
                 Background="#D9DDD8"
-                CornerRadius="12"/>
+                CornerRadius="12">
+            <Grid Margin="15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- ENCABEZADO DEL CALENDARIO -->
+                <Grid Grid.Row="0" Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- ANTERIOR / SIGUIENTE -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Button Content="‹"
+                                Width="32" Height="28"
+                                FontSize="16"
+                                Style="{StaticResource BotonRedondo}"
+                                Click="Anterior_Click"/>
+                        <Button Content="›"
+                                Width="32" Height="28"
+                                FontSize="16"
+                                Margin="6,0,0,0"
+                                Style="{StaticResource BotonRedondo}"
+                                Click="Siguiente_Click"/>
+                    </StackPanel>
+
+                    <!-- TÍTULO -->
+                    <TextBlock x:Name="txtTituloCalendario"
+                               Grid.Column="1"
+                               Foreground="#17475A"
+                               FontWeight="Bold"
+                               FontSize="18"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                    <!-- DÍA / SEMANA / MES -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button x:Name="btnVistaDia"
+                                Content="Día"
+                                Tag="Dia"
+                                Width="70" Height="28"
+                                Style="{StaticResource BotonRedondo}"
+                                Click="Vista_Click"/>
+                        <Button x:Name="btnVistaSemana"
+                                Content="Semana"
+                                Tag="Semana"
+                                Width="70" Height="28"
+                                Margin="6,0,0,0"
+                                Style="{StaticResource BotonRedondo}"
+                                Click="Vista_Click"/>
+                        <Button x:Name="btnVistaMes"
+                                Content="Mes"
+                                Tag="Mes"
+                                Width="70" Height="28"
+                                Margin="6,0,0,0"
+                                Style="{StaticResource BotonRedondo}"
+                                Click="Vista_Click"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- AQUÍ SE DIBUJARÁ EL DÍA / SEMANA / MES -->
+                <Border x:Name="areaCalendario"
+                        Grid.Row="1"
+                        Background="White"
+                        CornerRadius="10"/>
+            </Grid>
+        </Border>
 
     </Grid>
 </UserControl>
