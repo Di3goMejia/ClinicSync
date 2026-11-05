@@ -54,12 +54,15 @@ namespace ClinicSyncDesktop.Views
                 ? "Activo"
                 : "Inactivo";
 
-            // BLOQUEAR LOS CAMPOS SI ESTÁ INACTIVO
+            // BLOQUEAR CAMPOS SI ESTÁ INACTIVO
             ConfigurarCampos();
+
+            // MOSTRAR AVISO SI ESTÁ INACTIVO
+            ActualizarAvisoInactivo();
         }
 
         // =====================================
-        // BLOQUEAR CAMPOS SEGÚN ESTADO ORIGINAL
+        // CONFIGURAR CAMPOS SEGÚN ESTADO
         // =====================================
         private void ConfigurarCampos()
         {
@@ -69,20 +72,48 @@ namespace ClinicSyncDesktop.Views
             txtNombres.IsReadOnly = !permitirEdicion;
             txtApellidos.IsReadOnly = !permitirEdicion;
             txtTelefono.IsReadOnly = !permitirEdicion;
-
             txtFechaNacimiento.IsReadOnly = !permitirEdicion;
 
             cmbSexo.IsEnabled = permitirEdicion;
 
-            // El estado siempre puede modificarse.
+            // EL INTERRUPTOR SIEMPRE ESTÁ DISPONIBLE
             chkActivo.IsEnabled = true;
-
-            // Los campos inactivos siguen visibles.
-            // No modificamos su diseño ni sus colores.
         }
 
         // =====================================
-        // CAMBIAR TEXTO DEL ESTADO
+        // AVISO DE PACIENTE INACTIVO
+        // =====================================
+        private void ActualizarAvisoInactivo()
+        {
+            if (chkActivo == null ||
+                txtError == null ||
+                iconoError == null)
+            {
+                return;
+            }
+
+            if (!estadoOriginal)
+            {
+                if (chkActivo.IsChecked == true)
+                {
+                    txtError.Text = "";
+                    iconoError.Visibility =
+                        Visibility.Collapsed;
+                }
+                else
+                {
+                    txtError.Text =
+                        "El paciente está desactivado. " +
+                        "Actívalo para poder modificar sus datos.";
+
+                    iconoError.Visibility =
+                        Visibility.Visible;
+                }
+            }
+        }
+
+        // =====================================
+        // CAMBIAR ESTADO
         // =====================================
         private void Estado_Changed(
             object sender,
@@ -94,6 +125,8 @@ namespace ClinicSyncDesktop.Views
             txtEstado.Text = chkActivo.IsChecked == true
                 ? "Activo"
                 : "Inactivo";
+
+            ActualizarAvisoInactivo();
         }
 
         // =====================================
@@ -116,6 +149,8 @@ namespace ClinicSyncDesktop.Views
 
             iconoError.Visibility =
                 Visibility.Collapsed;
+
+            ActualizarAvisoInactivo();
         }
 
         // =====================================
@@ -185,7 +220,8 @@ namespace ClinicSyncDesktop.Views
 
                 if (numeros.Length > 6)
                 {
-                    texto += "/" + numeros.Substring(6);
+                    texto += "/" +
+                        numeros.Substring(6);
                 }
             }
 
@@ -240,8 +276,6 @@ namespace ClinicSyncDesktop.Views
             object sender,
             RoutedEventArgs e)
         {
-            // PACIENTE INACTIVO:
-            // NO PERMITIR CAMBIAR LA FECHA
             if (!estadoOriginal)
                 return;
 
@@ -349,7 +383,7 @@ namespace ClinicSyncDesktop.Views
                 chkActivo.IsChecked == true;
 
             // =================================
-            // PACIENTE INACTIVO
+            // PACIENTE ORIGINALMENTE INACTIVO
             // SOLO PERMITIR REACTIVAR
             // =================================
             if (!estadoOriginal)
@@ -357,7 +391,7 @@ namespace ClinicSyncDesktop.Views
                 if (!nuevoEstado)
                 {
                     MostrarError(
-                        "El paciente está inactivo. " +
+                        "El paciente está desactivado. " +
                         "Actívalo para poder modificar sus datos.");
 
                     return;
@@ -368,8 +402,6 @@ namespace ClinicSyncDesktop.Views
 
                 try
                 {
-                    // REACTIVAR EN SQL SERVER
-                    // SIN MODIFICAR NINGÚN CAMPO
                     await ClienteApi.CambiarEstadoPacienteAsync(
                         paciente.IdPaciente,
                         true);
@@ -395,7 +427,7 @@ namespace ClinicSyncDesktop.Views
 
             // =================================
             // PACIENTE ACTIVO
-            // VALIDAR TODOS LOS CAMPOS
+            // OBTENER INFORMACIÓN
             // =================================
             string identidadTexto =
                 txtIdentidad.Text.Trim();
@@ -421,7 +453,9 @@ namespace ClinicSyncDesktop.Views
             string telefono =
                 telefonoTexto.Replace("-", "");
 
+            // =================================
             // VALIDAR IDENTIDAD
+            // =================================
             if (string.IsNullOrWhiteSpace(identidadTexto))
             {
                 MostrarError("Ingresa una identidad.");
@@ -446,7 +480,9 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
+            // =================================
             // VALIDAR NOMBRES
+            // =================================
             if (string.IsNullOrWhiteSpace(nombres))
             {
                 MostrarError(
@@ -464,7 +500,9 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
+            // =================================
             // VALIDAR APELLIDOS
+            // =================================
             if (string.IsNullOrWhiteSpace(apellidos))
             {
                 MostrarError(
@@ -482,7 +520,9 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
+            // =================================
             // VALIDAR FECHA
+            // =================================
             if (string.IsNullOrWhiteSpace(
                 txtFechaNacimiento.Text))
             {
@@ -510,7 +550,9 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
+            // =================================
             // VALIDAR SEXO
+            // =================================
             if (cmbSexo.SelectedItem is not ComboBoxItem opcion ||
                 opcion.Tag is not string sexo ||
                 (sexo != "F" && sexo != "M"))
@@ -521,7 +563,9 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
+            // =================================
             // VALIDAR TELÉFONO
+            // =================================
             if (string.IsNullOrWhiteSpace(telefonoTexto))
             {
                 MostrarError("Ingresa un teléfono.");
@@ -539,7 +583,7 @@ namespace ClinicSyncDesktop.Views
             }
 
             // =================================
-            // FORMATEAR DATOS
+            // FORMATEAR INFORMACIÓN
             // =================================
             string identidadFormateada =
                 identidad.Substring(0, 4) + "-" +
@@ -558,7 +602,6 @@ namespace ClinicSyncDesktop.Views
 
             try
             {
-                // MODIFICAR INFORMACIÓN
                 using var respuesta =
                     await ClienteApi.PutAutenticadoAsync(
                         $"api/pacientes/{paciente.IdPaciente}",
@@ -596,8 +639,8 @@ namespace ClinicSyncDesktop.Views
                     return;
                 }
 
-                // DESACTIVAR SOLO DESPUÉS
-                // DE GUARDAR CORRECTAMENTE
+                // CAMBIAR ESTADO DESPUÉS DE
+                // GUARDAR CORRECTAMENTE
                 if (!nuevoEstado)
                 {
                     await ClienteApi.CambiarEstadoPacienteAsync(

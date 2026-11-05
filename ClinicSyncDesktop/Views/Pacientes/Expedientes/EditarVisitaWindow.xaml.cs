@@ -21,23 +21,28 @@ namespace ClinicSyncDesktop.Views
     public partial class EditarVisitaWindow : Window
     {
         private readonly int idVisita;
-        private int idPaciente;
+        private readonly int idPaciente;
         private int idEmpleado;
+
+        private bool pacienteActivo = false;
+        private bool estadoVerificado = false;
+        private bool guardando = false;
 
         private readonly ObservableCollection<TratamientoOpcion>
             tratamientos = new();
 
         private ICollectionView? vistaTratamientos;
-
         private TextBlock? mensajeArchivo;
 
         // CONSTRUCTOR
-        public EditarVisitaWindow(int idVisita)
+        public EditarVisitaWindow(int idVisita, int idPaciente = 0)
         {
             InitializeComponent();
-            calFecha.DisplayDateEnd = DateTime.Today;
 
             this.idVisita = idVisita;
+            this.idPaciente = idPaciente;
+
+            calFecha.DisplayDateEnd = DateTime.Today;
 
             dgTratamientos.ItemsSource = tratamientos;
 
@@ -45,20 +50,25 @@ namespace ClinicSyncDesktop.Views
                 CollectionViewSource.GetDefaultView(tratamientos);
 
             MostrarPestana("Antecedentes");
+
+            AplicarRestriccionesPaciente();
         }
 
         // MODELOS
-
         public class VisitaDetalle
         {
             public int IdVisita { get; set; }
             public int IdExpediente { get; set; }
             public int IdEmpleado { get; set; }
-
             public DateTime Fecha { get; set; }
-
             public string Motivo { get; set; } = "";
             public string? Notas { get; set; }
+        }
+
+        public class PacienteEstadoApi
+        {
+            public int IdPaciente { get; set; }
+            public bool Activo { get; set; }
         }
 
         public class TratamientoApi
@@ -132,6 +142,10 @@ namespace ClinicSyncDesktop.Views
             {
                 txtError.Visibility = Visibility.Collapsed;
 
+                // VERIFICAR SI EL PACIENTE ESTÁ ACTIVO
+                await VerificarEstadoPacienteAsync();
+
+                // CARGAR INFORMACIÓN
                 await CargarVisitaAsync();
                 await CargarTratamientosAsync();
 
@@ -154,12 +168,96 @@ namespace ClinicSyncDesktop.Views
             }
             catch (Exception ex)
             {
+                estadoVerificado = false;
+                pacienteActivo = false;
+
                 MostrarError(
                     "No se pudo cargar la visita: " + ex.Message);
             }
             finally
             {
-                btnGuardar.IsEnabled = true;
+                AplicarRestriccionesPaciente();
+            }
+        }
+
+        // CONSULTAR ESTADO DEL PACIENTE
+        private async Task VerificarEstadoPacienteAsync()
+        {
+            estadoVerificado = false;
+            pacienteActivo = false;
+
+            if (idPaciente <= 0)
+            {
+                MostrarError(
+                    "El paciente está desactivado. La edición permanecerá bloqueada.");
+
+                return;
+            }
+
+            PacienteEstadoApi[] pacientes =
+                await ClienteApi.ObtenerAutenticadoAsync<
+                    PacienteEstadoApi[]>("api/pacientes");
+
+            PacienteEstadoApi? paciente =
+                pacientes.FirstOrDefault(p =>
+                    p.IdPaciente == idPaciente);    
+
+            if (paciente == null)
+            {
+                MostrarError(
+                    "No se pudo verificar el estado del paciente.");
+
+                return;
+            }
+
+            pacienteActivo = paciente.Activo;
+            estadoVerificado = true;
+        }
+
+        // BLOQUEAR CAMPOS SI EL PACIENTE ESTÁ INACTIVO
+        private void AplicarRestriccionesPaciente()
+        {
+            bool permitir =
+                estadoVerificado && pacienteActivo;
+
+            // DOCTOR SIEMPRE ES SOLO LECTURA
+            txtDoctor.IsReadOnly = true;
+
+            // ANTECEDENTES
+            txtFecha.IsReadOnly = !permitir;
+            txtMotivo.IsReadOnly = !permitir;
+
+            // NOTAS
+            txtNotas.IsReadOnly = !permitir;
+
+            // CALENDARIO
+            btnCalendario.IsEnabled = permitir;
+            PopupFecha.IsOpen = false;
+
+            // GUARDAR
+            btnGuardar.IsEnabled = permitir && !guardando;
+
+            // ARCHIVOS
+            btnSubirArchivo.Visibility = permitir
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            // LAS PESTAÑAS SIGUEN DISPONIBLES
+            btnAntecedentes.IsEnabled = true;
+            btnTratamientos.IsEnabled = true;
+            btnNotas.IsEnabled = true;
+
+            // EL BUSCADOR SIGUE DISPONIBLE
+            txtBuscar.IsEnabled = true;
+
+            if (estadoVerificado && !pacienteActivo)
+            {
+                btnGuardar.ToolTip =
+                    "Activa al paciente para modificar esta visita.";
+            }
+            else
+            {
+                btnGuardar.ToolTip = null;
             }
         }
 
@@ -167,13 +265,20 @@ namespace ClinicSyncDesktop.Views
         private async Task CargarVisitaAsync()
         {
             VisitaDetalle visita =
-                await ClienteApi.ObtenerAutenticadoAsync<
-                    VisitaDetalle>(
+                await ClienteApi.ObtenerAutenticadoAsync<VisitaDetalle>(
                     $"api/visitas/{idVisita}");
 
             idEmpleado = visita.IdEmpleado;
 
-            txtFecha.Text = visita.Fecha.ToString("yyyy/MM/dd");
+            PerfilActual perfil =
+                await ClienteApi.ObtenerPerfilAsync();
+
+            txtDoctor.Text = perfil.NombreUsuario;
+            txtDoctor.IsReadOnly = true;
+            txtDoctor.Focusable = false;
+
+            txtFecha.Text =
+                visita.Fecha.ToString("yyyy/MM/dd");
 
             if (visita.Fecha != DateTime.MinValue)
             {
@@ -185,17 +290,13 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CARGAR TRATAMIENTOS
-
-
         private async Task CargarTratamientosAsync()
         {
-            // OBTENER ÚNICAMENTE TRATAMIENTOS ACTIVOS
             TratamientoApi[] catalogo =
                 await ClienteApi.ObtenerAutenticadoAsync<
                     TratamientoApi[]>(
                     "api/tratamientos?Activo=true");
 
-            // OBTENER TRATAMIENTOS REGISTRADOS EN LA VISITA
             TratamientoRegistrado[] registrados =
                 await ClienteApi.ObtenerAutenticadoAsync<
                     TratamientoRegistrado[]>(
@@ -203,12 +304,11 @@ namespace ClinicSyncDesktop.Views
 
             tratamientos.Clear();
 
-            // MOSTRAR TRATAMIENTOS ACTIVOS
             foreach (TratamientoApi item in catalogo)
             {
                 TratamientoRegistrado? existente =
-                    registrados.FirstOrDefault(
-                        t => t.IdTratamiento == item.IdTratamiento);
+                    registrados.FirstOrDefault(t =>
+                        t.IdTratamiento == item.IdTratamiento);
 
                 tratamientos.Add(new TratamientoOpcion
                 {
@@ -222,9 +322,7 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
-
-
-        // PESTAÑAS
+        // MOSTRAR PESTAÑAS
         private void MostrarPestana(string pestana)
         {
             PanelAntecedentes.Visibility =
@@ -242,8 +340,11 @@ namespace ClinicSyncDesktop.Views
                     ? Visibility.Visible
                     : Visibility.Collapsed;
 
-            Color activo = Color.FromRgb(141, 213, 232);
-            Color inactivo = Color.FromRgb(209, 215, 216);
+            Color activo =
+                Color.FromRgb(141, 213, 232);
+
+            Color inactivo =
+                Color.FromRgb(209, 215, 216);
 
             btnAntecedentes.Background =
                 new SolidColorBrush(
@@ -311,6 +412,9 @@ namespace ClinicSyncDesktop.Views
             object sender,
             RoutedEventArgs e)
         {
+            if (!estadoVerificado || !pacienteActivo)
+                return;
+
             if (sender is Button boton &&
                 boton.DataContext is TratamientoOpcion tratamiento)
             {
@@ -324,6 +428,9 @@ namespace ClinicSyncDesktop.Views
             object sender,
             RoutedEventArgs e)
         {
+            if (!estadoVerificado || !pacienteActivo)
+                return;
+
             if (sender is Button boton &&
                 boton.DataContext is TratamientoOpcion tratamiento)
             {
@@ -336,6 +443,9 @@ namespace ClinicSyncDesktop.Views
             object sender,
             RoutedEventArgs e)
         {
+            if (!estadoVerificado || !pacienteActivo)
+                return;
+
             if (sender is Button boton &&
                 boton.DataContext is TratamientoOpcion tratamiento)
             {
@@ -349,6 +459,9 @@ namespace ClinicSyncDesktop.Views
             object sender,
             RoutedEventArgs e)
         {
+            if (!estadoVerificado || !pacienteActivo)
+                return;
+
             PopupFecha.IsOpen = !PopupFecha.IsOpen;
         }
 
@@ -356,10 +469,14 @@ namespace ClinicSyncDesktop.Views
             object sender,
             SelectionChangedEventArgs e)
         {
+            if (!estadoVerificado || !pacienteActivo)
+                return;
+
             if (calFecha.SelectedDate.HasValue)
             {
                 txtFecha.Text =
-                    calFecha.SelectedDate.Value.ToString("yyyy/MM/dd");
+                    calFecha.SelectedDate.Value.ToString(
+                        "yyyy/MM/dd");
 
                 PopupFecha.IsOpen = false;
             }
@@ -370,8 +487,52 @@ namespace ClinicSyncDesktop.Views
             object sender,
             RoutedEventArgs e)
         {
+            if (guardando)
+                return;
+
             txtError.Visibility = Visibility.Collapsed;
 
+            // NO PERMITIR EDITAR PACIENTES INACTIVOS
+            if (!estadoVerificado || !pacienteActivo)
+            {
+                MostrarError(
+                    "El paciente está desactivado. " +
+                    "Actívalo para poder agregar nuevas visitas " +
+                    "o modificar los datos de las visitas anteriores.");
+
+                return;
+            }
+
+            // VOLVER A CONSULTAR ESTADO ANTES DE GUARDAR
+            try
+            {
+                await VerificarEstadoPacienteAsync();
+                AplicarRestriccionesPaciente();
+            }
+            catch (Exception ex)
+            {
+                estadoVerificado = false;
+                pacienteActivo = false;
+
+                AplicarRestriccionesPaciente();
+
+                MostrarError(
+                    "No se pudo verificar el estado del paciente: " +
+                    ex.Message);
+
+                return;
+            }
+
+            if (!estadoVerificado || !pacienteActivo)
+            {
+                MostrarError(
+                    "El paciente está desactivado. " +
+                    "Actívalo para modificar los datos de esta visita.");
+
+                return;
+            }
+
+            // VALIDAR MOTIVO
             if (string.IsNullOrWhiteSpace(txtMotivo.Text))
             {
                 MostrarError(
@@ -381,6 +542,7 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
+            // VALIDAR FECHA
             if (!DateTime.TryParseExact(
                 txtFecha.Text.Trim(),
                 "yyyy/MM/dd",
@@ -394,15 +556,18 @@ namespace ClinicSyncDesktop.Views
                 MostrarPestana("Antecedentes");
                 return;
             }
+
             if (fecha.Date > DateTime.Today)
             {
                 MostrarError(
-                    "La fecha de la visita no puede ser posterior a la fecha actual.");
+                    "La fecha de la visita no puede ser posterior " +
+                    "a la fecha actual.");
 
                 MostrarPestana("Antecedentes");
                 return;
             }
 
+            guardando = true;
             btnGuardar.IsEnabled = false;
 
             try
@@ -415,17 +580,18 @@ namespace ClinicSyncDesktop.Views
                     Notas = txtNotas.Text.Trim(),
 
                     Tratamientos = tratamientos
-                         .Where(t => t.Seleccionado)
-                         .Select(t => new
-                         {
-                             t.IdTratamiento,
-                             t.Cantidad
-                         })
-                         .ToArray() 
+                        .Where(t => t.Seleccionado)
+                        .Select(t => new
+                        {
+                            t.IdTratamiento,
+                            t.Cantidad
+                        })
+                        .ToArray()
                 };
 
                 await ClienteApi.ModificarVisitaCompletaAsync(
-                    idVisita, datos);
+                    idVisita,
+                    datos);
 
                 DialogResult = true;
                 Close();
@@ -433,11 +599,13 @@ namespace ClinicSyncDesktop.Views
             catch (Exception ex)
             {
                 MostrarError(
-                    "No se pudo guardar la visita: " + ex.Message);
+                    "No se pudo guardar la visita: " +
+                    ex.Message);
             }
             finally
             {
-                btnGuardar.IsEnabled = true;
+                guardando = false;
+                AplicarRestriccionesPaciente();
             }
         }
 
@@ -446,6 +614,9 @@ namespace ClinicSyncDesktop.Views
             object sender,
             RoutedEventArgs e)
         {
+            if (!estadoVerificado || !pacienteActivo)
+                return;
+
             OpenFileDialog explorador = new OpenFileDialog
             {
                 Title = "Seleccionar archivo del expediente",
@@ -478,6 +649,18 @@ namespace ClinicSyncDesktop.Views
                     return;
                 }
 
+                // VERIFICAR ESTADO ANTES DE SUBIR
+                await VerificarEstadoPacienteAsync();
+                AplicarRestriccionesPaciente();
+
+                if (!estadoVerificado || !pacienteActivo)
+                {
+                    MostrarMensajeArchivo(
+                        "El paciente está desactivado.",
+                        false);
+                    return;
+                }
+
                 await ClienteApi.SubirArchivoVisitaAsync(
                     idVisita,
                     explorador.FileName);
@@ -494,12 +677,11 @@ namespace ClinicSyncDesktop.Views
                     ex.ToString(),
                     "Error al subir archivo",
                     MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
-            }   
+                    MessageBoxImage.Error);
+            }
         }
 
-        // LISTAR ARCHIVOS CON LA X ROJA
+        // LISTAR ARCHIVOS
         private async Task CargarArchivosAsync()
         {
             ArchivoExpedienteApi[] archivos =
@@ -544,7 +726,7 @@ namespace ClinicSyncDesktop.Views
                             UriKind.Absolute))
                 };
 
-                Button botonAbrir = new()
+                Button botonAbrir = new Button
                 {
                     Content = archivo.NombreArchivo,
                     Tag = archivo,
@@ -565,7 +747,11 @@ namespace ClinicSyncDesktop.Views
                     BorderThickness = new Thickness(0),
                     Cursor = Cursors.Hand,
                     Tag = archivo.IdArchivo,
-                    ToolTip = "Descartar archivo"
+                    ToolTip = "Descartar archivo",
+                    Visibility =
+                        estadoVerificado && pacienteActivo
+                            ? Visibility.Visible
+                            : Visibility.Collapsed
                 };
 
                 botonBorrar.Content = new Image
@@ -589,7 +775,7 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
-        // MENSAJES DE VALIDACIÓN DE ARCHIVOS
+        // MENSAJES DE ARCHIVOS
         private void MostrarMensajeArchivo(
             string mensaje,
             bool exitoso)
@@ -620,18 +806,19 @@ namespace ClinicSyncDesktop.Views
             object sender,
             RoutedEventArgs e)
         {
+            if (!estadoVerificado || !pacienteActivo)
+                return;
+
             if (sender is not Button boton ||
                 boton.Tag is not Guid idArchivo)
                 return;
 
-            // VENTANA PERSONALIZADA DE CONFIRMACIÓN
             DescartarArchivoWindow advertencia =
                 new DescartarArchivoWindow
                 {
                     Owner = this
                 };
 
-            // NO O X: CANCELAR
             if (advertencia.ShowDialog() != true)
                 return;
 
@@ -639,10 +826,20 @@ namespace ClinicSyncDesktop.Views
 
             try
             {
-                // DESACTIVAR ARCHIVO EN LA BDD
-                await ClienteApi.DesactivarArchivoAsync(idArchivo);
+                await VerificarEstadoPacienteAsync();
+                AplicarRestriccionesPaciente();
 
-                // ACTUALIZAR LISTA
+                if (!estadoVerificado || !pacienteActivo)
+                {
+                    MostrarMensajeArchivo(
+                        "El paciente está desactivado.",
+                        false);
+                    return;
+                }
+
+                await ClienteApi.DesactivarArchivoAsync(
+                    idArchivo);
+
                 await CargarArchivosAsync();
 
                 MostrarMensajeArchivo(
@@ -651,15 +848,17 @@ namespace ClinicSyncDesktop.Views
             }
             catch (Exception)
             {
-                boton.IsEnabled = true;
-
                 MostrarMensajeArchivo(
                     "Hubo un error al eliminar el archivo.",
                     false);
             }
+            finally
+            {
+                boton.IsEnabled = true;
+            }
         }
 
-        // ABRIR ARCHIVO
+        // ABRIR O DESCARGAR ARCHIVO
         private async void AbrirArchivo_Click(
             object sender,
             RoutedEventArgs e)
@@ -696,12 +895,13 @@ namespace ClinicSyncDesktop.Views
             catch (Exception ex)
             {
                 MostrarMensajeArchivo(
-                    "No se pudo descargar el archivo: " + ex.Message,
+                    "No se pudo descargar el archivo: " +
+                    ex.Message,
                     false);
             }
         }
 
-        // MOSTRAR ERRORES GENERALES
+        // MOSTRAR ERROR
         private void MostrarError(string mensaje)
         {
             txtError.Text = mensaje;
@@ -722,9 +922,20 @@ namespace ClinicSyncDesktop.Views
             object sender,
             RoutedEventArgs e)
         {
-            DialogResult = false;
-            Close();
-        }
+            var confirmacion =
+                new DescartarPacienteWindow
+                {
+                    Owner = this
+                };
 
+            bool? resultado =
+                confirmacion.ShowDialog();
+
+            if (resultado == true)
+            {
+                DialogResult = false;
+                Close();
+            }
+        }
     }
 }

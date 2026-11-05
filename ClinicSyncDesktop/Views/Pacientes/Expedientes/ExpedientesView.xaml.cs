@@ -19,6 +19,7 @@ namespace ClinicSyncDesktop.Views
         private bool cargandoExpediente = false;
         private int idExpediente;
         private bool editandoNotas;
+        private bool pacienteActivo = false;
 
         public ExpedientesView(int idPaciente)
         {
@@ -63,7 +64,7 @@ namespace ClinicSyncDesktop.Views
             PanelAvisos.Children.Clear();
 
             AvisoPaciente aviso = new(mensaje, exitoso);
-            
+
             PanelAvisos.Visibility = Visibility.Visible;
 
             PanelAvisos.Children.Add(aviso);
@@ -127,6 +128,19 @@ namespace ClinicSyncDesktop.Views
 
                     return;
                 }
+
+                // VERIFICAR ESTADO DEL PACIENTE
+                pacienteActivo = paciente.Activo;
+
+                // OCULTAR AGREGAR VISITA SI ESTÁ INACTIVO
+                btnAgregarVisita.Visibility = pacienteActivo
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+
+                // MOSTRAR AVISO ROJO SI ESTÁ INACTIVO
+                AvisoPacienteInactivo.Visibility = pacienteActivo
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
 
                 // MOSTRAR DATOS DEL PACIENTE
                 txtNombre.Text =

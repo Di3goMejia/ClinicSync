@@ -245,7 +245,6 @@
 
                     <RadioButton Content="Hoy" Tag="Hoy"
                                  GroupName="FiltroEgresos"
-                                 IsChecked="True"
                                  Style="{StaticResource BotonFiltro}"
                                  Click="Filtro_Click"/>
 
@@ -259,10 +258,11 @@
                                  Style="{StaticResource BotonFiltro}"
                                  Click="Filtro_Click"/>
 
-                     <RadioButton Content="Todos" Tag="Todos"
+                    <RadioButton Content="Todos" Tag="Todos"
                                  GroupName="FiltroEgresos"
-                                  Style="{StaticResource BotonFiltro}"
-                                  Click="Filtro_Click"/>
+                                 IsChecked="True"
+                                 Style="{StaticResource BotonFiltro}"
+                                 Click="Filtro_Click"/>
                 </StackPanel>
             </Grid>
         </Border>

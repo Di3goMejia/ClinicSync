@@ -292,7 +292,7 @@
                     <RowDefinition Height="57"/>
                     <RowDefinition Height="61"/>
                     <RowDefinition Height="65"/>
-                    <RowDefinition Height="59"/>
+                    <RowDefinition Height="95"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
@@ -516,6 +516,17 @@
                                       Checked="Estado_Changed"
                                       Unchecked="Estado_Changed"/>
                         </StackPanel>
+
+                        <!-- AVISO PARA PACIENTES INACTIVOS -->
+                        <TextBlock x:Name="txtAvisoInactivo"
+                                   Text="El paciente está desactivado. Actívalo para poder modificar sus datos."
+                                   Foreground="#FF3652"
+                                   FontSize="11"
+                                   TextWrapping="Wrap"
+                                   Width="165"
+                                   Margin="0,6,0,0"
+                                   Visibility="Collapsed"/>
+
                     </StackPanel>
                 </Grid>
 

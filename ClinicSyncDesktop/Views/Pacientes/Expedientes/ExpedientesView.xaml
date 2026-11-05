@@ -17,7 +17,6 @@
             <GradientStop Color="#138DAA" Offset="1"/>
         </LinearGradientBrush>
 
-
         <Style x:Key="BotonTransparente"
                TargetType="{x:Type Button}">
             <Setter Property="Background" Value="Transparent"/>
@@ -26,7 +25,6 @@
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Padding" Value="5,0"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
@@ -43,7 +41,6 @@
             </Setter>
         </Style>
 
-
         <Style TargetType="{x:Type DataGridColumnHeader}">
             <Setter Property="Background" Value="#D9DDD8"/>
             <Setter Property="Foreground" Value="#17475A"/>
@@ -51,16 +48,14 @@
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Height" Value="25"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="HorizontalContentAlignment"
-                    Value="Left"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="Padding" Value="8,0"/>
         </Style>
 
         <Style TargetType="{x:Type DataGridCell}">
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="VerticalContentAlignment"
-                    Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Padding" Value="8,0"/>
         </Style>
 
@@ -110,9 +105,11 @@
                             </StackPanel>
                         </Button>
 
-                        <!-- AGREGAR NUEVO -->
-                        <Button Grid.Column="1"
+                        <!-- AGREGAR NUEVA VISITA -->
+                        <Button x:Name="btnAgregarVisita"
+                                Grid.Column="1"
                                 Style="{StaticResource BotonTransparente}"
+                                Visibility="Collapsed"
                                 Click="AgregarVisita_Click">
 
                             <StackPanel Orientation="Horizontal"
@@ -226,6 +223,7 @@
 
                             <Grid Grid.Row="0"
                                   Margin="0,0,0,5">
+
                                 <TextBlock Text="Notas:"
                                            FontWeight="Bold"
                                            Foreground="#17475A"
@@ -234,6 +232,7 @@
 
                                 <StackPanel Orientation="Horizontal"
                                             HorizontalAlignment="Right">
+
                                     <Button x:Name="btnEditarNotas"
                                             Content="Editar"
                                             Padding="8,2"
@@ -316,19 +315,46 @@
                             </Button>
                         </Grid>
 
-                        <!-- LISTA DE ARCHIVOS -->
-                        <Border Grid.Row="5"
-                                Background="#F5F7F4"
-                                CornerRadius="9"
-                                MinHeight="100"
-                                Margin="0,0,0,79">
+                        <!-- ARCHIVOS Y AVISO -->
+                        <Grid Grid.Row="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                            <ScrollViewer VerticalScrollBarVisibility="Auto"
-                                          Margin="8">
+                            <!-- LISTA DE ARCHIVOS -->
+                            <Border Grid.Row="0"
+                                    Background="#F5F7F4"
+                                    CornerRadius="9"
+                                    MinHeight="100"
+                                    Margin="0,0,0,8">
 
-                                <StackPanel x:Name="PanelArchivos"/>
-                            </ScrollViewer>
-                        </Border>
+                                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                              Margin="8">
+
+                                    <StackPanel x:Name="PanelArchivos"/>
+                                </ScrollViewer>
+                            </Border>
+
+                            <!-- AVISO DE PACIENTE INACTIVO -->
+                            <Border x:Name="AvisoPacienteInactivo"
+                                    Grid.Row="1"
+                                    Background="#FFF0F0"
+                                    BorderBrush="#D9534F"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    Padding="10,8"
+                                    Margin="0,0,0,8"
+                                    Visibility="Collapsed">
+
+                                <TextBlock
+                                    Text="El paciente está desactivado. Actívalo para poder agregar nuevas visitas o modificar los datos de las visitas anteriores."
+                                    Foreground="#C62828"
+                                    FontSize="12"
+                                    FontWeight="SemiBold"
+                                    TextWrapping="Wrap"/>
+                            </Border>
+                        </Grid>
                     </Grid>
 
                     <!-- COLUMNA DERECHA -->
@@ -358,7 +384,7 @@
                                   GridLinesVisibility="Horizontal"
                                   HorizontalGridLinesBrush="#C5CBC5"
                                   FontSize="13"
-                                   SelectionMode="Single">
+                                  SelectionMode="Single">
 
                             <DataGrid.RowStyle>
                                 <Style TargetType="DataGridRow">
@@ -377,7 +403,7 @@
                                                     Width="1*">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
-                                            <Setter Property="VerticalAlignment" Value="Center" />
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
@@ -387,7 +413,7 @@
                                                     Width="2*">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
-                                            <Setter Property="VerticalAlignment" Value="Center" />
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
