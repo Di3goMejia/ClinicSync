@@ -94,7 +94,6 @@
     <Border Background="White"
             CornerRadius="17"
             ClipToBounds="True">
-        
 
         <Grid>
             <Grid.RowDefinitions>
@@ -204,7 +203,7 @@
                                VerticalAlignment="Center">
                         <Run Text="Fecha: "/>
                         <Run Text="*" Foreground="#E34462"/>
-                                        </TextBlock>
+                    </TextBlock>
 
                     <Grid Grid.Row="1"
                           Grid.Column="1"
@@ -214,7 +213,8 @@
                         <TextBox x:Name="txtFecha"
                                  Style="{StaticResource EstiloCampo}"/>
 
-                        <Button Width="35"
+                        <Button x:Name="btnCalendario"
+                                Width="35"
                                 HorizontalAlignment="Right"
                                 Style="{StaticResource BotonSinBorde}"
                                 Click="Calendario_Click">
@@ -247,7 +247,7 @@
                                VerticalAlignment="Center">
                         <Run Text="Motivo: "/>
                         <Run Text="*" Foreground="#E34462"/>
-                                        </TextBlock>
+                    </TextBlock>
 
                     <TextBox x:Name="txtMotivo"
                              Grid.Row="3"
@@ -439,7 +439,8 @@
                                    FontWeight="Bold"
                                    VerticalAlignment="Center"/>
 
-                        <Button HorizontalAlignment="Right"
+                        <Button x:Name="btnSubirArchivo"
+                                HorizontalAlignment="Right"
                                 Width="95"
                                 Height="27"
                                 Style="{StaticResource BotonSinBorde}"
@@ -489,7 +490,6 @@
             <Border Grid.Row="2"
                     Background="#2198A8"
                     CornerRadius="0,0,15,15">
-                
 
                 <Button x:Name="btnGuardar"
                         Content="Guardar"
