@@ -59,14 +59,15 @@ namespace ClinicSyncDesktop.Views
         }
 
         public static bool MostrarConfirmacion(
-            Window? propietario,
-            string mensaje)
-        {
-            var ventana = new MensajeWindow();
+         Window? propietario,
+         string mensaje,
+         string titulo = "Descartar")
+            {
+                var ventana = new MensajeWindow();
 
-            ventana.Configurar(
-                "Descartar",
-                mensaje,
+                ventana.Configurar(
+                    titulo,
+                    mensaje,
                 "IconoAviso.png",
                 true);
 
