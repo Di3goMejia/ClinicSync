@@ -1,0 +1,211 @@
+﻿<UserControl x:Class="ClinicSyncDesktop.Views.AgendaView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="#F4F6F3"
+             d:DesignHeight="450"
+             d:DesignWidth="900">
+
+    <UserControl.Resources>
+
+        <!-- DEGRADADO TURQUESA -->
+        <LinearGradientBrush x:Key="Turquesa"
+                             StartPoint="0,0"
+                             EndPoint="1,0">
+            <GradientStop Color="#32A5AB" Offset="0"/>
+            <GradientStop Color="#138DAA" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- BOTÓN REDONDEADO -->
+        <Style x:Key="BotonRedondo" TargetType="Button">
+            <Setter Property="Background" Value="#92D4DE"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="15">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fondo"
+                                        Property="Background"
+                                        Value="#B6E7ED"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid Margin="18,20,18,18">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260"/>
+            <ColumnDefinition Width="18"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- PANEL IZQUIERDO -->
+        <Border Grid.Column="0"
+                Background="#D9DDD8"
+                CornerRadius="12">
+            <StackPanel Margin="15">
+
+                <Button Content="+ Agregar nueva cita"
+                        Height="32"
+                        Style="{StaticResource BotonRedondo}"
+                        Click="btnAgregarCita_Click"/>
+
+                <TextBlock Text="Próximas citas"
+                           Foreground="#17475A"
+                           FontWeight="Bold"
+                           FontSize="15"
+                           Margin="0,20,0,8"/>
+
+                <!-- LISTA DE PRÓXIMAS CITAS (se llena desde el código) -->
+                <ItemsControl x:Name="listaProximas">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="White"
+                                    CornerRadius="10"
+                                    Padding="10,7"
+                                    Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="12"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- PUNTO DE COLOR DE LA CITA -->
+                                    <Ellipse Grid.Column="0"
+                                             Width="9"
+                                             Height="9"
+                                             VerticalAlignment="Top"
+                                             Margin="0,4,0,0"
+                                             Fill="{Binding Color,
+                                                 FallbackValue=#32A5AB,
+                                                 TargetNullValue=#32A5AB}"/>
+
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding Titulo}"
+                                                   Foreground="#17475A"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="12"
+                                                   TextTrimming="CharacterEllipsis"/>
+
+                                        <TextBlock Text="{Binding FechaInicio,
+                                                       StringFormat={}{0:dd/MM/yyyy  HH:mm}}"
+                                                   Foreground="#17475A"
+                                                   FontSize="11"/>
+
+                                        <TextBlock Text="{Binding Direccion}"
+                                                   Foreground="#6B7F86"
+                                                   FontSize="11"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                
+                <Button x:Name="btnVerMas"
+                        Content="Ver más…"
+                        Height="26"
+                        Margin="0,4,0,0"
+                        Style="{StaticResource BotonRedondo}"
+                        Click="btnVerMas_Click"/>
+
+            </StackPanel>
+        </Border>
+
+        <!-- AQUÍ IRÁ EL CALENDARIO (paso 2) -->
+        <!-- CALENDARIO -->
+        <Border Grid.Column="2"
+                Background="#D9DDD8"
+                CornerRadius="12">
+            <Grid Margin="15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- ENCABEZADO DEL CALENDARIO -->
+                <Grid Grid.Row="0" Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- ANTERIOR / SIGUIENTE -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Button Content="‹"
+                                Width="32" Height="28"
+                                FontSize="16"
+                                Style="{StaticResource BotonRedondo}"
+                                Click="Anterior_Click"/>
+                        <Button Content="›"
+                                Width="32" Height="28"
+                                FontSize="16"
+                                Margin="6,0,0,0"
+                                Style="{StaticResource BotonRedondo}"
+                                Click="Siguiente_Click"/>
+                    </StackPanel>
+
+                    <!-- TÍTULO -->
+                    <TextBlock x:Name="txtTituloCalendario"
+                               Grid.Column="1"
+                               Foreground="#17475A"
+                               FontWeight="Bold"
+                               FontSize="18"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                    <!-- DÍA / SEMANA / MES -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button x:Name="btnVistaDia"
+                                Content="Día"
+                                Tag="Dia"
+                                Width="70" Height="28"
+                                Style="{StaticResource BotonRedondo}"
+                                Click="Vista_Click"/>
+                        <Button x:Name="btnVistaSemana"
+                                Content="Semana"
+                                Tag="Semana"
+                                Width="70" Height="28"
+                                Margin="6,0,0,0"
+                                Style="{StaticResource BotonRedondo}"
+                                Click="Vista_Click"/>
+                        <Button x:Name="btnVistaMes"
+                                Content="Mes"
+                                Tag="Mes"
+                                Width="70" Height="28"
+                                Margin="6,0,0,0"
+                                Style="{StaticResource BotonRedondo}"
+                                Click="Vista_Click"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- AQUÍ SE DIBUJARÁ EL DÍA / SEMANA / MES -->
+                <Border x:Name="areaCalendario"
+                        Grid.Row="1"
+                        Background="White"
+                        CornerRadius="10"/>
+            </Grid>
+        </Border>
+
+    </Grid>
+</UserControl>

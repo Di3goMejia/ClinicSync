@@ -98,7 +98,7 @@ namespace ClinicSync.Views
 
                 case "Agenda":
                     ContenidoPrincipal.Content =
-                        CrearVistaTemporal("Agenda");
+                        new AgendaView();
                     break;
 
                 case "Seguridad":
