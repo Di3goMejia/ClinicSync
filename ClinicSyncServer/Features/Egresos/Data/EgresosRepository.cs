@@ -35,7 +35,7 @@ namespace ClinicSyncServer.Features.Egresos.Data
 
                 p.Add("@IdUsuario", idUsuario, DbType.Int32);
                 p.Add("@Tipo", req.Tipo, DbType.String, size: 20);
-                p.Add("@Fecha", req.Fecha, DbType.Date);
+                p.Add("@Fecha", req.Fecha, DbType.DateTime2);
                 p.Add("@Concepto", req.Concepto, DbType.String, size: 255);
                 p.Add("@MedioPago", req.MedioPago, DbType.String, size: 20);
                 p.Add("@Monto", req.Monto,
@@ -55,10 +55,50 @@ namespace ClinicSyncServer.Features.Egresos.Data
 
                 return p.Get<int>("@IdEgreso");
             }
+
             catch (SqlException ex) when (SqlErrorTranslator.EsTraducible(ex))
             {
                 throw SqlErrorTranslator.Traducir(ex);
             }
+        }
+
+        public async Task<EgresoListado?> ObtenerAsync(
+            int idEgreso,
+            CancellationToken ct = default)
+        {
+            await using var db = factory.Crear();
+            await db.OpenAsync(ct);
+
+            return await db.QuerySingleOrDefaultAsync<EgresoListado>(
+                new CommandDefinition(
+                    "api.usp_Egresos_Obtener",
+                    new { IdEgreso = idEgreso },
+                    commandType: CommandType.StoredProcedure,
+                    cancellationToken: ct));
+        }
+
+        public async Task ActualizarAsync(
+            int idEgreso,
+            ActualizarEgresoRequest req,
+            int idUsuario,
+            CancellationToken ct = default)
+        {
+            await using var db = factory.Crear();
+            await db.OpenAsync(ct);
+
+            await db.ExecuteAsync(new CommandDefinition(
+                "api.usp_Egresos_Editar",
+                new
+                {
+                    IdEgreso = idEgreso,
+                    req.Fecha,
+                    req.Concepto,
+                    req.MedioPago,
+                    req.Monto,
+                    IdUsuario = idUsuario
+                },
+                commandType: CommandType.StoredProcedure,
+                cancellationToken: ct));
         }
 
         // LISTAR EGRESOS POR RANGO DE FECHAS
@@ -75,8 +115,8 @@ namespace ClinicSyncServer.Features.Egresos.Data
             {
                 var p = new DynamicParameters();
 
-                p.Add("@FechaDesde", desde, DbType.Date);
-                p.Add("@FechaHasta", hasta, DbType.Date);
+                p.Add("@FechaDesde", desde, DbType.DateTime2);
+                p.Add("@FechaHasta", hasta, DbType.DateTime2);
                 p.Add("@Activo", activo, DbType.Boolean);
 
                 var cmd = new CommandDefinition(

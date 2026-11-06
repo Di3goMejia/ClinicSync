@@ -78,6 +78,15 @@ namespace ClinicSyncServer.Features.Finanzas
 
         public sealed record PeriodoResumen(string Etiqueta, decimal Ingresos, decimal Egresos);
 
+        public sealed class MovimientoResumenDto
+        {
+            public DateTime Fecha { get; set; }
+            public string Concepto { get; set; } = "";
+            public string MedioPago { get; set; } = "";
+            public decimal Monto { get; set; }
+            public string Tipo { get; set; } = "";
+        }
+
         private static List<string> GenerarEtiquetas(DateOnly desde, DateOnly hasta, Agrupacion agrupacion)
         {
             var lista = new List<string>();
@@ -169,6 +178,21 @@ namespace ClinicSyncServer.Features.Finanzas
                     string? identificador =
                         usuario.FindFirst("sub")?.Value;
 
+
+                    if (request.IdsTratamientosVisita is null ||
+                        request.IdsTratamientosVisita.Count == 0 ||
+                        request.IdsTratamientosVisita.Any(id => id <= 0) ||
+                        request.IdsTratamientosVisita.Distinct().Count()
+                            != request.IdsTratamientosVisita.Count)
+                    {
+                        return Results.BadRequest(new
+                        {
+                            mensaje = "Seleccione tratamientos válidos " +
+                                      "del expediente del paciente."
+                        });
+                    }
+
+
                     if (!int.TryParse(identificador, out int idUsuario))
                     {
                         Console.WriteLine(
@@ -182,7 +206,7 @@ namespace ClinicSyncServer.Features.Finanzas
 
 
                     if (request.IdPaciente <= 0 ||
-                        request.Fecha.Date > DateTime.Today ||
+                        request.Fecha > DateTime.Now ||
                         request.Descuento < 0 ||
                         request.IdsTratamientosVisita is null ||
                         request.IdsTratamientosVisita.Count == 0 ||
@@ -197,7 +221,7 @@ namespace ClinicSyncServer.Features.Finanzas
                     try
                     {
                         int idIngreso = await db.ExecuteScalarAsync<int>(
-                            "api.usp_Finanzas_Ingreso_Crear",
+                            "api.usp_Finanzas_Ingreso_CrearDesdeVisita",
                             new
                             {
                                 request.IdPaciente,
@@ -295,7 +319,7 @@ namespace ClinicSyncServer.Features.Finanzas
                         request.IdsTratamientos.Distinct().Count() !=
                             request.IdsTratamientos.Count ||
                         request.Descuento < 0 ||
-                        request.Fecha.Date > DateTime.Today ||
+                        request.Fecha > DateTime.Now ||
                         (request.MedioPago != "Efectivo" &&
                          request.MedioPago != "Transferencia"))
                     {
@@ -400,6 +424,29 @@ namespace ClinicSyncServer.Features.Finanzas
                         }
                     }
                 );
+            });
+
+            grupo.MapGet("/resumen", async (
+                [FromQuery] Periodo periodo,
+                [FromQuery] DateOnly? desde,
+                [FromQuery] DateOnly? hasta,
+                SqlConnectionFactory factory
+            ) =>
+            {
+                var rango = RangoFinanciero.Resolver(periodo, desde, hasta, DateTime.UtcNow);
+
+                await using var db = factory.Crear();
+
+                var movimientos = await db.QueryAsync<MovimientoResumenDto>(
+                    "api.usp_Finanzas_ResumenMovimiento",
+                    new
+                    {
+                        Desde = rango.Desde,
+                        Hasta = rango.Hasta!.Value
+                    },
+                    commandType: CommandType.StoredProcedure);
+
+                return Results.Ok(movimientos);
             });
         }
     }

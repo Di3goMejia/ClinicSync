@@ -1,0 +1,169 @@
+<Window x:Class="ClinicSyncDesktop.Views.EditarEgresoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Editar egreso"
+        Width="460"
+        Height="300"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False">
+    <Window.Resources>
+        <LinearGradientBrush x:Key="Turquesa" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#32A5AB" Offset="0"/>
+            <GradientStop Color="#138DAA" Offset="1"/>
+        </LinearGradientBrush>
+        <Style x:Key="Etiqueta" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+        <Style x:Key="Campo" TargetType="TextBox">
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="13" ClipToBounds="True">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="Center" Focusable="False"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ComboRedondo" TargetType="ComboBox">
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border Background="{TemplateBinding Background}" CornerRadius="13"/>
+                            <ToggleButton Background="Transparent"
+                                          BorderThickness="0"
+                                          Focusable="False"
+                                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                                <Grid>
+                                    <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
+                                                      Margin="10,0,25,0"
+                                                      VerticalAlignment="Center"
+                                                      IsHitTestVisible="False"/>
+                                    <TextBlock Text="▼"
+                                               Foreground="#138DAA"
+                                               FontSize="10"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,10,0"/>
+                                </Grid>
+                            </ToggleButton>
+                            <Popup x:Name="PART_Popup"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   Placement="Bottom"
+                                   PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                   AllowsTransparency="True"
+                                   Focusable="False">
+                                <Border Background="White" BorderBrush="#B5CECE" BorderThickness="1" CornerRadius="12">
+                                    <ScrollViewer MaxHeight="180"><ItemsPresenter/></ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="BotonCalendario" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style x:Key="Boton" TargetType="Button">
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Width" Value="105"/>
+            <Setter Property="Background" Value="#92D4DE"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="13">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Border Margin="9" CornerRadius="15" Background="White" ClipToBounds="True">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="16" ShadowDepth="5" Opacity="0.28"/>
+        </Border.Effect>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="35"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="{StaticResource Turquesa}" CornerRadius="15,15,0,0">
+                <Grid Margin="12,0,9,0">
+                    <TextBlock Text="Editar egreso:" Foreground="White" FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center" Margin="10,0,-10,0"/>
+                    <Button Width="23" Height="23" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Cursor="Hand" Click="Cancelar_Click">
+                        <Image Source="/Resources/ImagenesPacientes/cerrar-ventana.png" Stretch="Uniform"/>
+                    </Button>
+                </Grid>
+            </Border>
+            <Grid Grid.Row="1" Margin="22,17,22,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="78"/>
+                    <RowDefinition Height="58"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="Fecha y hora:" Style="{StaticResource Etiqueta}"/>
+                    <Grid Margin="0,5,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <DatePicker x:Name="dpFecha" Grid.Column="0" Height="25" Background="#D9DDD8" BorderThickness="0"/>
+                        <TextBox x:Name="txtHora" Grid.Column="2" Style="{StaticResource Campo}" Margin="0" MaxLength="5" Text="00:00" ToolTip="HH:mm"/>
+                    </Grid>
+                </StackPanel>
+                <StackPanel Grid.Row="1">
+                    <TextBlock Text="Concepto:" Style="{StaticResource Etiqueta}"/>
+                    <TextBox x:Name="txtConcepto" Style="{StaticResource Campo}" Height="50" Padding="10,6" TextWrapping="Wrap" VerticalContentAlignment="Top"/>
+                </StackPanel>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Medio de pago:" Style="{StaticResource Etiqueta}"/>
+                        <ComboBox x:Name="cmbMedio" Style="{StaticResource ComboRedondo}" Margin="0,5,0,0">
+                            <ComboBoxItem Content="EFECTIVO"/>
+                            <ComboBoxItem Content="TRANSFERENCIA"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Monto:" Style="{StaticResource Etiqueta}"/>
+                        <TextBox x:Name="txtMonto" Style="{StaticResource Campo}" Margin="0,5,0,0" ToolTip="0.00"/>
+                    </StackPanel>
+                </Grid>
+                <TextBlock x:Name="txtError" Grid.Row="3" Foreground="#C93C55" TextWrapping="Wrap" Margin="0,5,0,0"/>
+            </Grid>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,22,5">
+                <Button Content="Cancelar" Style="{StaticResource Boton}" Background="#E1E7E3" Click="Cancelar_Click" Margin="0,0,10,0"/>
+                <Button x:Name="btnGuardar" Content="Guardar" Style="{StaticResource Boton}" Click="Guardar_Click"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

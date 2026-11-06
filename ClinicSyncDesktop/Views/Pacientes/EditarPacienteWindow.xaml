@@ -1,0 +1,575 @@
+﻿<Window x:Class="ClinicSyncDesktop.Views.EditarPacienteWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Editar paciente"
+        Width="460"
+        Height="410"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False">
+
+    <Window.Resources>
+
+        <!-- DEGRADADO TURQUESA -->
+        <LinearGradientBrush x:Key="Turquesa"
+                             StartPoint="0,0"
+                             EndPoint="1,0">
+            <GradientStop Color="#32A5AB" Offset="0"/>
+            <GradientStop Color="#138DAA" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- ETIQUETAS -->
+        <Style x:Key="Etiqueta" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <!-- CAMPOS REDONDEADOS -->
+        <Style x:Key="Campo" TargetType="TextBox">
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="13"
+                                ClipToBounds="True">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"
+                                          Focusable="False"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BOTONES REDONDEADOS -->
+        <Style x:Key="BotonRedondo" TargetType="Button">
+            <Setter Property="Background" Value="#92D4DE"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="15">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fondo"
+                                        Property="Background"
+                                        Value="#B6E7ED"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Fondo"
+                                        Property="Opacity"
+                                        Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- COMBOBOX IGUAL AL DE AGREGAR PACIENTE -->
+        <Style x:Key="ComboRedondo" TargetType="ComboBox">
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border Background="#D9DDD8"
+                                    CornerRadius="13"/>
+
+                            <ContentPresenter
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                Margin="10,0,25,0"
+                                VerticalAlignment="Center"
+                                IsHitTestVisible="False"/>
+
+                            <!-- FLECHA PERSONALIZADA -->
+                            <Image x:Name="IconoFlecha"
+                                   Source="/Resources/ImagenesPacientes/flecha-hacia-abajo-combobox.png"
+                                   Width="15"
+                                   Height="15"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,5,0"
+                                   IsHitTestVisible="False"
+                                   RenderTransformOrigin="0.5,0.5">
+                                <Image.RenderTransform>
+                                    <RotateTransform Angle="0"/>
+                                </Image.RenderTransform>
+                            </Image>
+
+                            <ToggleButton
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Opacity="0"
+                                Focusable="False"
+                                IsChecked="{Binding IsDropDownOpen,
+                                    RelativeSource={RelativeSource TemplatedParent},
+                                    Mode=TwoWay}"/>
+
+                            <Popup x:Name="PART_Popup"
+                                   Placement="Bottom"
+                                   IsOpen="{Binding IsDropDownOpen,
+                                       RelativeSource={RelativeSource TemplatedParent}}"
+                                   AllowsTransparency="True"
+                                   StaysOpen="False">
+                                <Border Background="White"
+                                        BorderBrush="#D9DDD8"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        MinWidth="{Binding ActualWidth,
+                                            RelativeSource={RelativeSource TemplatedParent}}">
+                                    <ScrollViewer MaxHeight="160">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDropDownOpen"
+                                     Value="True">
+                                <Setter TargetName="IconoFlecha"
+                                        Property="RenderTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="180"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BOTÓN CALENDARIO -->
+        <Style x:Key="BotonCalendario" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- INTERRUPTOR DE ESTADO -->
+        <Style x:Key="Interruptor" TargetType="CheckBox">
+            <Setter Property="Width" Value="39"/>
+            <Setter Property="Height" Value="21"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid>
+                            <Border x:Name="Fondo"
+                                    Background="#D9DDD8"
+                                    CornerRadius="11"/>
+
+                            <Ellipse x:Name="Circulo"
+                                     Width="16"
+                                     Height="16"
+                                     Fill="White"
+                                     HorizontalAlignment="Left"
+                                     Margin="3,0,0,0"/>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Fondo"
+                                        Property="Background"
+                                        Value="#23A995"/>
+                                <Setter TargetName="Circulo"
+                                        Property="HorizontalAlignment"
+                                        Value="Right"/>
+                                <Setter TargetName="Circulo"
+                                        Property="Margin"
+                                        Value="0,0,3,0"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Fondo"
+                                        Property="Opacity"
+                                        Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <!-- VENTANA PRINCIPAL REDONDEADA -->
+    <Border Margin="9"
+            Background="White"
+            CornerRadius="15"
+            ClipToBounds="True">
+
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="16"
+                              ShadowDepth="5"
+                              Opacity="0.28"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="35"/>
+            </Grid.RowDefinitions>
+
+            <!-- ENCABEZADO -->
+            <Border Grid.Row="0"
+                    Background="{StaticResource Turquesa}"
+                    CornerRadius="15,15,0,0">
+
+                <Grid Margin="12,0,9,0">
+
+                    <TextBlock Text="Editar paciente:"
+                               Foreground="White"
+                               FontWeight="SemiBold"
+                               FontSize="15"
+                               VerticalAlignment="Center" Margin="10,0,-10,0"/>
+
+                    <Button Width="23"
+                            Height="23"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Click="Cerrar_Click">
+                        <Image Source="/Resources/ImagenesPacientes/cerrar-ventana.png"/>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- FORMULARIO -->
+            <Grid Grid.Row="1"
+                  Margin="22,17,22,7">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="57"/>
+                    <RowDefinition Height="61"/>
+                    <RowDefinition Height="65"/>
+                    <RowDefinition Height="95"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- IDENTIDAD -->
+                <StackPanel Grid.Row="0">
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Identidad:"
+                                   Style="{StaticResource Etiqueta}"/>
+                        <TextBlock Text=" *"
+                                   Foreground="#CF4059"
+                                   FontWeight="Bold"/>
+                    </StackPanel>
+
+                    <TextBox x:Name="txtIdentidad"
+                             Style="{StaticResource Campo}"
+                             Width="165"
+                             MaxLength="15"
+                             HorizontalAlignment="Left"
+                             Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <!-- NOMBRE COMPLETO -->
+                <StackPanel Grid.Row="1">
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Nombre Completo:"
+                                   Style="{StaticResource Etiqueta}"/>
+                        <TextBlock Text=" *"
+                                   Foreground="#CF4059"
+                                   FontWeight="Bold"/>
+                    </StackPanel>
+
+                    <Grid Margin="0,5,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox x:Name="txtNombres"
+                                 Grid.Column="0"
+                                 MaxLength="50"
+                                 Style="{StaticResource Campo}"/>
+
+                        <TextBox x:Name="txtApellidos"
+                                 Grid.Column="2"
+                                 MaxLength="50"
+                                 Style="{StaticResource Campo}"/>
+                    </Grid>
+                </StackPanel>
+
+                <!-- FECHA DE NACIMIENTO Y SEXO -->
+                <Grid Grid.Row="2">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- FECHA -->
+                    <StackPanel Grid.Column="0">
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Fecha de nacimiento:"
+                                       Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Text=" *"
+                                       Foreground="#CF4059"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <Grid Width="145"
+                              Height="25"
+                              HorizontalAlignment="Left"
+                              Margin="0,5,0,0">
+
+                            <Border Background="#D9DDD8"
+                                    CornerRadius="13"/>
+
+                            <Grid Margin="9,0,5,0">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="20"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- FECHA EDITABLE -->
+                                <Grid Grid.Column="0">
+
+                                    <TextBox
+                                        x:Name="txtFechaNacimiento"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Foreground="#17475A"
+                                        FontSize="12"
+                                        Padding="0"
+                                        MaxLength="10"
+                                        VerticalContentAlignment="Center"
+                                        TextChanged="Fecha_TextChanged"
+                                        LostFocus="Fecha_LostFocus"
+                                        ToolTip="YYYY/MM/DD"/>
+
+                                    <!-- PLACEHOLDER -->
+                                    <TextBlock
+                                        Text="YYYY/MM/DD"
+                                        Foreground="#AEB0B1"
+                                        FontSize="12"
+                                        VerticalAlignment="Center"
+                                        IsHitTestVisible="False">
+
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility"
+                                                        Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding Text,
+                                                            ElementName=txtFechaNacimiento}"
+                                                        Value="">
+                                                        <Setter Property="Visibility"
+                                                                Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+
+                                <!-- ICONO CALENDARIO -->
+                                <Button Grid.Column="1"
+                                        Style="{StaticResource BotonCalendario}"
+                                        Click="Calendario_Click">
+                                    <Image
+                                        Source="/Resources/ImagenesPacientes/calendario.png"
+                                        Width="15"
+                                        Height="15"/>
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- SEXO -->
+                    <StackPanel Grid.Column="2">
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Sexo:"
+                                       Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Text=" *"
+                                       Foreground="#CF4059"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <ComboBox x:Name="cmbSexo"
+                                  Margin="0,5,0,0"
+                                  Style="{StaticResource ComboRedondo}"
+                                  SelectedIndex="0">
+
+                            <ComboBoxItem
+                                Content="Seleccione una opción"
+                                IsEnabled="False"/>
+
+                            <ComboBoxItem
+                                Content="Femenino"
+                                Tag="F"/>
+
+                            <ComboBoxItem
+                                Content="Masculino"
+                                Tag="M"/>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+
+                <!-- TELÉFONO Y ESTADO -->
+                <Grid Grid.Row="3">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- TELÉFONO -->
+                    <StackPanel Grid.Column="0">
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Teléfono:"
+                                       Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Text=" *"
+                                       Foreground="#CF4059"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <TextBox x:Name="txtTelefono"
+                                 Width="165"
+                                 HorizontalAlignment="Left"
+                                 Margin="0,5,0,0"
+                                 MaxLength="9"
+                                 Style="{StaticResource Campo}"/>
+                    </StackPanel>
+
+                    <!-- ESTADO -->
+                    <StackPanel Grid.Column="2"
+                                HorizontalAlignment="Center">
+
+                        <TextBlock Text="Estado:"
+                                   Style="{StaticResource Etiqueta}"/>
+
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0,5,0,0">
+
+                            <TextBlock x:Name="txtEstado"
+                                       Text="Activo"
+                                       Foreground="#17475A"
+                                       FontSize="13"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,7,0"/>
+
+                            <CheckBox x:Name="chkActivo"
+                                      Style="{StaticResource Interruptor}"
+                                      Checked="Estado_Changed"
+                                      Unchecked="Estado_Changed"/>
+                        </StackPanel>
+
+                        <!-- AVISO PARA PACIENTES INACTIVOS -->
+                        <TextBlock x:Name="txtAvisoInactivo"
+                                   Text="El paciente está desactivado. Actívalo para poder modificar sus datos."
+                                   Foreground="#FF3652"
+                                   FontSize="11"
+                                   TextWrapping="Wrap"
+                                   Width="165"
+                                   Margin="0,6,0,0"
+                                   Visibility="Collapsed"/>
+
+                    </StackPanel>
+                </Grid>
+
+                <!-- MENSAJES DE VALIDACIÓN -->
+                <Grid Grid.Row="4"
+                      Margin="0,5,0,0"
+                      VerticalAlignment="Top">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="18"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Image x:Name="iconoError"
+                           Grid.Column="0"
+                           Source="/Resources/ImagenesAvisos/IconoAlerta.png"
+                           Width="14"
+                           Height="14"
+                           VerticalAlignment="Top"
+                           Visibility="Collapsed"/>
+
+                    <TextBlock x:Name="txtError"
+                               Grid.Column="1"
+                               Foreground="#CF4059"
+                               FontSize="12"
+                               TextWrapping="Wrap"/>
+                </Grid>
+            </Grid>
+
+            <!-- PIE CON DEGRADADO -->
+            <Border Grid.Row="2"
+                    Background="{StaticResource Turquesa}"
+                    CornerRadius="0,0,15,15">
+
+                <Button x:Name="btnGuardar"
+                        Content="Guardar"
+                        Width="95"
+                        Height="26"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource BotonRedondo}"
+                        Click="Guardar_Click"/>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

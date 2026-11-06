@@ -12,6 +12,18 @@ namespace ClinicSyncServer.Features.Egresos
             CancellationToken ct = default)
             => repositorio.InsertarAsync(req, idUsuario, ct);
 
+        public Task<EgresoListado?> ObtenerAsync(
+            int idEgreso,
+            CancellationToken ct = default)
+            => repositorio.ObtenerAsync(idEgreso, ct);
+
+        public Task ActualizarAsync(
+            int idEgreso,
+            ActualizarEgresoRequest req,
+            int idUsuario,
+            CancellationToken ct = default)
+            => repositorio.ActualizarAsync(idEgreso, req, idUsuario, ct);
+
         public Task<IEnumerable<EgresoListado>> ListarAsync(
             DateTime desde,
             DateTime hasta,
