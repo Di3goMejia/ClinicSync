@@ -120,7 +120,46 @@ namespace ClinicSyncServer.Features.Agenda
                 .RequireAuthorization(
                     PermisosSeguridad.AgendaCrear);
 
-           
+            // MODIFICAR CITA
+            agenda.MapPut(
+                "/citas/{id:int}",
+                async (
+                    int id,
+                    [FromBody] CitaRequest req,
+                    IAgendaService svc,
+                    CancellationToken ct) =>
+                {
+                    if (id <= 0)
+                        return Results.BadRequest();
+
+                    await svc.ModificarAsync(id, req, ct);
+
+                    return Results.NoContent();
+                })
+                .WithName("ModificarCita")
+                .RequireAuthorization(
+                    PermisosSeguridad.AgendaModificar);
+
+            // CANCELAR CITA
+            agenda.MapPost(
+                "/citas/{id:int}/cancelar",
+                async (
+                    int id,
+                    IAgendaService svc,
+                    CancellationToken ct) =>
+                {
+                    if (id <= 0)
+                        return Results.BadRequest();
+
+                    await svc.CancelarAsync(id, ct);
+
+                    return Results.NoContent();
+                })
+                .WithName("CancelarCita")
+                .RequireAuthorization(
+                    PermisosSeguridad.AgendaModificar);
+
+
         }
     }
 }

@@ -1,0 +1,460 @@
+﻿<Window x:Class="ClinicSyncDesktop.Views.Citas.ModificarCitaWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Modificar cita"
+        Width="560"
+        Height="620"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False">
+
+    <Window.Resources>
+
+        <LinearGradientBrush x:Key="Turquesa" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#32A5AB" Offset="0"/>
+            <GradientStop Color="#138DAA" Offset="1"/>
+        </LinearGradientBrush>
+
+        <Style x:Key="Etiqueta" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <Style x:Key="Campo" TargetType="TextBox">
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="13"
+                                ClipToBounds="True">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"
+                                          Focusable="False"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BotonRedondo" TargetType="Button">
+            <Setter Property="Background" Value="#92D4DE"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="15">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fondo"
+                                        Property="Background"
+                                        Value="#B6E7ED"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- CÍRCULO DE COLOR -->
+        <Style x:Key="BotonColor" TargetType="Button">
+            <Setter Property="Width" Value="22"/>
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="11"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- COMBOBOX REDONDEADO -->
+        <Style x:Key="ComboRedondo" TargetType="ComboBox">
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border Background="#D9DDD8"
+                                    CornerRadius="13"/>
+
+                            <ContentPresenter
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                Margin="10,0,25,0"
+                                VerticalAlignment="Center"
+                                IsHitTestVisible="False"/>
+
+                            <!-- FLECHA QUE GIRA -->
+                            <Image x:Name="IconoFlecha"
+                                   Source="/Resources/ImagenesPacientes/flecha-hacia-abajo-combobox.png"
+                                   Width="15"
+                                   Height="15"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,5,0"
+                                   IsHitTestVisible="False"
+                                   RenderTransformOrigin="0.5,0.5">
+                                <Image.RenderTransform>
+                                    <RotateTransform Angle="0"/>
+                                </Image.RenderTransform>
+                            </Image>
+
+                            <ToggleButton
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Opacity="0"
+                                Focusable="False"
+                                IsChecked="{Binding IsDropDownOpen,
+                                    RelativeSource={RelativeSource TemplatedParent},
+                                    Mode=TwoWay}"/>
+
+                            <Popup x:Name="PART_Popup"
+                                   Placement="Bottom"
+                                   IsOpen="{Binding IsDropDownOpen,
+                                       RelativeSource={RelativeSource TemplatedParent}}"
+                                   AllowsTransparency="True"
+                                   StaysOpen="False">
+                                <Border Background="White"
+                                        BorderBrush="#D9DDD8"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        MinWidth="{Binding ActualWidth,
+                                            RelativeSource={RelativeSource TemplatedParent}}">
+                                    <ScrollViewer MaxHeight="160">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDropDownOpen" Value="True">
+                                <Setter TargetName="IconoFlecha"
+                                        Property="RenderTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="180"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- CAMPO DE FECHA REDONDEADO (todo el campo es el botón) -->
+        <Style x:Key="BotonFecha" TargetType="Button">
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="13">
+                            <ContentPresenter Margin="10,0,6,0"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <Border Margin="9"
+            CornerRadius="15"
+            Background="White"
+            ClipToBounds="True">
+
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="16" ShadowDepth="5" Opacity="0.28"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="35"/>
+            </Grid.RowDefinitions>
+
+            <!-- ENCABEZADO -->
+            <Border Grid.Row="0"
+                    Background="{StaticResource Turquesa}"
+                    CornerRadius="15,15,0,0">
+                <Grid Margin="12,0,9,0">
+                    <TextBlock Text="Modificar cita:"
+                               Foreground="White"
+                               FontWeight="SemiBold"
+                               FontSize="15"
+                               VerticalAlignment="Center"
+                               Margin="10,0,0,0"/>
+
+                    <Button Width="23" Height="23"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Click="Cerrar_Click">
+                        <Image Source="/Resources/ImagenesPacientes/cerrar-ventana.png"
+                               Stretch="Uniform"/>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- FORMULARIO -->
+            <StackPanel Grid.Row="1" Margin="26,14,26,8">
+
+                <!-- PACIENTE (no está en el Figma, lo exige la BD) -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Paciente:" Style="{StaticResource Etiqueta}"/>
+                    <TextBlock Text=" *" Foreground="#CF4059" FontWeight="Bold"/>
+                </StackPanel>
+
+                <ComboBox x:Name="cmbPaciente"
+                          Margin="0,5,0,12"
+                          Style="{StaticResource ComboRedondo}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding NombreCompleto}"
+                                       Padding="4,2"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <!-- TÍTULO Y COLOR -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Agregar título:" Style="{StaticResource Etiqueta}"/>
+                    <TextBlock Text=" *" Foreground="#CF4059" FontWeight="Bold"/>
+                </StackPanel>
+                <Grid Margin="0,5,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="22"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox x:Name="txtTitulo"
+                             Grid.Column="0"
+                             Style="{StaticResource Campo}"
+                             MaxLength="100"/>
+
+                    <Button x:Name="btnColor"
+                            Grid.Column="2"
+                            Style="{StaticResource BotonColor}"
+                            Background="#8BC34A"
+                            ToolTip="Clic para cambiar el color"
+                            Click="Color_Click"/>
+                </Grid>
+
+                <!-- FECHAS -->
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- FECHA DE INICIO -->
+                    <StackPanel Grid.Column="0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Fecha de inicio:" Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Text=" *" Foreground="#CF4059" FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <Grid Margin="0,5,0,0">
+                            <Button Style="{StaticResource BotonFecha}"
+                                    Tag="Inicio"
+                                    Click="Fecha_Click">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock x:Name="txtFechaInicio"
+                                               Text="Seleccione una fecha"
+                                               Foreground="#AEB0B1"
+                                               FontSize="12"
+                                               VerticalAlignment="Center"/>
+
+                                    <Image Grid.Column="1"
+                                           Source="/Resources/ImagenesPacientes/calendario.png"
+                                           Width="15"
+                                           Height="15"/>
+                                </Grid>
+                            </Button>
+
+                            <!-- DATEPICKER INVISIBLE: guarda la fecha -->
+                            <DatePicker x:Name="dpInicio"
+                                        Opacity="0"
+                                        IsHitTestVisible="False"
+                                        Panel.ZIndex="-1"
+                                        SelectedDateChanged="dpInicio_SelectedDateChanged"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- FECHA DE FINALIZACIÓN -->
+                    <StackPanel Grid.Column="2">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Fecha de finalización:" Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Text=" *" Foreground="#CF4059" FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <Grid Margin="0,5,0,0">
+                            <Button Style="{StaticResource BotonFecha}"
+                                    Tag="Fin"
+                                    Click="Fecha_Click">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock x:Name="txtFechaFin"
+                                               Text="Seleccione una fecha"
+                                               Foreground="#AEB0B1"
+                                               FontSize="12"
+                                               VerticalAlignment="Center"/>
+
+                                    <Image Grid.Column="1"
+                                           Source="/Resources/ImagenesPacientes/calendario.png"
+                                           Width="15"
+                                           Height="15"/>
+                                </Grid>
+                            </Button>
+
+                            <DatePicker x:Name="dpFin"
+                                        Opacity="0"
+                                        IsHitTestVisible="False"
+                                        Panel.ZIndex="-1"
+                                        SelectedDateChanged="dpFin_SelectedDateChanged"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+
+                <!-- HORAS -->
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Hora de inicio:" Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Text=" *" Foreground="#CF4059" FontWeight="Bold"/>
+                        </StackPanel>
+                        <ComboBox x:Name="cmbHoraInicio"
+                                  Margin="0,5,0,0"
+                                  Style="{StaticResource ComboRedondo}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Hora de finalización:" Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Text=" *" Foreground="#CF4059" FontWeight="Bold"/>
+                        </StackPanel>
+                        <ComboBox x:Name="cmbHoraFin"
+                                  Margin="0,5,0,0"
+                                  Style="{StaticResource ComboRedondo}"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- TODO EL DÍA -->
+                <CheckBox x:Name="chkTodoElDia"
+                          Content="Todo el día"
+                          Foreground="#17475A"
+                          FontSize="13"
+                          Margin="0,0,0,12"
+                          Click="TodoElDia_Click"/>
+
+                <!-- DIRECCIÓN -->
+                <TextBlock Text="Dirección:" Style="{StaticResource Etiqueta}"/>
+                <TextBox x:Name="txtDireccion"
+                         Width="280"
+                         HorizontalAlignment="Left"
+                         Margin="0,5,0,12"
+                         Style="{StaticResource Campo}"
+                         MaxLength="200"/>
+
+                <!-- NOTAS -->
+                <TextBlock Text="Notas:" Style="{StaticResource Etiqueta}"/>
+                <Border Background="#D9DDD8"
+                        CornerRadius="13"
+                        Margin="0,5,0,0">
+                    <TextBox x:Name="txtNotas"
+                             Height="70"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Foreground="#17475A"
+                             FontSize="12"
+                             Padding="10,6"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             MaxLength="500"/>
+                </Border>
+
+            </StackPanel>
+
+            <!-- MENSAJE DE VALIDACIÓN -->
+            <TextBlock x:Name="txtError"
+                       Grid.Row="1"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Bottom"
+                       Foreground="#E34462"
+                       FontSize="12"
+                       FontWeight="SemiBold"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       Margin="26,0,26,45"
+                       Visibility="Collapsed"/>
+
+            <!-- BOTÓN AGREGAR -->
+            <Border Grid.Row="2"
+                    Background="{StaticResource Turquesa}"
+                    CornerRadius="0,0,15,15">
+                <Button Content="Guardar cambios"
+                        Width="125" Height="26"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource BotonRedondo}"
+                        Click="GuardarCambios_Click"/>
+            </Border>
+
+        </Grid>
+    </Border>
+</Window>

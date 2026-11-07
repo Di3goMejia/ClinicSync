@@ -8,6 +8,8 @@ using ClinicSyncDesktop.Services;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Media;
+using System.Windows.Controls.Primitives;
+using ClinicSyncDesktop.Views.Citas;
 
 namespace ClinicSyncDesktop.Views
 {
@@ -573,7 +575,8 @@ namespace ClinicSyncDesktop.Views
                 Child = contenido
             };
 
-            fila.MouseLeftButtonUp += (s, e) => Evento_Click(ev);
+            fila.MouseLeftButtonUp += (s, e) =>
+                Evento_Click(ev, fila);
 
             return fila;
         }
@@ -618,13 +621,172 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
-        // CLIC EN UNA CITA (los compañeros conectarán aquí Editar/Eliminar)
-        private void Evento_Click(EventoAgenda evento)
+        // MENÚ DE OPCIONES DE UNA CITA
+        // MENÚ PERSONALIZADO DE OPCIONES DE UNA CITA
+        private void Evento_Click(
+            EventoAgenda evento,
+            FrameworkElement elemento)
         {
-            // Pendiente: menú Editar / Eliminar (otros compañeros).
+            // CONTENEDOR PRINCIPAL
+            Border contenedor = new Border
+            {
+                Background = new SolidColorBrush(
+                    Color.FromArgb(235, 184, 213, 212)),
+                CornerRadius = new CornerRadius(5),
+                Padding = new Thickness(10),
+                Effect = new System.Windows.Media.Effects.DropShadowEffect
+                {
+                    BlurRadius = 12,
+                    ShadowDepth = 3,
+                    Opacity = 0.25
+                }
+            };
+
+            // OPCIONES HORIZONTALES
+            StackPanel opciones = new StackPanel
+            {
+                Orientation = Orientation.Horizontal
+            };
+
+            // BOTÓN EDITAR
+            Button btnEditar = new Button
+            {
+                Content = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Children =
+            {
+                new TextBlock
+                {
+                    Text = "✎",
+                    FontSize = 17,
+                    Margin = new Thickness(0, 0, 7, 0)
+                },
+                new TextBlock
+                {
+                    Text = "Editar",
+                    FontSize = 14,
+                    VerticalAlignment = VerticalAlignment.Center
+                }
+            }
+                },
+                Background = new SolidColorBrush(
+                    Color.FromRgb(230, 239, 237)),
+                Foreground = new SolidColorBrush(
+                    Color.FromRgb(23, 71, 90)),
+                BorderThickness = new Thickness(0),
+                Padding = new Thickness(7, 3, 7, 3),
+                Cursor = System.Windows.Input.Cursors.Hand,
+                Margin = new Thickness(0, 0, 8, 0)
+            };
+
+            // BOTÓN CANCELAR
+            Button btnCancelar = new Button
+            {
+                Content = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Children =
+            {
+                new TextBlock
+                {
+                    Text = "✕",
+                    FontSize = 18,
+                    Margin = new Thickness(0, 0, 7, 0)
+                },
+                new TextBlock
+                {
+                    Text = "Cancelar",
+                    FontSize = 14,
+                    VerticalAlignment = VerticalAlignment.Center
+                }
+            }
+                },
+                Background = new SolidColorBrush(
+                    Color.FromRgb(230, 239, 237)),
+                Foreground = new SolidColorBrush(
+                    Color.FromRgb(23, 71, 90)),
+                BorderThickness = new Thickness(0),
+                Padding = new Thickness(7, 3, 7, 3),
+                Cursor = System.Windows.Input.Cursors.Hand
+            };
+
+            opciones.Children.Add(btnEditar);
+            opciones.Children.Add(btnCancelar);
+
+            contenedor.Child = opciones;
+
+            // POPUP PERSONALIZADO
+            Popup menu = new Popup
+            {
+                Child = contenedor,
+                PlacementTarget = elemento,
+                Placement = PlacementMode.Left,
+                HorizontalOffset = -5,
+                VerticalOffset = 0,
+                AllowsTransparency = true,
+                StaysOpen = false
+            };
+
+            // ACCIÓN EDITAR
+            btnEditar.Click += async (s, e) =>
+            {
+                menu.IsOpen = false;
+
+                ModificarCitaWindow ventana =
+                    new ModificarCitaWindow(evento.IdEvento)
+                    {
+                        Owner = Window.GetWindow(this)
+                    };
+
+                if (ventana.ShowDialog() == true)
+                {
+                    await CargarProximasAsync();
+                    await CargarEventosAsync();
+
+                    MostrarNotificacion(
+                        "La cita se modificó con éxito.",
+                        true);
+                }
+            };
+
+            // ACCIÓN CANCELAR
+            btnCancelar.Click += async (s, e) =>
+            {
+                menu.IsOpen = false;
+
+                ConfirmarDescarteWindow confirmacion =
+                    new ConfirmarDescarteWindow(
+                        "¿Seguro que desea cancelar esta cita?")
+                    {
+                        Owner = Window.GetWindow(this),
+                        Title = "CANCELAR CITA"
+                    };
+
+                if (confirmacion.ShowDialog() != true)
+                    return;
+
+                try
+                {
+                    await agendaService.CancelarAsync(evento.IdEvento);
+
+                    await CargarProximasAsync();
+                    await CargarEventosAsync();
+
+                    MostrarNotificacion(
+                        "La cita se canceló con éxito.",
+                        true);
+                }
+                catch (Exception)
+                {
+                    MostrarNotificacion(
+                        "No fue posible cancelar la cita.",
+                        false);
+                }
+            };
+
+            menu.IsOpen = true;
         }
-
-
 
         // CITAS QUE CAEN EN UN DÍA (incluye las de varios días)
         private List<EventoAgenda> EventosDelDia(DateTime dia)
@@ -678,7 +840,8 @@ namespace ClinicSyncDesktop.Views
                 }
             };
 
-            barra.MouseLeftButtonUp += (s, e) => Evento_Click(ev);
+            barra.MouseLeftButtonUp += (s, e) =>
+                Evento_Click(ev, barra);
 
             return barra;
         }

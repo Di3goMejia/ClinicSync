@@ -52,13 +52,19 @@ namespace ClinicSyncDesktop.Services
         public async Task<DisponibilidadAgenda> VerificarDisponibilidadAsync(
             DateTime inicio,
             DateTime fin,
-            CancellationToken ct = default)
+            CancellationToken ct = default,
+            int? idEventoExcluir = null)
         {
             ct.ThrowIfCancellationRequested();
 
             string ruta =
                 $"api/agenda/disponibilidad?fechaInicio={Uri.EscapeDataString(Fecha(inicio))}" +
                 $"&fechaFinal={Uri.EscapeDataString(Fecha(fin))}";
+
+            if (idEventoExcluir.HasValue)
+            {
+                ruta += $"&idEventoExcluir={idEventoExcluir.Value}";
+            }
 
             return await ClienteApi.ObtenerAutenticadoAsync<DisponibilidadAgenda>(ruta);
 
@@ -79,6 +85,21 @@ namespace ClinicSyncDesktop.Services
                 .OrderBy(p => p.Apellidos)
                 .ThenBy(p => p.Nombres)
                 .ToList();
+        }
+
+
+        // OBTENER UNA CITA POR ID
+        public async Task<EventoAgenda> ObtenerPorIdAsync(
+            int idEvento,
+            CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            if (idEvento <= 0)
+                throw new ArgumentException("El identificador de la cita no es válido.");
+
+            return await ClienteApi.ObtenerAutenticadoAsync<EventoAgenda>(
+                $"api/agenda/{idEvento}");
         }
 
         // REGISTRAR CITA
@@ -130,6 +151,84 @@ namespace ClinicSyncDesktop.Services
             return resultado?.IdEvento
                 ?? throw new HttpRequestException(
                     "La API no devolvió el identificador de la cita.");
+        }
+
+        // MODIFICAR CITA
+        public async Task ModificarAsync(
+            int idEvento,
+            int idPaciente,
+            string titulo,
+            DateTime inicio,
+            DateTime fin,
+            string? color = null,
+            string? direccion = null,
+            string? notas = null,
+            bool todoElDia = false,
+            CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            if (idEvento <= 0)
+                throw new ArgumentException("El identificador de la cita no es válido.");
+
+            var solicitud = new
+            {
+                IdPaciente = idPaciente,
+                Titulo = titulo,
+                FechaInicio = DateTime.SpecifyKind(inicio, DateTimeKind.Unspecified),
+                FechaFinal = DateTime.SpecifyKind(fin, DateTimeKind.Unspecified),
+                Color = color,
+                Direccion = direccion,
+                Notas = notas,
+                TodoElDia = todoElDia
+            };
+
+            using var respuesta = await ClienteApi.PutAutenticadoAsync(
+                $"api/agenda/citas/{idEvento}",
+                solicitud,
+                ct);
+
+            if (!respuesta.IsSuccessStatusCode)
+            {
+                string mensaje = await ObtenerMensajeErrorAsync(
+                    respuesta,
+                    "No fue posible modificar la cita.",
+                    ct);
+
+                throw new HttpRequestException(
+                    mensaje,
+                    null,
+                    respuesta.StatusCode);
+            }
+        }
+
+        // CANCELAR CITA
+        public async Task CancelarAsync(
+            int idEvento,
+            CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            if (idEvento <= 0)
+                throw new ArgumentException("El identificador de la cita no es válido.");
+
+            using var respuesta = await ClienteApi.PostAutenticadoAsync(
+                $"api/agenda/citas/{idEvento}/cancelar",
+                new { },
+                ct);
+
+            if (!respuesta.IsSuccessStatusCode)
+            {
+                string mensaje = await ObtenerMensajeErrorAsync(
+                    respuesta,
+                    "No fue posible cancelar la cita.",
+                    ct);
+
+                throw new HttpRequestException(
+                    mensaje,
+                    null,
+                    respuesta.StatusCode);
+            }
         }
 
         // LEER EL MENSAJE DE ERROR DE LA API
