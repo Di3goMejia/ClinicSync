@@ -51,6 +51,7 @@
     </UserControl.Resources>
 
     <Grid Margin="18,20,18,18">
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="260"/>
             <ColumnDefinition Width="18"/>
@@ -131,7 +132,6 @@
             </StackPanel>
         </Border>
 
-        <!-- AQUÍ IRÁ EL CALENDARIO (paso 2) -->
         <!-- CALENDARIO -->
         <Border Grid.Column="2"
                 Background="#D9DDD8"
@@ -141,6 +141,16 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
+
+                <!-- CONTENEDOR DE NOTIFICACIONES -->
+                <StackPanel x:Name="PanelAvisos"
+                            Grid.Row="1"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Margin="0,0,10,10"
+                            Panel.ZIndex="100"
+                            IsHitTestVisible="True"
+                            Visibility="Collapsed"/>
 
                 <!-- ENCABEZADO DEL CALENDARIO -->
                 <Grid Grid.Row="0" Margin="0,0,0,12">

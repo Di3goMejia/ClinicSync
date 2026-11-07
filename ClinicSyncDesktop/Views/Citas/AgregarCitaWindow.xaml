@@ -430,6 +430,19 @@
 
             </StackPanel>
 
+            <!-- MENSAJE DE VALIDACIÓN -->
+            <TextBlock x:Name="txtError"
+                       Grid.Row="1"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Bottom"
+                       Foreground="#E34462"
+                       FontSize="12"
+                       FontWeight="SemiBold"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       Margin="26,0,26,45"
+                       Visibility="Collapsed"/>
+
             <!-- BOTÓN AGREGAR -->
             <Border Grid.Row="2"
                     Background="{StaticResource Turquesa}"

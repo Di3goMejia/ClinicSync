@@ -505,7 +505,7 @@ namespace ClinicSyncDesktop.Views
             if (guardando)
                 return;
 
-            var confirmar = new DescartarPacienteWindow
+            var confirmar = new ConfirmarDescarteWindow
             {
                 Owner = this
             };

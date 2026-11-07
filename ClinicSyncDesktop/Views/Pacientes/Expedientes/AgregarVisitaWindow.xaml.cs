@@ -744,8 +744,8 @@ namespace ClinicSyncDesktop.Views
             RoutedEventArgs e)
         {
             // REUTILIZAR VENTANA EXISTENTE
-            DescartarPacienteWindow confirmar =
-                new DescartarPacienteWindow();
+            ConfirmarDescarteWindow confirmar =
+                new ConfirmarDescarteWindow();
 
             confirmar.Owner = this;
 

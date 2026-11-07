@@ -3,14 +3,15 @@ using System.Windows;
 
 namespace ClinicSyncDesktop.Views
 {
-    public partial class DescartarArchivoWindow : Window
+    public partial class ConfirmarDescarteWindow : Window
     {
-        public DescartarArchivoWindow()
+        public ConfirmarDescarteWindow(string mensaje = "¿Seguro que desea descartar este registro?")
         {
             InitializeComponent();
+            txtMensaje.Text = mensaje;
         }
 
-        // CONFIRMAR DESACTIVACIÓN
+        // SÍ: DESCARTAR EL REGISTRO
         private void Si_Click(
             object sender,
             RoutedEventArgs e)
@@ -18,16 +19,8 @@ namespace ClinicSyncDesktop.Views
             DialogResult = true;
         }
 
-        // CANCELAR
+        // NO: REGRESAR AL FORMULARIO
         private void No_Click(
-            object sender,
-            RoutedEventArgs e)
-        {
-            DialogResult = false;
-        }
-
-        // CERRAR CON LA X
-        private void Cerrar_Click(
             object sender,
             RoutedEventArgs e)
         {

@@ -36,6 +36,17 @@ namespace ClinicSyncDesktop.Views
             Loaded += AgendaView_Loaded;
         }
 
+        // MOSTRAR NOTIFICACIONES
+        private void MostrarNotificacion(string mensaje, bool exitoso)
+        {
+            AvisoNotificacion aviso =
+                new AvisoNotificacion(mensaje, exitoso);
+
+            PanelAvisos.Visibility = Visibility.Visible;
+
+            PanelAvisos.Children.Add(aviso);
+        }
+
         private async void AgendaView_Loaded(
          object sender,
          RoutedEventArgs e)
@@ -57,11 +68,7 @@ namespace ClinicSyncDesktop.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    "No fue posible cargar las próximas citas.\n\n" + ex.Message,
-                    "ClinicSync",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
+                MostrarNotificacion("No fue posible cargar las próximas citas.", false);
             }
         }
 
@@ -79,6 +86,8 @@ namespace ClinicSyncDesktop.Views
             {
                 await CargarProximasAsync();
                 await CargarEventosAsync();
+
+                MostrarNotificacion("La cita se agregó con éxito.", true);
             }
         }
 
@@ -605,11 +614,7 @@ namespace ClinicSyncDesktop.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    "No fue posible cargar el calendario.\n\n" + ex.Message,
-                    "ClinicSync",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
+                MostrarNotificacion("No fue posible cargar el calendario.", false);
             }
         }
 

@@ -813,8 +813,8 @@ namespace ClinicSyncDesktop.Views
                 boton.Tag is not Guid idArchivo)
                 return;
 
-            DescartarArchivoWindow advertencia =
-                new DescartarArchivoWindow
+            ConfirmarDescarteWindow advertencia =
+                new ConfirmarDescarteWindow("¿Seguro que desea descartar este archivo?")
                 {
                     Owner = this
                 };
@@ -923,7 +923,7 @@ namespace ClinicSyncDesktop.Views
             RoutedEventArgs e)
         {
             var confirmacion =
-                new DescartarPacienteWindow
+                new ConfirmarDescarteWindow
                 {
                     Owner = this
                 };

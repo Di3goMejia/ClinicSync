@@ -43,7 +43,7 @@ namespace ClinicSyncDesktop.Views
         private void MostrarAviso(string mensaje, bool exitoso)
         {
             PanelAvisos.Children.Add(
-                new AvisoPaciente(mensaje, exitoso));
+                new AvisoNotificacion(mensaje, exitoso));
 
             PanelAvisos.Visibility = Visibility.Visible;
         }

@@ -28,12 +28,12 @@ namespace ClinicSyncDesktop.Views
             Loaded += TratamientosView_Loaded;
         }
 
-        // Mostrar notificaciones con el mismo diseño que Pacientes.
+        // Mostrar notificaciones.
         private void MostrarAviso(string mensaje, bool exitoso)
         {
             PanelAvisos.Children.Clear();
 
-            AvisoPaciente aviso = new AvisoPaciente(
+            AvisoNotificacion aviso = new AvisoNotificacion(
                 mensaje,
                 exitoso);
 
