@@ -197,5 +197,58 @@ namespace ClinicSyncServer.Features.Agenda.Data
                 throw Traducir(ex);
             }
         }
+
+        // MODIFICAR UNA CITA
+        public async Task ModificarAsync(
+            int idEvento,
+            CitaRequest req,
+            CancellationToken ct = default)
+        {
+            await using var db = factory.Crear();
+            await db.OpenAsync(ct);
+
+            try
+            {
+                var p = ParametrosCita(req);
+
+                p.Add("@IdEvento", idEvento, DbType.Int32);
+
+                var cmd = new CommandDefinition(
+                    "api.usp_Citas_Modificar",
+                    p,
+                    commandType: CommandType.StoredProcedure,
+                    cancellationToken: ct);
+
+                await db.ExecuteAsync(cmd);
+            }
+            catch (SqlException ex) when (SqlErrorTranslator.EsTraducible(ex))
+            {
+                throw Traducir(ex);
+            }
+        }
+
+        // CANCELAR UNA CITA
+        public async Task CancelarAsync(
+            int idEvento,
+            CancellationToken ct = default)
+        {
+            await using var db = factory.Crear();
+            await db.OpenAsync(ct);
+
+            try
+            {
+                var cmd = new CommandDefinition(
+                    "api.usp_Citas_Cancelar",
+                    new { IdEvento = idEvento },
+                    commandType: CommandType.StoredProcedure,
+                    cancellationToken: ct);
+
+                await db.ExecuteAsync(cmd);
+            }
+            catch (SqlException ex) when (SqlErrorTranslator.EsTraducible(ex))
+            {
+                throw Traducir(ex);
+            }
+        }
     }
 }

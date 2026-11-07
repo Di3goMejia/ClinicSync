@@ -60,6 +60,23 @@ namespace ClinicSyncServer.Features.Agenda
             return await repo.InsertarAsync(req, idEmpleado, ct);
         }
 
-       
+        // MODIFICAR UNA CITA
+        public Task ModificarAsync(
+            int idEvento,
+            CitaRequest req,
+            CancellationToken ct = default)
+        {
+            return repo.ModificarAsync(idEvento, req, ct);
+        }
+
+        // CANCELAR UNA CITA
+        public Task CancelarAsync(
+            int idEvento,
+            CancellationToken ct = default)
+        {
+            return repo.CancelarAsync(idEvento, ct);
+        }
+
+
     }
 }

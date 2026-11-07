@@ -22,6 +22,17 @@ namespace ClinicSyncServer.Features.Agenda
             int idUsuario,
             CancellationToken ct = default);
 
+        // MODIFICAR UNA CITA
+        Task ModificarAsync(
+            int idEvento,
+            CitaRequest req,
+            CancellationToken ct = default);
+
+        // CANCELAR UNA CITA
+        Task CancelarAsync(
+            int idEvento,
+            CancellationToken ct = default);
+
         Task<int> InsertarAsync(
             CitaRequest req,
             int idUsuario,
