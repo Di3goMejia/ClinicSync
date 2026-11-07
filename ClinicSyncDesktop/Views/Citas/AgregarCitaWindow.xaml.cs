@@ -62,9 +62,7 @@ namespace ClinicSyncDesktop.Views
             }
             catch (Exception ex)
             {
-                MensajeWindow.MostrarError(
-                    this,
-                    "No se pudo cargar la lista de pacientes.\n" + ex.Message);
+                MostrarError("No se pudo cargar la lista de pacientes. " + ex.Message);
             }
         }
 
@@ -197,10 +195,14 @@ namespace ClinicSyncDesktop.Views
             if (guardando)
                 return;
 
-            bool descartar = MensajeWindow.MostrarConfirmacion(
-                this,
-                "¿Seguro que desea descartar esta cita?",
-                "CUIDADO!");
+            ConfirmarDescarteWindow advertencia =
+                new ConfirmarDescarteWindow(
+                    "¿Seguro que desea descartar esta cita?")
+                {
+                    Owner = this
+                };
+
+            bool descartar = advertencia.ShowDialog() == true;
 
             if (descartar)
                 DialogResult = false;
@@ -211,6 +213,8 @@ namespace ClinicSyncDesktop.Views
         {
             if (guardando)
                 return;
+
+            LimpiarError();
 
             bool todoElDia = chkTodoElDia.IsChecked == true;
 
@@ -223,10 +227,7 @@ namespace ClinicSyncDesktop.Views
                  (cmbHoraInicio.SelectedItem is null ||
                   cmbHoraFin.SelectedItem is null)))
             {
-                MensajeWindow.MostrarAviso(
-                    this,
-                    "Se deben llenar los campos obligatorios.");
-
+                MostrarError("Se deben llenar los campos obligatorios.");
                 return;
             }
 
@@ -245,10 +246,7 @@ namespace ClinicSyncDesktop.Views
 
             if (ordenInvalido)
             {
-                MensajeWindow.MostrarAviso(
-                    this,
-                    "La fecha y hora final deben ser posteriores a las de inicio.");
-
+                MostrarError("La fecha y hora final deben ser posteriores a las de inicio.");
                 return;
             }
 
@@ -269,7 +267,9 @@ namespace ClinicSyncDesktop.Views
 
                 if (!disponibilidad.Disponible)
                 {
-                    HoraNoDisponibleWindow.Mostrar(this);
+                    MostrarError(
+                    "El horario seleccionado no está disponible. " +
+                    "Por favor, selecciona otro horario.");
                     return;
                 }
 
@@ -284,27 +284,16 @@ namespace ClinicSyncDesktop.Views
                     txtNotas.Text,
                     todoElDia);
 
-                MensajeWindow.MostrarExito(
-                    this,
-                    "La cita se agregó con éxito.");
-
                 DialogResult = true;
             }
             catch (HttpRequestException ex)
                 when (ex.StatusCode == HttpStatusCode.Conflict)
             {
-                // Horario ocupado (burbuja del Figma) u otro conflicto
-                // (por ejemplo, el paciente ya tiene una cita a esa hora).
-                if (ex.Message.Contains("Esta hora", StringComparison.OrdinalIgnoreCase))
-                    HoraNoDisponibleWindow.Mostrar(this);
-                else
-                    MensajeWindow.MostrarAviso(this, ex.Message);
+                MostrarError(ex.Message);
             }
             catch (Exception ex)
             {
-                MensajeWindow.MostrarError(
-                    this,
-                    "La cita NO se agregó.\n" + ex.Message);
+                MostrarError("La cita NO se agregó.\n" + ex.Message);
             }
             finally
             {
@@ -314,5 +303,20 @@ namespace ClinicSyncDesktop.Views
                     boton.IsEnabled = true;
             }
         }
+
+        // MOSTRAR ERROR DE VALIDACIÓN
+        private void MostrarError(string mensaje)
+        {
+            txtError.Text = mensaje;
+            txtError.Visibility = Visibility.Visible;
+        }
+
+        // LIMPIAR ERROR DE VALIDACIÓN
+        private void LimpiarError()
+        {
+            txtError.Text = string.Empty;
+            txtError.Visibility = Visibility.Collapsed;
+        }
+
     }
 }

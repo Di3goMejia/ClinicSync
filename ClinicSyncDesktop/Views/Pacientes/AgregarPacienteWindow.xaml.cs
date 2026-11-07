@@ -362,8 +362,8 @@ namespace ClinicSyncDesktop.Views
             if (guardando)
                 return;
 
-            DescartarPacienteWindow ventana =
-                new DescartarPacienteWindow();
+            ConfirmarDescarteWindow ventana =
+                new ConfirmarDescarteWindow();
 
             ventana.Owner = this;
 

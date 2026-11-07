@@ -141,9 +141,14 @@ namespace ClinicSyncDesktop.Views
 
             if (tieneCambios)
             {
-                bool descartar = MensajeWindow.MostrarConfirmacion(
-                    this,
-                    "¿Seguro que desea descartar esta edición?");
+                ConfirmarDescarteWindow advertencia =
+                    new ConfirmarDescarteWindow(
+                        "¿Seguro que desea descartar esta edición?")
+                    {
+                        Owner = this
+                    };
+
+                bool descartar = advertencia.ShowDialog() == true;
 
                 if (!descartar)
                     return;

@@ -37,7 +37,7 @@ namespace ClinicSyncDesktop.Views
         {
             PanelAvisos.Children.Clear();
 
-            AvisoPaciente aviso = new AvisoPaciente(
+            AvisoNotificacion aviso = new AvisoNotificacion(
                 mensaje,
                 exitoso);
 

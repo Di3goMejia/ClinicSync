@@ -63,7 +63,7 @@ namespace ClinicSyncDesktop.Views
         {
             PanelAvisos.Children.Clear();
 
-            AvisoPaciente aviso = new(mensaje, exitoso);
+            AvisoNotificacion aviso = new(mensaje, exitoso);
 
             PanelAvisos.Visibility = Visibility.Visible;
 
@@ -517,7 +517,7 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
-            DescartarArchivoWindow advertencia = new()
+            ConfirmarDescarteWindow advertencia = new ConfirmarDescarteWindow("¿Seguro que desea descartar este archivo?")
             {
                 Owner = Window.GetWindow(this)
             };

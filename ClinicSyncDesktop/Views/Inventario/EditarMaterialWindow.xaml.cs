@@ -314,7 +314,7 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
-            var confirmacion = new DescartarPacienteWindow
+            var confirmacion = new ConfirmarDescarteWindow
             {
                 Owner = this
             };

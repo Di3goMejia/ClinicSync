@@ -7,11 +7,11 @@ using System.Windows.Threading;
 
 namespace ClinicSyncDesktop.Views
 {
-    public partial class AvisoPaciente : UserControl
+    public partial class AvisoNotificacion : UserControl
     {
         private readonly DispatcherTimer temporizador;
 
-        public AvisoPaciente(
+        public AvisoNotificacion(
             string mensaje,
             bool exitoso)
         {
@@ -42,7 +42,7 @@ namespace ClinicSyncDesktop.Views
 
             temporizador.Start();
 
-            Unloaded += AvisoPaciente_Unloaded;
+            Unloaded += AvisoNotificacion_Unloaded;
         }
 
         // DESAPARECER AUTOMÁTICAMENTE
@@ -80,7 +80,7 @@ namespace ClinicSyncDesktop.Views
         }
 
         // DETENER TEMPORIZADOR AL QUITARLO
-        private void AvisoPaciente_Unloaded(
+        private void AvisoNotificacion_Unloaded(
             object sender,
             RoutedEventArgs e)
         {
