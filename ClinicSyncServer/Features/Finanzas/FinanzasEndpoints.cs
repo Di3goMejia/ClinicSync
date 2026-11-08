@@ -41,9 +41,14 @@ namespace ClinicSyncServer.Features.Finanzas
 
         public sealed class TratamientoIngresoDto
         {
+            public int IdTratamientoVisita { get; set; }
+
             public int IdTratamiento { get; set; }
+
             public string Nombre { get; set; } = "";
+
             public decimal Precio { get; set; }
+
             public int Cantidad { get; set; }
         }
 
@@ -331,8 +336,21 @@ namespace ClinicSyncServer.Features.Finanzas
                     {
                         await using var db = factory.Crear();
 
+
+                        int esIngresoDeVisita = await db.ExecuteScalarAsync<int>(
+                            @"SELECT CASE WHEN EXISTS (
+                            SELECT 1
+                            FROM dbo.DetalleIngresos
+                            WHERE IdIngreso = @IdIngreso
+                             ) THEN 1 ELSE 0 END",
+                            new { IdIngreso = idIngreso });
+
+                        string procedimiento = esIngresoDeVisita == 1
+                            ? "api.usp_Finanzas_Ingreso_EditarDesdeVisita"
+                            : "api.usp_Finanzas_Ingreso_Editar";
+
                         await db.ExecuteAsync(
-                            "api.usp_Finanzas_Ingreso_Editar",
+                            procedimiento,
                             new
                             {
                                 IdIngreso = idIngreso,
@@ -342,11 +360,11 @@ namespace ClinicSyncServer.Features.Finanzas
                                 request.Descuento,
                                 request.Activo,
                                 IdUsuario = idUsuario,
-                                TratamientosJson =
-                                    System.Text.Json.JsonSerializer.Serialize(
-                                        request.IdsTratamientos)
+                                TratamientosJson = JsonSerializer.Serialize(
+                                    request.IdsTratamientos)
                             },
                             commandType: CommandType.StoredProcedure);
+
 
                         return Results.Ok(new
                         {
@@ -354,11 +372,13 @@ namespace ClinicSyncServer.Features.Finanzas
                         });
                     }
                     catch (Microsoft.Data.SqlClient.SqlException ex)
-                        when (ex.Number >= 51200 && ex.Number <= 51299)
+                        when ((ex.Number >= 51200 && ex.Number <= 51299) ||
+                              (ex.Number >= 51401 && ex.Number <= 51416))
                     {
                         return Results.BadRequest(
                             new { mensaje = ex.Message });
                     }
+
                     catch (Exception ex)
                     {
                         logger.LogError(

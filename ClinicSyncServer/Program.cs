@@ -14,6 +14,7 @@ using ClinicSyncServer.Features.Finanzas;
 using ClinicSyncServer.Infrastructure;
 using ClinicSyncServer.Infrastructure.Auth;
 using ClinicSyncServer.Features.Agenda;
+using ClinicSyncServer.Features.Notificaciones;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
@@ -93,5 +94,6 @@ app.MapFinanzasEndpoints();
 app.MapExpedientesModule();
 app.MapEgresosModule();
 app.MapAgendaModule();
+app.MapNotificacionesEndpoints();
 app.Run();
 

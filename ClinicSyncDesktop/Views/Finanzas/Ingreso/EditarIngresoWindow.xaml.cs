@@ -24,6 +24,7 @@ namespace ClinicSyncDesktop.Views
         private int idPacienteSeleccionado;
         private bool guardando;
         private bool cargando;
+        private bool ingresoDeVisita;
 
         public EditarIngresoWindow(int idIngreso)
         {
@@ -82,18 +83,12 @@ namespace ClinicSyncDesktop.Views
                     await servicio.ObtenerIngresoPorIdAsync(idIngreso);
 
                 idPacienteSeleccionado = ingreso.IdPaciente;
+                ingresoDeVisita = ingreso.Tratamientos.Any(
+                    t => t.IdTratamientoVisita > 0);
 
                 // 3. Mostrar los datos del ingreso.
                 var paciente = pacientes.FirstOrDefault(
                     p => p.IdPaciente == ingreso.IdPaciente);
-
-                var listaTratamientos =
-                    await servicio.ObtenerTratamientosAsync(
-                        paciente!.IdPaciente, DateTime.Today);
-
-                catalogoTratamientos =
-                    listaTratamientos?.ToList()
-                    ?? new List<TratamientoIngreso>();
 
                 TxtPaciente.Text = paciente != null
                     ? paciente.NombreCompleto
@@ -118,38 +113,38 @@ namespace ClinicSyncDesktop.Views
                 }
 
                 // 5. Recuperar tratamientos asociados.
-                var idsTratamientos = ingreso.Tratamientos
-                    .Select(t => t.IdTratamiento)
-                    .ToHashSet();
 
-                tratamientosElegidos = catalogoTratamientos
-                    .Where(t => idsTratamientos.Contains(t.IdTratamiento))
+                // Recuperar directamente los tratamientos del ingreso.
+                tratamientosElegidos = ingreso.Tratamientos
                     .ToList();
 
+                // Mostrar los tratamientos aunque ya estén cobrados.
                 TxtTratamientos.Text =
-                    string.Join(", ",
-                        tratamientosElegidos.Select(t => t.Nombre));
+                    tratamientosElegidos.Count == 0
+                        ? "Seleccione tratamientos"
+                        : string.Join(", ",
+                            tratamientosElegidos.Select(t => t.Nombre));
 
-                if (tratamientosElegidos.Count != idsTratamientos.Count)
-                {
-                    ErrorTratamientos.Text =
-                        "Algunos tratamientos del ingreso no están " +
-                        "disponibles en el catálogo actual.";
-                }
+                // Consultar tratamientos disponibles para la fecha
+                // del ingreso, no para DateTime.Today.
+                var disponibles =
+                    await servicio.ObtenerTratamientosAsync(
+                        idPacienteSeleccionado,
+                        ingreso.Fecha.Date);
 
-                // 6. Comprobar si cargaron los catálogos.
-                if (pacientes.Count == 0)
-                {
-                    ErrorPaciente.Text =
-                        "No se encontraron pacientes disponibles.";
-                }
+                // Conservar los disponibles y los ya asociados.
+                catalogoTratamientos = disponibles
+                    .Concat(tratamientosElegidos)
+                    .GroupBy(t => t.IdTratamientoVisita > 0
+                        ? "V" + t.IdTratamientoVisita
+                        : "C" + t.IdTratamiento)
+                    .Select(g => g.First())
+                    .ToList();
 
-                if (catalogoTratamientos.Count == 0)
-                {
-                    ErrorTratamientos.Text =
-                        "No se encontraron tratamientos en el catálogo.";
-                }
+                ErrorTratamientos.Text = "";
+
                 BtnGuardarCambios.IsEnabled = true;
+
             }
             catch (Exception ex)
             {
@@ -266,26 +261,53 @@ namespace ClinicSyncDesktop.Views
 
         // SELECCIONAR TRATAMIENTOS
 
+
         private async void SeleccionarTratamientos_Click(
             object sender, RoutedEventArgs e)
         {
             ErrorTratamientos.Text = "";
 
+            if (idPacienteSeleccionado <= 0)
+            {
+                ErrorPaciente.Text = "Seleccione un paciente.";
+                return;
+            }
+
+            if (DpFecha.SelectedDate == null)
+            {
+                ErrorFecha.Text = "Seleccione una fecha.";
+                return;
+            }
+
             try
             {
-                // Obtener el catálogo completo.
-                var resultado =
-                    await servicio.ObtenerTratamientosAsync(
-                        idPacienteSeleccionado, DateTime.Today);
+                DateTime fecha = DpFecha.SelectedDate.Value.Date;
 
-                catalogoTratamientos =
-                    resultado?.ToList()
-                    ?? new List<TratamientoIngreso>();
+                // Consultar solamente tratamientos pendientes
+                // del paciente para la fecha seleccionada.
+                var disponibles =
+                    await servicio.ObtenerTratamientosAsync(
+                        idPacienteSeleccionado, fecha);
+
+                // Conservar tratamientos ya asociados al ingreso
+                // únicamente si el paciente y la fecha son los mismos.
+                var propios = tratamientosElegidos
+                    .Where(t => t.IdTratamientoVisita > 0)
+                    .ToList();
+
+                catalogoTratamientos = disponibles
+                    .Concat(propios)
+                    .GroupBy(t => t.IdTratamientoVisita > 0
+                        ? "V" + t.IdTratamientoVisita
+                        : "C" + t.IdTratamiento)
+                    .Select(g => g.First())
+                    .ToList();
 
                 if (catalogoTratamientos.Count == 0)
                 {
                     ErrorTratamientos.Text =
-                        "No existen tratamientos disponibles.";
+                        "No existen tratamientos registrados " +
+                        "para el paciente en la fecha seleccionada.";
                     return;
                 }
 
@@ -305,9 +327,9 @@ namespace ClinicSyncDesktop.Views
                         string.Join(", ",
                             tratamientosElegidos.Select(t => t.Nombre));
 
-                    Recalcular_Click(
-                        TxtDescuento,
-                        null!);
+                    ErrorTratamientos.Text = "";
+
+                    Recalcular_Click(TxtDescuento, null!);
                 }
             }
             catch (Exception ex)
@@ -317,6 +339,7 @@ namespace ClinicSyncDesktop.Views
                     ex.Message;
             }
         }
+
 
 
         // VALIDAR DESCUENTO AL MODIFICAR
@@ -379,6 +402,26 @@ namespace ClinicSyncDesktop.Views
 
             fecha = fechaSeleccionada.Date.Add(hora);
             return true;
+        }
+
+        private void LimpiarTratamientosSeleccionados()
+        {
+            tratamientosElegidos.Clear();
+            catalogoTratamientos.Clear();
+
+            TxtTratamientos.Text = "Seleccione tratamientos";
+            ErrorTratamientos.Text = "";
+            ErrorDescuento.Text = "";
+        }
+
+        private void DpFecha_SelectedDateChanged(
+            object sender, SelectionChangedEventArgs e)
+        {
+            if (cargando)
+                return;
+
+            LimpiarTratamientosSeleccionados();
+            ErrorFecha.Text = "";
         }
 
         private bool ValidarFormulario()
@@ -475,10 +518,14 @@ namespace ClinicSyncDesktop.Views
                     MedioPago = medio.Content?.ToString() ?? "",
                     Activo = TglActivo.IsChecked == true,
 
+
                     IdsTratamientos = tratamientosElegidos
-                        .Select(t => t.IdTratamiento)
-                        .Distinct()
-                        .ToList()
+                    .Select(t => ingresoDeVisita
+                        ? t.IdTratamientoVisita
+                        : t.IdTratamiento)
+                    .Distinct()
+                    .ToList()
+
                 };
 
                 await servicio.ActualizarIngresoAsync(

@@ -384,7 +384,8 @@
                                         BorderThickness="0"
                                         FontSize="13"
                                         Padding="5,0"
-                                        VerticalContentAlignment="Center"/>
+                                        VerticalContentAlignment="Center"         
+                                        SelectedDateChanged="DpFecha_SelectedDateChanged"/>
                         </Border>
 
                         <TextBlock Text="Hora (HH:mm):"
