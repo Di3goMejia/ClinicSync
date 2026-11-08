@@ -1,7 +1,9 @@
-﻿using ClinicSyncServer.Common;
-using ClinicSyncServer.Features.Usuarios.Requests;
+﻿using ClinicSyncServer.Features.Usuarios.Requests;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+
+using PermisosSeguridad = ClinicSyncServer.Common.Seguridad.Permisos;
+using ClaimsPersonalizados = ClinicSyncServer.Common.Seguridad.ClaimsPersonalizados;
 
 namespace ClinicSyncServer.Features.Usuarios
 {
@@ -9,25 +11,34 @@ namespace ClinicSyncServer.Features.Usuarios
     {   
         public static void MapUsuariosEndpoints(this WebApplication app)
         {
-            var auth = app.MapGroup("/api/usuarios/").RequireAuthorization();
+            var usuarios = app.MapGroup("/api/usuarios/").RequireAuthorization();
 
             // ENDPOINT CREAR
-            auth.MapPost("/", async (IUsuariosService svc, [FromBody] CrearUsuarioRequest usuario) =>
+            usuarios.MapPost("/", async (IUsuariosService svc, [FromBody] CrearUsuarioRequest usuario) =>
             {
                 var resp = await svc.CrearAsync(usuario);
 
                 return Results.Created($"/api/usuarios/{resp.IdUsuario}", resp);
             })
             .WithName("CrearUsuario")
-            .RequireAuthorization(Common.Seguridad.Permisos.UsuariosCrear);
+            .RequireAuthorization(PermisosSeguridad.UsuariosCrear);
 
-            // ENDPOINT OBTENER USUARIO
-            auth.MapGet("/{id:int}", async (int id, ClaimsPrincipal usuario, IUsuariosService svc) =>
+            // ENDPOINT LISTAR
+            usuarios.MapGet("/", async (IUsuariosService svc) =>
+            {
+                var listado = await svc.ListarAsync();
+                return Results.Ok(listado);
+            })
+            .WithName("ListarUsuarios")
+            .RequireAuthorization(PermisosSeguridad.UsuariosLeer);
+
+            // ENDPOINT OBTENER USUARIO POR ID
+            usuarios.MapGet("/{id:int}", async (int id, ClaimsPrincipal usuario, IUsuariosService svc) =>
             {
                 var idSolicitante = int.Parse(usuario.FindFirstValue("sub")!);
                 var puedeLeerTodos = usuario.HasClaim(
-                    Common.Seguridad.ClaimsPersonalizados.Permiso, 
-                    Common.Seguridad.Permisos.UsuariosLeer
+                    ClaimsPersonalizados.Permiso, 
+                    PermisosSeguridad.UsuariosLeer
                 );
 
                 var detalle = await svc.ObtenerAsync(id, idSolicitante, puedeLeerTodos);
@@ -35,7 +46,19 @@ namespace ClinicSyncServer.Features.Usuarios
                     ? Results.NotFound()
                     : Results.Ok(detalle);
             })
-            .WithName("ObtenerUsuario");
+            .WithName("ObtenerUsuario")
+            .RequireAuthorization(PermisosSeguridad.UsuariosLeer);
+
+            // ENDPOINT MODIFICAR USUARIO POR ID
+            usuarios.MapPut("/{id:int}", async (int id, [FromBody] ModificarUsuarioRequest req, IUsuariosService svc) =>
+            {
+                var solicitud = req with { IdUsuario = id };
+                await svc.ModificarAsync(solicitud);
+
+                return Results.NoContent();
+            })
+            .WithName("ModificarUsuario")
+            .RequireAuthorization(PermisosSeguridad.UsuariosModificar);
         }
     }
 }

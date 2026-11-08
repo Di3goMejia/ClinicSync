@@ -3,7 +3,6 @@
 namespace ClinicSyncServer.Features.Usuarios.Requests
 {
     public record ModificarUsuarioRequest(
-        [property: Required(ErrorMessage = "El ID de usuario es obligatorio.")]
         int? IdUsuario,
 
         [property: Required(ErrorMessage = "El número de identidad es obligatorio.")]

@@ -70,15 +70,54 @@ namespace ClinicSyncServer.Infrastructure.Email
             await smtp.DisconnectAsync(true, ct);
         }
 
-        public Task EnviarActivacionAsync(
+        public async Task EnviarActivacionAsync(
             string correo,
             string nombre,
             string token,
             CancellationToken ct = default)
         {
-            // Conservar aquí la implementación existente
-            // de activación de cuentas cuando esté disponible.
-            return Task.CompletedTask;
+            string remitente = _config["Gmail:Correo"]
+                ?? throw new Exception("Falta configurar Gmail.");
+
+            string password = _config["Gmail:Password"]
+                ?? throw new Exception("Falta la clave de Gmail.");
+
+            var mensaje = new MimeMessage();
+
+            mensaje.From.Add(
+                new MailboxAddress("ClinicSync", remitente));
+
+            mensaje.To.Add(MailboxAddress.Parse(correo));
+
+            mensaje.Subject = "Activacion de Cuenta - ClinicSync";
+
+            mensaje.Body = new TextPart("plain")
+            {
+                Text =
+                    $"Hola, {nombre}\n\n" +
+                    "Un administrador te ha creado una cuenta en ClinicSync.\n\n" +
+                    "Para ingresar, utiliza el siguiente código:\n\n" +
+                    token + "\n\n" +
+                    "Este código caduca en 1 día.\n\n" +
+                    "ClinicSync"
+            };
+
+            using var smtp = new SmtpClient();
+
+            await smtp.ConnectAsync(
+                "smtp.gmail.com",
+                587,
+                SecureSocketOptions.StartTls,
+                ct);
+
+            await smtp.AuthenticateAsync(
+                remitente,
+                password,
+                ct);
+
+            await smtp.SendAsync(mensaje, ct);
+
+            await smtp.DisconnectAsync(true, ct);
         }
     }
 }

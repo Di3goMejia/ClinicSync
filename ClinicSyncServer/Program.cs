@@ -5,6 +5,7 @@ using ClinicSyncServer.Features.Auth;
 using ClinicSyncServer.Features.Permisos;
 using ClinicSyncServer.Features.Sesiones;
 using ClinicSyncServer.Features.Usuarios;
+using ClinicSyncServer.Features.Roles;
 using ClinicSyncServer.Features.Tratamientos;
 using ClinicSyncServer.Features.Inventario;
 using ClinicSyncServer.Features.Pacientes;
@@ -48,6 +49,7 @@ builder.Services
     .AddSesiones()
     .AddAuth()
     .AddUsuarios()
+    .AddRoles()
     .AddTratamientos()
     .AddInventario()
     .AddPacientes()
@@ -87,6 +89,7 @@ app.UseAntiforgery();
 /* Endpoints */
 app.MapAuth();
 app.MapUsuarios();
+app.MapRoles();
 app.MapTratamientos();
 app.MapInventario();
 app.MapPacientesModule();

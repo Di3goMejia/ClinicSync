@@ -1,17 +1,12 @@
 ﻿using ClinicSyncDesktop.Data;
 using ClinicSyncDesktop.Services;
 using ClinicSyncDesktop.Views;
-using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Views.Notificaciones;
-using System.Threading.Tasks;
 using System.Windows.Threading;
-using ClinicSyncDesktop.Views.Notificaciones;
-
-
+using System.Diagnostics;
 
 namespace ClinicSync.Views
 {
@@ -19,18 +14,15 @@ namespace ClinicSync.Views
     {
         private Button? botonSeleccionado;
 
-        // SERVICIO PARA TRATAMIENTOS
-        private readonly TratamientosApiService tratamientosService =
-            new TratamientosApiService();
+        private readonly TratamientosApiService tratamientosService = new();
+        private readonly NotificacionesApiService notificacionesService = new();
 
-        public MenuLateral()
-        {
-            InitializeComponent();
-            PrepararNotificaciones();
-            AbrirModulo("Pacientes");
-        }
+        private readonly DispatcherTimer relojNotificaciones =
+            new() { Interval = TimeSpan.FromMinutes(1) };
 
-        public MenuLateral(string modulo)
+        private bool cargandoNotificaciones;
+
+        public MenuLateral(string modulo = "Pacientes")
         {
             InitializeComponent();
             PrepararNotificaciones();
@@ -46,7 +38,7 @@ namespace ClinicSync.Views
                 PerfilActual perfil =
                     await ClienteApi.ObtenerPerfilAsync();
 
-                NombrePerfil.Text = perfil.NombreUsuario;
+                NombrePerfil.Text = perfil.NombreEmpleado;
                 RolPerfil.Text = perfil.Rol;
             }
             catch (Exception)
@@ -62,9 +54,7 @@ namespace ClinicSync.Views
         {
             if (sender is Button boton)
             {
-                string modulo =
-                    boton.Tag?.ToString() ?? "Inicio";
-
+                string modulo = boton.Tag?.ToString() ?? "Inicio";
                 AbrirModulo(modulo);
             }
         }
@@ -72,54 +62,44 @@ namespace ClinicSync.Views
         // ABRIR MÓDULOS
         public void AbrirModulo(string modulo)
         {
-            if (modulo == "Inicio")
-            {
-                MenuPrincipal inicio = new MenuPrincipal();
-
-                Application.Current.MainWindow = inicio;
-                inicio.Show();
-                Close();
-                return;
-            }
-
             switch (modulo)
             {
+                case "Inicio":
+                    MenuPrincipal inicio = new();
+
+                    Application.Current.MainWindow = inicio;
+                    inicio.Show();
+                    
+                    Close();
+                    break;
+
                 case "Pacientes":
-                    ContenidoPrincipal.Content =
-                        new PacientesView();
+                    ContenidoPrincipal.Content = new PacientesView();
                     break;
 
                 case "Tratamientos":
-                    ContenidoPrincipal.Content =
-                        new TratamientosView(tratamientosService);
+                    ContenidoPrincipal.Content = new TratamientosView(tratamientosService);
                     break;
 
                 case "Inventario":
-                    ContenidoPrincipal.Content =
-                        new InventarioView();
+                    ContenidoPrincipal.Content = new InventarioView();
                     break;
 
                 case "Finanzas":
-                    ContenidoPrincipal.Content =
-                        new FinanzasView();
+                    ContenidoPrincipal.Content = new FinanzasView();
                     break;
 
                 case "Agenda":
-                    ContenidoPrincipal.Content =
-                        new AgendaView();
+                    ContenidoPrincipal.Content = new AgendaView();
                     break;
 
                 case "Seguridad":
-                    ContenidoPrincipal.Content =
-                         CrearVistaTemporal("Seguridad");
+                    ContenidoPrincipal.Content = new SeguridadView();
                     break;
 
                 case "Notificaciones":
                     ContenidoPrincipal.Content = new NotificacionesView();
                     break;
-
-                    return;
-
 
                 default:
                     ContenidoPrincipal.Content =
@@ -147,29 +127,21 @@ namespace ClinicSync.Views
         {
             if (botonSeleccionado != null)
             {
-                botonSeleccionado.Background =
-                    Brushes.Transparent;
-
-                botonSeleccionado.Foreground =
-                    Brushes.White;
+                botonSeleccionado.Background = Brushes.Transparent;
+                botonSeleccionado.Foreground = Brushes.White;
             }
 
             if (boton != null)
             {
-                boton.Background =
-                    new SolidColorBrush(
-                        Color.FromRgb(146, 212, 222));
-
-                boton.Foreground =
-                    new SolidColorBrush(
-                        Color.FromRgb(23, 71, 90));
+                boton.Background = new SolidColorBrush(Color.FromRgb(146, 212, 222));
+                boton.Foreground = new SolidColorBrush(Color.FromRgb(23, 71, 90));
 
                 botonSeleccionado = boton;
             }
         }
 
         // VISTA TEMPORAL
-        private UserControl CrearVistaTemporal(string modulo)
+        private static UserControl CrearVistaTemporal(string modulo)
         {
             return new UserControl
             {
@@ -182,13 +154,9 @@ namespace ClinicSync.Views
                             Text = modulo,
                             FontSize = 28,
                             FontWeight = FontWeights.Bold,
-                            Foreground =
-                                new SolidColorBrush(
-                                    Color.FromRgb(23, 71, 90)),
-                            HorizontalAlignment =
-                                HorizontalAlignment.Center,
-                            VerticalAlignment =
-                                VerticalAlignment.Center
+                            Foreground = new SolidColorBrush(Color.FromRgb(23, 71, 90)),
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center
                         }
                     }
                 }
@@ -198,9 +166,7 @@ namespace ClinicSync.Views
         // ABRIR EXPEDIENTE
         public void AbrirExpediente(int idPaciente)
         {
-            ContenidoPrincipal.Content =
-                new ExpedientesView(idPaciente);
-
+            ContenidoPrincipal.Content = new ExpedientesView(idPaciente);
             ResaltarBoton(btnPacientes);
         }
 
@@ -215,9 +181,7 @@ namespace ClinicSync.Views
             object sender, RoutedEventArgs e)
         {
             PopupPerfil.IsOpen = false;
-
-            PopupNotificaciones.IsOpen =
-                !PopupNotificaciones.IsOpen;
+            PopupNotificaciones.IsOpen = !PopupNotificaciones.IsOpen;
 
             if (PopupNotificaciones.IsOpen)
             {
@@ -238,13 +202,13 @@ namespace ClinicSync.Views
         {
             try
             {
-                await servicioNotificaciones.MarcarTodasAsync();
+                await notificacionesService.MarcarTodasAsync();
 
                 await CargarNotificacionesAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex);
+                Debug.WriteLine(ex);
             }
         }
 
@@ -289,23 +253,13 @@ namespace ClinicSync.Views
                 return;
             }
 
-            Login login = new Login();
+            Login login = new();
 
             Application.Current.MainWindow = login;
             login.Show();
+
             Close();
         }
-
-        private readonly NotificacionesApiService
-            servicioNotificaciones = new();
-
-        private readonly DispatcherTimer relojNotificaciones =
-            new()
-            {
-                Interval = TimeSpan.FromMinutes(1)
-            };
-
-        private bool cargandoNotificaciones;
 
         private void PrepararNotificaciones()
         {
@@ -333,8 +287,7 @@ namespace ClinicSync.Views
             try
             {
                 // OBTENER NOTIFICACIONES
-                var todas =
-                    await servicioNotificaciones.ListarAsync();
+                var todas = await notificacionesService.ListarAsync();
 
                 // SOLO NOTIFICACIONES VISIBLES
                 var visibles = todas
@@ -371,7 +324,7 @@ namespace ClinicSync.Views
                             // MARCAR COMO LEÍDA
                             async () =>
                             {
-                                await servicioNotificaciones
+                                await notificacionesService
                                     .MarcarLeidaAsync(
                                         n.IdNotificacion);
 
@@ -403,7 +356,7 @@ namespace ClinicSync.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(
+                Debug.WriteLine(
                     "Error al cargar notificaciones: " +
                     ex.Message);
             }
@@ -412,7 +365,5 @@ namespace ClinicSync.Views
                 cargandoNotificaciones = false;
             }
         }
-
-
     }
 }

@@ -1,7 +1,10 @@
 ﻿using ClinicSyncServer.Common.Abstracciones;
 using ClinicSyncServer.Features.Usuarios.Data;
+using ClinicSyncServer.Features.Usuarios.Projections;
 using ClinicSyncServer.Features.Usuarios.Requests;
 using ClinicSyncServer.Features.Usuarios.Responses;
+using Microsoft.Data.SqlClient;
+using System.Data;
 using System.Security.Cryptography;
 
 namespace ClinicSyncServer.Features.Usuarios
@@ -40,6 +43,16 @@ namespace ClinicSyncServer.Features.Usuarios
                 u.Nombres, u.Apellidos, u.FechaNacimiento, u.Genero, u.Telefono, 
                 u.CorreoContacto, u.ImagenPerfil, u.NombreUsuario, u.CorreoLogin, 
                 u.IdRol, u.Estado, u.FechaRegistro);
+        }
+
+        public async Task<IEnumerable<UsuarioListado>> ListarAsync()
+        {
+            return await repo.ListarAsync();
+        }
+
+        public async Task ModificarAsync(ModificarUsuarioRequest req, CancellationToken ct = default)
+        {
+            await repo.ModificarAsync(req);
         }
     }
 }

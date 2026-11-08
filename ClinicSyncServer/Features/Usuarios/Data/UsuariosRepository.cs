@@ -62,11 +62,10 @@ namespace ClinicSyncServer.Features.Usuarios.Data
                         req.FechaNacimiento,
                         req.Genero,
                         req.Telefono,
-                        req.IDRol,
+                        req.IdRol,
                         req.NombreUsuario,
                         req.CorreoLogin,
                         req.CorreoContacto,
-                        req.ImagenPerfil,
                         TokenHash = tokenHash,
                         Expira = expira
                     },
@@ -99,6 +98,25 @@ namespace ClinicSyncServer.Features.Usuarios.Data
                 new { Id = id },
                 commandType: CommandType.StoredProcedure
             );
+        }
+
+        public async Task ModificarAsync(ModificarUsuarioRequest req)
+        {
+            await using SqlConnection db = factory.Crear();
+            await db.OpenAsync();
+
+            try
+            {
+                await db.ExecuteAsync(
+                    "api.usp_Usuarios_Modificar",
+                    req,
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+            catch (SqlException ex) when (SqlErrorTranslator.EsTraducible(ex))
+            {
+                throw SqlErrorTranslator.Traducir(ex);
+            }
         }
     }
 }

@@ -1,5 +1,8 @@
-﻿using ClinicSyncServer.Features.Usuarios.Requests;
+﻿using ClinicSyncServer.Features.Usuarios.Projections;
+using ClinicSyncServer.Features.Usuarios.Requests;
 using ClinicSyncServer.Features.Usuarios.Responses;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace ClinicSyncServer.Features.Usuarios
 {
@@ -12,5 +15,8 @@ namespace ClinicSyncServer.Features.Usuarios
             int idSolicitante,
             bool puedeVerTodos,
             CancellationToken ct = default);
+
+        Task<IEnumerable<UsuarioListado>> ListarAsync();
+        Task ModificarAsync(ModificarUsuarioRequest req, CancellationToken ct = default);
     }
 }

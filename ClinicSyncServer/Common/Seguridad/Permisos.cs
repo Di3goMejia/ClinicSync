@@ -6,6 +6,8 @@ namespace ClinicSyncServer.Common.Seguridad
         // USUARIOS
         public const string UsuariosLeer = "USUARIOS_LEER";
         public const string UsuariosCrear = "USUARIOS_CREAR";
+        public const string UsuariosModificar = "USUARIOS_MODIFICAR";
+        public const string UsuariosEstado = "USUARIOS_ESTADO";
 
         // TRATAMIENTOS
         public const string TratamientosCrear = "TRATAMIENTOS_CREAR";
@@ -42,11 +44,25 @@ namespace ClinicSyncServer.Common.Seguridad
         public const string AgendaLeer = "AGENDA_LEER";
         public const string AgendaModificar = "AGENDA_MODIFICAR";
 
+        // ROLES
+        public const string RolesLeer = "ROLES_LEER";
+        public const string RolesCrear = "ROLES_CREAR";
+        public const string RolesModificar = "ROLES_MODIFICAR";
+        public const string RolesEstado = "ROLES_ESTADO";
+
         public static readonly IReadOnlyList<string> Todos =
         [
             // USUARIOS
             UsuariosLeer,
             UsuariosCrear,
+            UsuariosModificar,
+            UsuariosEstado,
+
+            // ROLES
+            RolesLeer,
+            RolesCrear,
+            RolesModificar,
+            RolesEstado,
 
             // TRATAMIENTOS
             TratamientosLeer,
