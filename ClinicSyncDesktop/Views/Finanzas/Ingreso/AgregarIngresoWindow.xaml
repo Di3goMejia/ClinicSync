@@ -365,7 +365,7 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Tratamiento(s): *"
+                            <TextBlock Text="Tratamiento: *"
                                        Style="{StaticResource Etiqueta}"/>
 
                             <Grid>

@@ -221,21 +221,39 @@
                             Margin="0,0,30,0">
 
                     <!-- ICONO ORIGINAL DE NOTIFICACIONES -->
+
                     <Button x:Name="btnCampana"
                             Style="{StaticResource BotonIcono}"
-                            Click="Campana_Click"
-                            Width="62">
+                            Click="Campana_Click">  
 
-                        <Border Width="36"
-                                Height="36"
-                                CornerRadius="18"
-                                Background="#138DAA">
+                        <Grid Width="36" Height="36">
 
-                            <Image Source="/Resources/Imagenes MenuPrincipal/campana-blanca.png"
-                                   Width="23"
-                                   Height="23"/>
-                        </Border>
+                            <!-- FONDO E IMAGEN ORIGINAL DE LA CAMPANA -->
+                            <Border Width="36"
+                                    Height="36"
+                                    CornerRadius="18"
+                                    Background="White">
+
+                                <Image Source="/Resources/Imagenes MenuPrincipal/campana-azul.png"
+                                       Width="23"
+                                       Height="23"/>    
+                            </Border>
+
+                            <!-- PUNTO DE NOTIFICACIONES PENDIENTES -->
+                            <Ellipse x:Name="PuntoPendientes"
+                                     Width="9"
+                                     Height="9"
+                                     Fill="#22BEC5"
+                                     Stroke="White"
+                                     StrokeThickness="1"
+                                     HorizontalAlignment="Right"
+                                     VerticalAlignment="Top"
+                                     Margin="0,1,1,0"
+                                     Visibility="Collapsed"/>   
+
+                        </Grid>
                     </Button>
+
 
                     <!-- ICONO ORIGINAL DE USUARIO -->
                     <Button x:Name="btnUsuario"
@@ -318,11 +336,50 @@
                             Cursor="Hand"
                             Click="MarcarLeidas_Click"/>
 
-                    <Grid Grid.Row="2"
-                          Background="White">
-                        <StackPanel x:Name="ListaAhora"/>
-                        <StackPanel x:Name="ListaAnteriores"/>
-                    </Grid>
+
+                    <!-- CONTENIDO DE LAS NOTIFICACIONES -->
+                    <ScrollViewer Grid.Row="2"
+                          Background="White"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+
+                        <StackPanel Margin="8,6,8,8">
+
+                            <!-- NOTIFICACIONES DE HOY -->
+                            <TextBlock x:Name="TituloAhora"
+                               Text="Ahora"
+                               FontSize="13"
+                               FontWeight="Bold"
+                               Foreground="#17475A"
+                               Margin="5,4,0,6"
+                               Visibility="Collapsed"/>
+
+                            <StackPanel x:Name="ListaAhora"/>
+
+                            <!-- NOTIFICACIONES ANTERIORES -->
+                            <TextBlock x:Name="TituloAnteriores"
+                               Text="Más temprano"
+                               FontSize="13"
+                               FontWeight="Bold"
+                               Foreground="#17475A"
+                               Margin="5,12,0,6"
+                               Visibility="Collapsed"/>
+
+                            <StackPanel x:Name="ListaAnteriores"/>
+
+                            <!-- MENSAJE CUANDO NO HAY NOTIFICACIONES -->
+                            <TextBlock x:Name="MensajeSinNotificaciones"
+                               Text="No hay notificaciones."
+                               FontSize="12"
+                               Foreground="#6B777C"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               Margin="8,22,8,0"
+                               Visibility="Collapsed"/> 
+
+                        </StackPanel>
+                    </ScrollViewer>
+
 
                     <Border Grid.Row="3"
                             Background="{StaticResource FondoMenu}"
