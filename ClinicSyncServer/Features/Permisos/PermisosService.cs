@@ -7,5 +7,10 @@ namespace ClinicSyncServer.Features.Permisos
     {
         public Task<PermisosUsuario?> ObtenerPorUsuarioAsync(int idUsuario, CancellationToken ct = default) =>
             permisos.ObtenerPorUsuarioAsync(idUsuario);
+
+        public Task<IReadOnlyList<PermisoCatalogo>> ListarAsync(CancellationToken ct = default) =>
+            Task.FromResult<IReadOnlyList<PermisoCatalogo>>(
+                Common.Seguridad.Permisos.Todos.Select(
+                    codigo => new PermisoCatalogo(codigo, codigo.Split('_')[0], codigo)).ToList());
     }
 }

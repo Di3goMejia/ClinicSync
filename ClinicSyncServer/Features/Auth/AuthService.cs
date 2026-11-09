@@ -92,8 +92,28 @@ namespace ClinicSyncServer.Features.Auth
         public Task CerrarSesionAsync(Guid idSesion) =>
             sesiones.CerrarAsync(idSesion, "LOGOUT");
 
-        public async Task ActivarCuentaAsync(string token, string nuevaPassword) =>
-            await UsarTokenAsync(token, "PRIMER_ACCESO", nuevaPassword);
+        public async Task ValidarTokenActivacionAsync(string token, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                throw new ReglaNegocioException("Ingrese el código o token de activación.", 50011);
+
+            var hash = ObtenerHashTokenActivacion(token);
+
+            var valido = await tokens.ValidarTokenAsync(hash, "PRIMER_LOGIN", ct);
+            if (!valido)
+                throw new ReglaNegocioException("El código es incorrecto o ha caducado.", 50011);
+        }
+
+        public async Task ActivarCuentaAsync(string token, string nuevaPassword, string? confirmarPassword = null)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                throw new ReglaNegocioException("Ingrese el código o token de activación.", 50011);
+
+            if (confirmarPassword is not null && nuevaPassword != confirmarPassword)
+                throw new ReglaNegocioException("Las contraseñas no coinciden.", 50011);
+
+            await UsarTokenAsync(token.Trim(), "PRIMER_LOGIN", nuevaPassword);
+        }
 
         public async Task RestablecerContrasenaAsync(
     string identificador,
@@ -192,12 +212,33 @@ namespace ClinicSyncServer.Features.Auth
                 ct);
         }
 
+        private static byte[] ObtenerHashTokenActivacion(string token)
+        {
+            token = token.Trim();
+
+            // Compatibilidad retroactiva con tokens anteriores de 32 bytes en Base64 (44 caracteres)
+            if (token.Length == 44 && token.EndsWith("="))
+            {
+                try
+                {
+                    var bytes = Convert.FromBase64String(token);
+                    if (bytes.Length == 32)
+                        return SHA256.HashData(bytes);
+                }
+                catch (FormatException)
+                {
+                    // Si no es base64 válido, continúa con UTF-8
+                }
+            }
+
+            return SHA256.HashData(Encoding.UTF8.GetBytes(token));
+        }
+
         private async Task UsarTokenAsync(string token, string proposito, string nuevaPassword)
         {
             ValidarPolitica(nuevaPassword);
 
-            var hash = tokenService.HashRefreshToken(token)
-                ?? throw new ReglaNegocioException("El enlace no es válido o expiró.", CodigoEnlace);
+            var hash = ObtenerHashTokenActivacion(token);
 
             // El procedimiento valida, consume el token y revoca las sesiones en una transacción
             await credenciales.EstablecerPasswordAsync(hash, proposito, hasher.Hash(nuevaPassword));

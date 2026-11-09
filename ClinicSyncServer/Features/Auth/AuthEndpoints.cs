@@ -44,12 +44,30 @@ namespace ClinicSyncServer.Features.Auth
                     await auth.RenovarAsync(req.RefreshToken, ct));
             });
 
+            publico.MapPost("/validar-token", async (
+                ValidarTokenRequest req,
+                IAuthService auth,
+                CancellationToken ct) =>
+            {
+                await auth.ValidarTokenActivacionAsync(req.Token, ct);
+                return Results.Ok();
+            });
+
+            publico.MapPost("/validar-activacion", async (
+                ValidarTokenRequest req,
+                IAuthService auth,
+                CancellationToken ct) =>
+            {
+                await auth.ValidarTokenActivacionAsync(req.Token, ct);
+                return Results.Ok();
+            });
+
             publico.MapPost("/activar", async (
                 ActivarCuentaRequest req,
                 IAuthService auth) =>
             {
                 await auth.ActivarCuentaAsync(
-                    req.Token, req.NuevaPassword);
+                    req.Token, req.NuevaPassword, req.ConfirmarPassword);
 
                 return Results.NoContent();
             });

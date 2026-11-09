@@ -150,7 +150,7 @@ namespace ClinicSyncDesktop.Views
             if (sender is not Button boton)
                 return;
 
-            vistaActual = boton.Tag as string switch
+            vistaActual = (boton.Tag as string) switch
             {
                 "Dia" => VistaCalendario.Dia,
                 "Semana" => VistaCalendario.Semana,

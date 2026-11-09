@@ -18,6 +18,13 @@ namespace ClinicSyncServer.Infrastructure.Email
             return Task.CompletedTask;
         }
 
+        public Task EnviarDesactivacionAsync(
+            string correo,
+            string nombre,
+            CancellationToken ct = default) => Task.CompletedTask;
+
+        public Task EnviarReactivacionAsync(string correo, string nombre, CancellationToken ct = default) => Task.CompletedTask;
+
         public Task EnviarRestablecimientoAsync(
             string correo,
             string token,

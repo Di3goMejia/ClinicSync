@@ -9,10 +9,12 @@
         public int IdUsuario { get; set; }
         public int IdEmpleado { get; set; }
         public int IdRol { get; set; }
+        public string NombreRol { get; set; } = string.Empty;
         public string Nombres { get; set; } = string.Empty;
         public string Apellidos { get; set; } = string.Empty;
         public string? ImagenPerfil { get; set; }
-        public DateTime UltimoAcceso { get; set; }
+        public DateTime? UltimoAcceso { get; set; }
+        public DateTime? UltimoLogin { get => UltimoAcceso; set => UltimoAcceso = value; }
         public string Estado { get; set; } = "PENDIENTE";
     }
 }

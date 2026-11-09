@@ -1,0 +1,79 @@
+<Window x:Class="ClinicSyncDesktop.Views.Seguridad.EditarRolWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Rol" Width="650" Height="600" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" WindowStyle="None" AllowsTransparency="True" Background="Transparent">
+    <Window.Resources>
+        <LinearGradientBrush x:Key="Turquesa" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#32A5AB"/>
+            <GradientStop Color="#138DAA" Offset="1"/>
+        </LinearGradientBrush>
+        <Style x:Key="Campo" TargetType="TextBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="10,0"/>
+        </Style>
+        <Style x:Key="Boton" TargetType="Button">
+            <Setter Property="Background" Value="#92D4DE"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="14,6"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
+    <Border Margin="7" Background="White" CornerRadius="15" ClipToBounds="True">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="42"/>
+                <RowDefinition Height="52"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="{StaticResource Turquesa}" MouseLeftButtonDown="Encabezado_MouseLeftButtonDown">
+                <Grid>
+                    <TextBlock Text="Editar rol" Foreground="White" FontSize="16" FontWeight="Bold" Margin="16,0" VerticalAlignment="Center"/>
+                    <Button Content="×" HorizontalAlignment="Right" Width="30" Background="Transparent" Foreground="White" BorderThickness="0" FontSize="22" Click="Cancelar_Click"/>
+                </Grid>
+            </Border>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button x:Name="BtnInfo" Content="Información del rol" Style="{StaticResource Boton}" Click="Info_Click"/>
+                <Button x:Name="BtnPermisos" Content="Permisos" Style="{StaticResource Boton}" Margin="8,0,0,0" Click="Permisos_Click"/>
+            </StackPanel>
+            <Grid Grid.Row="2" Margin="30,10">
+                <StackPanel x:Name="PanelInfo">
+                    <TextBlock Text="Nombre *" Foreground="#17475A" FontWeight="SemiBold"/>
+                    <TextBox x:Name="TxtNombre" Style="{StaticResource Campo}" Margin="0,4,0,14"/>
+                    <TextBlock Text="Descripción" Foreground="#17475A" FontWeight="SemiBold"/>
+                    <TextBox x:Name="TxtDescripcion" Style="{StaticResource Campo}" Height="70" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,4,0,14"/>
+                    <StackPanel x:Name="PanelRolBase">
+                        <TextBlock Text="Rol base" Foreground="#17475A" FontWeight="SemiBold"/>
+                        <ComboBox x:Name="CmbRolBase" DisplayMemberPath="Nombre" Height="30" Margin="0,4,0,14"/>
+                    </StackPanel>
+                    <CheckBox x:Name="ChkActivo" Content="Rol activo" Foreground="#17475A" IsChecked="True"/>
+                </StackPanel>
+                <StackPanel x:Name="PanelPermisos" Visibility="Collapsed">
+                    <TextBlock x:Name="TxtMensajePermisos" Foreground="#17475A" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox x:Name="TxtBuscarPermiso" Style="{StaticResource Campo}" Width="260" TextChanged="FiltroPermisos_TextChanged"/>
+                        <ComboBox x:Name="CmbModulo" Width="150" Height="30" Margin="8,0,0,0" SelectionChanged="FiltroPermisos_Changed"/>
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Visible" Margin="0,12,0,0">
+                        <ItemsControl x:Name="ListaPermisos">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Content="{Binding Nombre}" Tag="{Binding Codigo}" IsChecked="{Binding Seleccionado}" Margin="4"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </StackPanel>
+                <TextBlock x:Name="TxtError" Foreground="#B3261E" TextWrapping="Wrap" VerticalAlignment="Bottom" Visibility="Collapsed"/>
+            </Grid>
+            <Border Grid.Row="3" Background="{StaticResource Turquesa}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,18,0" VerticalAlignment="Center">
+                    <Button Content="Guardar" Style="{StaticResource Boton}" Click="Guardar_Click"/>
+                    <Button Content="Cancelar" Style="{StaticResource Boton}" Margin="8,0,0,0" Click="Cancelar_Click"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

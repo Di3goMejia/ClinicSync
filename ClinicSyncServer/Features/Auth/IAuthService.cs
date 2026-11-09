@@ -11,7 +11,8 @@ namespace ClinicSyncServer.Features.Auth
         Task<LoginResponse> VerificarSegundoFactorAsync(VerificarSegundoFactorRequest req, DatosCliente cliente, CancellationToken ct = default);
         Task<LoginResponse> RenovarAsync(string refreshToken, CancellationToken ct = default);
         Task CerrarSesionAsync(Guid idSesion);
-        Task ActivarCuentaAsync(string token, string nuevaPassword);
+        Task ValidarTokenActivacionAsync(string token, CancellationToken ct = default);
+        Task ActivarCuentaAsync(string token, string nuevaPassword, string? confirmarPassword = null);
         Task SolicitarRestablecimientoAsync(string identificador, CancellationToken ct = default);
         Task RestablecerContrasenaAsync(
         string identificador,

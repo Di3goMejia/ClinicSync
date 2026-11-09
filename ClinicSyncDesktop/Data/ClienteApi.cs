@@ -147,6 +147,98 @@ namespace ClinicSyncDesktop.Data
             return await EnviarJsonAutenticadoAsync<T>(HttpMethod.Patch, ruta, contenido, ct);
         }
 
+        public static async Task SubirArchivoAutenticadoAsync(
+            string ruta,
+            string rutaArchivo,
+            string nombreCampo,
+            CancellationToken ct = default)
+        {
+            if (!File.Exists(rutaArchivo))
+                throw new FileNotFoundException("No se encontró la imagen seleccionada.", rutaArchivo);
+
+            var tokenAnterior = accessToken ??
+                throw new InvalidOperationException("No hay una sesión iniciada.");
+
+            async Task<HttpResponseMessage> EnviarAsync(string token)
+            {
+                using var solicitud = new HttpRequestMessage(HttpMethod.Post, ruta);
+                solicitud.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                solicitud.Headers.Add("X-Equipo", Environment.MachineName);
+
+                using var formulario = new MultipartFormDataContent();
+                await using var archivo = File.OpenRead(rutaArchivo);
+                using var contenido = new StreamContent(archivo);
+                contenido.Headers.ContentType = new MediaTypeHeaderValue(
+                    Path.GetExtension(rutaArchivo).ToLowerInvariant() switch
+                    {
+                        ".jpg" or ".jpeg" => "image/jpeg",
+                        ".png" => "image/png",
+                        _ => "application/octet-stream"
+                    });
+                formulario.Add(contenido, nombreCampo, Path.GetFileName(rutaArchivo));
+                solicitud.Content = formulario;
+                return await cliente.SendAsync(solicitud, ct);
+            }
+
+            using var respuesta = await EnviarAsync(tokenAnterior);
+            if (respuesta.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                await bloqueoRenovacion.WaitAsync(ct);
+                try
+                {
+                    if (accessToken == tokenAnterior)
+                        await RenovarSesionAsync();
+                }
+                finally
+                {
+                    bloqueoRenovacion.Release();
+                }
+
+                using var reintento = await EnviarAsync(accessToken ??
+                    throw new InvalidOperationException("La sesión terminó."));
+                await VerificarRespuestaAsync(reintento);
+                return;
+            }
+
+            await VerificarRespuestaAsync(respuesta);
+        }
+
+        // VALIDAR TOKEN DE ACTIVACIÓN
+        public static async Task ValidarTokenActivacionAsync(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                throw new InvalidOperationException("El código o token de activación es obligatorio.");
+
+            using var respuesta = await cliente.PostAsJsonAsync(
+                "api/auth/validar-token",
+                new { Token = token.Trim() });
+
+            await VerificarRespuestaAsync(respuesta);
+        }
+
+        public static async Task ActivarCuentaAsync(
+            string token,
+            string nuevaPassword,
+            string confirmarPassword)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                throw new InvalidOperationException("El código o token de activación es obligatorio.");
+
+            if (!string.Equals(nuevaPassword, confirmarPassword, StringComparison.Ordinal))
+                throw new InvalidOperationException("Las contraseñas no coinciden.");
+
+            using var respuesta = await cliente.PostAsJsonAsync(
+                "api/auth/activar",
+                new
+                {
+                    Token = token.Trim(),
+                    NuevaPassword = nuevaPassword,
+                    ConfirmarPassword = confirmarPassword
+                });
+
+            await VerificarRespuestaAsync(respuesta);
+        }
+
         private static async Task<HttpResponseMessage> EnviarJsonAutenticadoAsync<T>(
             HttpMethod metodo,
             string ruta,
@@ -887,6 +979,15 @@ namespace ClinicSyncDesktop.Data
             await VerificarRespuestaAsync(respuesta);
 
             return await respuesta.Content.ReadAsByteArrayAsync();
+        }
+
+        public static async Task<byte[]> DescargarImagenPerfilAsync(int idUsuario, CancellationToken ct = default)
+        {
+            using var respuesta = await EnviarAutenticadoAsync(
+                HttpMethod.Get,
+                $"api/usuarios/{idUsuario}/imagen");
+            await VerificarRespuestaAsync(respuesta);
+            return await respuesta.Content.ReadAsByteArrayAsync(ct);
         }
 
         public static async Task<byte[]> DescargarArchivoAsync(Guid idArchivo)
