@@ -104,6 +104,7 @@ namespace ClinicSyncDesktop.Services
             string concepto,
             string medioPago,
             decimal monto,
+            bool? activo = null,
             CancellationToken ct = default)
         {
             var solicitud = new
@@ -111,7 +112,8 @@ namespace ClinicSyncDesktop.Services
                 Fecha = fecha.ToString("O", CultureInfo.InvariantCulture),
                 Concepto = concepto,
                 MedioPago = medioPago,
-                Monto = monto
+                Monto = monto,
+                Activo = activo
             };
 
             using var respuesta = await ClienteApi.PutAutenticadoAsync(

@@ -18,6 +18,83 @@
             <GradientStop Color="#138DAA" Offset="1"/>
         </LinearGradientBrush>
 
+
+        <!-- COMBOBOX REDONDEADO PARA FILTRAR ESTADOS -->
+        <Style x:Key="ComboFiltroRedondo"
+       TargetType="ComboBox">
+
+            <Setter Property="Width" Value="110"/>
+            <Setter Property="Height" Value="29"/>
+            <Setter Property="Background" Value="#E8F0F0"/>
+            <Setter Property="Foreground" Value="#17465A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+
+                        <Grid>
+                            <!-- FONDO REDONDEADO -->
+                            <Border Background="{TemplateBinding Background}"
+                            CornerRadius="15"/>
+
+                            <!-- BOTÓN PARA ABRIR OPCIONES -->
+                            <ToggleButton
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Focusable="False"
+                        IsChecked="{Binding IsDropDownOpen,
+                            RelativeSource={RelativeSource TemplatedParent},
+                            Mode=TwoWay}">
+
+                                <Grid>
+                                    <ContentPresenter
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left"
+                                Margin="12,0,25,0"
+                                IsHitTestVisible="False"/>
+
+                                    <TextBlock Text="▼"
+                                       Foreground="#168FA7"
+                                       FontSize="10"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,12,0"/>
+                                </Grid>
+                            </ToggleButton>
+
+                            <!-- LISTA DESPLEGABLE -->
+                            <Popup x:Name="PART_Popup"
+                           IsOpen="{TemplateBinding IsDropDownOpen}"
+                           Placement="Bottom"
+                           AllowsTransparency="True"
+                           Focusable="False">
+
+                                <Border Background="White"
+                                BorderBrush="#B5CECE"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                MinWidth="{Binding ActualWidth,
+                                    RelativeSource={RelativeSource TemplatedParent}}">
+
+                                    <ScrollViewer MaxHeight="180"
+                                          VerticalScrollBarVisibility="Auto">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
         <!-- BOTÓN AGREGAR -->
         <Style x:Key="BotonAgregar" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="Transparent"/>
@@ -263,6 +340,22 @@
                                  IsChecked="True"
                                  Style="{StaticResource BotonFiltro}"
                                  Click="Filtro_Click"/>
+
+
+                    <ComboBox x:Name="CmbEstadoEgresos"
+                              Style="{StaticResource ComboFiltroRedondo}"
+                              Margin="10,0,0,0"
+                              SelectedIndex="0"
+                              VerticalAlignment="Center"
+                              SelectionChanged="CmbEstadoEgresos_SelectionChanged"> 
+
+                        <ComboBoxItem Content="Todos" Tag="Todos"/>
+                        <ComboBoxItem Content="Activos" Tag="Activos"/>
+                        <ComboBoxItem Content="Inactivos" Tag="Inactivos"/>
+
+                    </ComboBox>
+
+
                 </StackPanel>
             </Grid>
         </Border>
@@ -325,10 +418,15 @@
         </DataGrid>
 
         <!-- AVISOS (ÉXITO / ERROR) -->
+
         <StackPanel x:Name="PanelAvisos"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Margin="0,8,16,0" Grid.Column="1" Grid.Row="1" Height="0" Width="0"/>
+            Grid.Column="1"
+            Grid.Row="1"
+            Panel.ZIndex="10"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Margin="0,8,16,0"
+            MaxWidth="420"/>
 
     </Grid>
 </UserControl>

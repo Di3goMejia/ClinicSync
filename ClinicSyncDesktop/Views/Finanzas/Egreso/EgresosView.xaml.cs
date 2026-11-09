@@ -1,5 +1,4 @@
-﻿
-using ClinicSyncDesktop.Services;
+﻿using ClinicSyncDesktop.Services;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,7 +12,7 @@ namespace ClinicSyncDesktop.Views
 
         // FILTRO INICIAL
         private string _filtro = "Todos";
-
+        private string _estado = "Todos";
         private bool cargando;
         private bool recargarPendiente;
 
@@ -35,14 +34,21 @@ namespace ClinicSyncDesktop.Views
             string mensaje,
             bool exitoso)
         {
+            // Evitar el error si el panel no está disponible.
+            if (PanelAvisos == null)
+            {
+                System.Diagnostics.Debug.WriteLine(mensaje);
+                return;
+            }
+
             PanelAvisos.Children.Clear();
 
-            AvisoNotificacion aviso = new AvisoNotificacion(
-                mensaje,
-                exitoso);
+            AvisoNotificacion aviso =
+                new AvisoNotificacion(mensaje, exitoso);
 
             PanelAvisos.Children.Add(aviso);
         }
+
 
         // CARGAR EGRESOS
         private async void EgresosView_Loaded(
@@ -53,8 +59,8 @@ namespace ClinicSyncDesktop.Views
         }
 
         // RANGO DE FECHAS SEGÚN EL FILTRO
-        private (DateTime desde, DateTime hasta)
-            ObtenerRango()
+
+        private (DateTime desde, DateTime hasta) ObtenerRango()
         {
             DateTime hoy = DateTime.Today;
 
@@ -62,26 +68,20 @@ namespace ClinicSyncDesktop.Views
             {
                 "Todos" => (
                     DateTime.MinValue,
-                    DateTime.MaxValue),
+                    hoy),
 
                 "Semana" => (
                     hoy.AddDays(-6),
                     hoy),
 
                 "Mes" => (
-                    new DateTime(
-                        hoy.Year,
-                        hoy.Month,
-                        1),
-
-                    new DateTime(
-                        hoy.Year,
-                        hoy.Month,
-                        1).AddMonths(1).AddDays(-1)),
+                    new DateTime(hoy.Year, hoy.Month, 1),
+                    hoy),
 
                 _ => (hoy, hoy)
             };
         }
+
 
         // CONSULTAR EGRESOS
         private async Task CargarEgresosAsync()
@@ -110,28 +110,42 @@ namespace ClinicSyncDesktop.Views
                     recargarPendiente = false;
 
                     string filtroSolicitado = _filtro;
-
+                    string estadoSolicitado = _estado;
                     var (desde, hasta) = ObtenerRango();
+                    bool? activo = _estado switch
+                    {
+                        "Activos" => true,
+                        "Inactivos" => false,
+                        _ => null
+                    };
+
 
                     try
                     {
-                        var egresos =
-                            await _egresosService.ListarAsync(
-                                desde,
-                                hasta);
-
-                        if (filtroSolicitado == _filtro)
+                        var egresos = await _egresosService.ListarAsync(
+                            desde,
+                            hasta,
+                            activo);
+                        if (filtroSolicitado == _filtro &&
+                            estadoSolicitado == _estado)
                         {
-                            dgEgresos.ItemsSource = egresos;
+                            var listaFiltrada = activo.HasValue
+                                ? egresos.Where(x => x.Activo == activo.Value).ToList()
+                                : egresos;
+
+                            dgEgresos.ItemsSource = listaFiltrada;
                         }
+
                     }
-                    catch (Exception)
+
+                    catch (Exception ex)
                     {
-                        if (filtroSolicitado == _filtro)
+                        if (filtroSolicitado == _filtro &&
+                            estadoSolicitado == _estado)
                         {
                             MostrarAviso(
-                                "No fue posible cargar los egresos. " +
-                                "Verifica el servidor y tus permisos.",
+                                "No fue posible cargar los egresos: " +
+                                ex.Message,
                                 false);
                         }
                     }
@@ -219,5 +233,19 @@ namespace ClinicSyncDesktop.Views
                     true);
             }
         }
+        private async void CmbEstadoEgresos_SelectionChanged(
+            object sender,
+            SelectionChangedEventArgs e)
+        {
+            if (CmbEstadoEgresos == null)
+                return;
+
+            _estado =
+                (CmbEstadoEgresos.SelectedItem as ComboBoxItem)?
+                .Tag?.ToString() ?? "Todos";
+
+            await CargarEgresosAsync();
+        }
+
     }
 }

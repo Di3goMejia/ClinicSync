@@ -76,7 +76,6 @@ namespace ClinicSyncServer.Features.Egresos.Data
                     commandType: CommandType.StoredProcedure,
                     cancellationToken: ct));
         }
-
         public async Task ActualizarAsync(
             int idEgreso,
             ActualizarEgresoRequest req,
@@ -95,11 +94,15 @@ namespace ClinicSyncServer.Features.Egresos.Data
                     req.Concepto,
                     req.MedioPago,
                     req.Monto,
-                    IdUsuario = idUsuario
+                    IdUsuario = idUsuario,
+
+                    // ENVIAR EL ESTADO ACTIVO AL PROCEDIMIENTO
+                    Activo = req.Activo
                 },
                 commandType: CommandType.StoredProcedure,
                 cancellationToken: ct));
         }
+
 
         // LISTAR EGRESOS POR RANGO DE FECHAS
         public async Task<IEnumerable<EgresoListado>> ListarAsync(

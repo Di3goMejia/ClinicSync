@@ -10,6 +10,83 @@
         <SolidColorBrush x:Key="ColorFondo" Color="#D9DEDA"/>
         <SolidColorBrush x:Key="ColorTotal" Color="#00A98B"/>
 
+
+        <!-- COMBOBOX REDONDEADO PARA FILTRAR ESTADOS -->
+        <Style x:Key="ComboFiltroRedondo"
+                 TargetType="ComboBox">
+
+            <Setter Property="Width" Value="110"/>
+            <Setter Property="Height" Value="29"/>
+            <Setter Property="Background" Value="#E8F0F0"/>
+            <Setter Property="Foreground" Value="#17465A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+
+                        <Grid>
+                            <!-- FONDO REDONDEADO -->
+                            <Border Background="{TemplateBinding Background}"
+                            CornerRadius="15"/>
+
+                            <!-- BOTÓN PARA ABRIR OPCIONES -->
+                            <ToggleButton
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Focusable="False"
+                                IsChecked="{Binding IsDropDownOpen,
+                                    RelativeSource={RelativeSource TemplatedParent},
+                                    Mode=TwoWay}">
+
+                                <Grid>
+                                    <ContentPresenter
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left"
+                                Margin="12,0,25,0"
+                                IsHitTestVisible="False"/>
+
+                                    <TextBlock Text="▼"
+                                       Foreground="#168FA7"
+                                       FontSize="10"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,12,0"/>
+                                </Grid>
+                            </ToggleButton>
+
+                            <!-- LISTA DESPLEGABLE -->
+                            <Popup x:Name="PART_Popup"
+                           IsOpen="{TemplateBinding IsDropDownOpen}"
+                           Placement="Bottom"
+                           AllowsTransparency="True"
+                           Focusable="False">
+
+                                <Border Background="White"
+                                BorderBrush="#B5CECE"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                MinWidth="{Binding ActualWidth,
+                                    RelativeSource={RelativeSource TemplatedParent}}">
+
+                                    <ScrollViewer MaxHeight="180"
+                                          VerticalScrollBarVisibility="Auto">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
         <!-- ESTILO GENERAL DE LOS FILTROS -->
         <Style x:Key="EstiloFiltro" TargetType="Button">
             <Setter Property="Width" Value="78"/>
@@ -270,7 +347,23 @@
                                 Content="Todos"
                                 Width="85"
                                 Style="{StaticResource EstiloFiltro}"
-                                Click="BtnTodos_Click"/>    
+                                Click="BtnTodos_Click"/>
+
+
+                        <ComboBox x:Name="CmbEstadoIngresos"
+                                  Style="{StaticResource ComboFiltroRedondo}"
+                                  Margin="10,0,0,0"
+                                  SelectedIndex="0"
+                                  VerticalAlignment="Center"
+                                  SelectionChanged="CmbEstadoIngresos_SelectionChanged">
+
+                            <ComboBoxItem Content="Todos" Tag="Todos"/>
+                            <ComboBoxItem Content="Activos" Tag="Activos"/>
+                            <ComboBoxItem Content="Inactivos" Tag="Inactivos"/>
+
+                        </ComboBox>
+
+
 
                     </StackPanel>
                 </Grid>

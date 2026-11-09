@@ -20,7 +20,7 @@ namespace ClinicSyncDesktop.Views
 
         // FILTRO SELECCIONADO
         private string filtroActual = "Todos";
-
+        private string estadoActual = "Todos";
         // EVENTO PARA EDICIÓN
         public event Action<IngresoListado>? EditarIngresoSolicitado;
 
@@ -136,6 +136,13 @@ namespace ClinicSyncDesktop.Views
                     break;
             }
 
+            consulta = estadoActual switch
+            {
+                "Activos" => consulta.Where(i => i.Activo),
+                "Inactivos" => consulta.Where(i => !i.Activo),
+                _ => consulta
+            };
+
             DgIngresos.ItemsSource = consulta
                 .OrderByDescending(i => i.Fecha)
                 .ThenByDescending(i => i.IdIngreso)
@@ -154,6 +161,20 @@ namespace ClinicSyncDesktop.Views
             AplicarFiltro();
         }
 
+        private void CmbEstadoIngresos_SelectionChanged(
+            object sender,
+            SelectionChangedEventArgs e)
+        {
+            if (CmbEstadoIngresos == null ||
+                DgIngresos == null)
+                return;
+
+            estadoActual =
+                (CmbEstadoIngresos.SelectedItem as ComboBoxItem)?
+                .Tag?.ToString() ?? "Todos";
+
+            AplicarFiltro();
+        }
         // ACTUALIZAR LOS COLORES DE LOS CUATRO BOTONES
         private void ActualizarBotones()
         {
