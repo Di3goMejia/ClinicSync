@@ -8,4 +8,5 @@ public sealed record CrearRolRequest(
     string Nombre,
 
     [property: StringLength(500, ErrorMessage = "La descripción no puede superar los 500 caracteres.")]
-    string? Descripcion);
+    string? Descripcion,
+    IReadOnlyList<string>? Permisos = null);

@@ -25,22 +25,22 @@ public sealed class RolesApiService
         return await ClienteApi.ObtenerAutenticadoAsync<Rol>($"api/roles/{idRol}");
     }
 
-    public async Task<RolCreado> CrearAsync(string nombre, string? descripcion, CancellationToken ct = default)
+    public async Task<RolCreado> CrearAsync(string nombre, string? descripcion, IEnumerable<string>? permisos = null, CancellationToken ct = default)
     {
         using var respuesta = await ClienteApi.PostAutenticadoAsync(
             "api/roles",
-            new { nombre, descripcion },
+            new { nombre, descripcion, permisos },
             ct);
         await VerificarRespuestaAsync(respuesta, "No fue posible crear el rol.", ct);
         return await respuesta.Content.ReadFromJsonAsync<RolCreado>(cancellationToken: ct)
             ?? throw new HttpRequestException("La API no devolvió el rol creado.");
     }
 
-    public async Task ModificarAsync(int idRol, string nombre, string? descripcion, CancellationToken ct = default)
+    public async Task ModificarAsync(int idRol, string nombre, string? descripcion, IEnumerable<string>? permisos = null, CancellationToken ct = default)
     {
         using var respuesta = await ClienteApi.PutAutenticadoAsync(
             $"api/roles/{idRol}",
-            new { nombre, descripcion },
+            new { nombre, descripcion, permisos },
             ct);
         await VerificarRespuestaAsync(respuesta, "No fue posible modificar el rol.", ct);
     }

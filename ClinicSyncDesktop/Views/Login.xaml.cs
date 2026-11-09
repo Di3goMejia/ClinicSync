@@ -156,6 +156,17 @@ namespace ClinicSync.Views
             ventana.ShowDialog();
         }
 
+        private void ActivarCuenta_Click(
+        object sender, RoutedEventArgs e)
+        {
+            var ventana =
+                new ClinicSyncDesktop.Views.ActivacionCuentaView();
+
+            ventana.Owner = this;
+
+            ventana.ShowDialog();
+        }
+
         private void ChkRecordarSesion_Checked(object sender, RoutedEventArgs e)
         {
 

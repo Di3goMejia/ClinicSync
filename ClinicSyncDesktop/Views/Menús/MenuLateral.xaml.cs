@@ -7,6 +7,7 @@ using System.Windows.Media;
 using ClinicSyncDesktop.Views.Notificaciones;
 using System.Windows.Threading;
 using System.Diagnostics;
+using ClinicSyncDesktop.Views.Seguridad;
 
 namespace ClinicSync.Views
 {

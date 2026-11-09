@@ -10,5 +10,11 @@ namespace ClinicSyncServer.Features.Permisos
             services.AddScoped<IPermisosService, PermisosService>();
             return services;
         }
+
+        public static WebApplication MapPermisos(this WebApplication app)
+        {
+            app.MapPermisosEndpoints();
+            return app;
+        }
     }
 }

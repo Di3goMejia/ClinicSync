@@ -46,11 +46,14 @@ public sealed class RolesRepository(SqlConnectionFactory factory)
         await using var db = factory.Crear();
         await db.OpenAsync(ct);
 
-        return await db.QuerySingleOrDefaultAsync<RolDetalle>(new CommandDefinition(
+        var rol = await db.QuerySingleOrDefaultAsync<RolDetalle>(new CommandDefinition(
             "api.usp_Roles_ObtenerPorId",
-            new { IdRol = id },
+            new { Id = id },
             commandType: CommandType.StoredProcedure,
             cancellationToken: ct));
+
+        rol?.Permisos = await ObtenerPermisosAsync(id, ct);
+        return rol;
     }
 
     public async Task ModificarAsync(int id, ModificarRolRequest request, CancellationToken ct = default)
@@ -89,5 +92,61 @@ public sealed class RolesRepository(SqlConnectionFactory factory)
         {
             throw SqlErrorTranslator.Traducir(ex);
         }
+    }
+
+    public async Task<int> ContarUsuariosAsync(int idRol, CancellationToken ct = default)
+    {
+        await using var db = factory.Crear();
+        await db.OpenAsync(ct);
+
+        var usuarios = await db.QueryAsync<int>(
+            new CommandDefinition(
+                "api.usp_Roles_ListarUsuarios",
+                new { Id = idRol },
+                commandType: CommandType.StoredProcedure,
+                cancellationToken: ct
+            )
+        );
+
+        return usuarios.Count();
+    }
+
+    public async Task<bool> EsProtegidoAsync(int idRol, CancellationToken ct = default)
+    {
+        var rol = await ObtenerPorIdAsync(idRol, ct);
+        return rol!.Protegido;
+    }
+
+    public async Task<IReadOnlyList<string>> ObtenerPermisosAsync(int idRol, CancellationToken ct = default)
+    {
+        await using var db = factory.Crear();
+        await db.OpenAsync(ct);
+        var permisos = await db.QueryAsync<string>(new CommandDefinition(
+            "api.usp_Roles_PermisosPorRol",
+            new { IdRol = idRol },
+            commandType: CommandType.StoredProcedure,
+            cancellationToken: ct));
+        return permisos.ToList();
+    }
+
+    public async Task ReemplazarPermisosAsync(int idRol, IEnumerable<string> codigos, CancellationToken ct = default)
+    {
+        await using var db = factory.Crear();
+        await db.OpenAsync(ct);
+
+        var tabla = new DataTable();
+        tabla.Columns.Add("Codigo", typeof(string));
+        foreach (var codigo in codigos.Distinct(StringComparer.OrdinalIgnoreCase))
+            tabla.Rows.Add(codigo);
+
+        var parametros = new DynamicParameters();
+        parametros.Add("IdRol", idRol);
+        parametros.Add("CodigosPermisos", tabla.AsTableValuedParameter("dbo.CodigosPermiso"));
+
+        await db.ExecuteAsync(new CommandDefinition(
+            "api.usp_Roles_ReemplazarPermisos",
+            parametros,
+            commandType: CommandType.StoredProcedure,
+            cancellationToken: ct));
     }
 }

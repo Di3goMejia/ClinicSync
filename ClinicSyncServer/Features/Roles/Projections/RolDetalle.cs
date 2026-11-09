@@ -8,4 +8,5 @@ public sealed class RolDetalle
     public string? Descripcion { get; set; }
     public bool Activo { get; set; }
     public bool Protegido { get; set; }
+    public IReadOnlyList<string> Permisos { get; set; } = [];
 }

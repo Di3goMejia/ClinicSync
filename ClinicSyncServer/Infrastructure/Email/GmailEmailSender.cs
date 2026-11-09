@@ -70,6 +70,51 @@ namespace ClinicSyncServer.Infrastructure.Email
             await smtp.DisconnectAsync(true, ct);
         }
 
+        public async Task EnviarReactivacionAsync(string correo, string nombre, CancellationToken ct = default)
+        {
+            string remitente = _config["Gmail:Correo"] ?? throw new Exception("Falta configurar Gmail.");
+            string password = _config["Gmail:Password"] ?? throw new Exception("Falta la clave de Gmail.");
+            var mensaje = new MimeMessage();
+            mensaje.From.Add(new MailboxAddress("ClinicSync", remitente));
+            mensaje.To.Add(MailboxAddress.Parse(correo));
+            mensaje.Subject = "Cuenta reactivada - ClinicSync";
+            mensaje.Body = new TextPart("plain") { Text = $"Hola, {nombre}\n\nTu cuenta de ClinicSync ha sido reactivada por un administrador.\n\nClinicSync" };
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls, ct);
+            await smtp.AuthenticateAsync(remitente, password, ct);
+            await smtp.SendAsync(mensaje, ct);
+            await smtp.DisconnectAsync(true, ct);
+        }
+
+        public async Task EnviarDesactivacionAsync(
+            string correo,
+            string nombre,
+            CancellationToken ct = default)
+        {
+            string remitente = _config["Gmail:Correo"]
+                ?? throw new Exception("Falta configurar Gmail.");
+            string password = _config["Gmail:Password"]
+                ?? throw new Exception("Falta la clave de Gmail.");
+
+            var mensaje = new MimeMessage();
+            mensaje.From.Add(new MailboxAddress("ClinicSync", remitente));
+            mensaje.To.Add(MailboxAddress.Parse(correo));
+            mensaje.Subject = "Cuenta desactivada - ClinicSync";
+            mensaje.Body = new TextPart("plain")
+            {
+                Text = $"Hola, {nombre}\n\n" +
+                       "Un administrador ha desactivado tu cuenta de ClinicSync.\n\n" +
+                       "Si consideras que esto es un error, comunícate con el administrador del sistema.\n\n" +
+                       "ClinicSync"
+            };
+
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls, ct);
+            await smtp.AuthenticateAsync(remitente, password, ct);
+            await smtp.SendAsync(mensaje, ct);
+            await smtp.DisconnectAsync(true, ct);
+        }
+
         public async Task EnviarActivacionAsync(
             string correo,
             string nombre,

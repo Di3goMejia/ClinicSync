@@ -26,12 +26,6 @@ namespace ClinicSyncServer.Features.Usuarios.Requests
         string Telefono,
 
         [property: EmailAddress(ErrorMessage = "El formato del correo de contacto es inválido.")]
-        string CorreoContacto,
-
-        [property: Url(ErrorMessage = "El formato de URL de la imágen de perfil es inválido.")]
-        string? ImagenPerfil,
-
-        [property: Required(ErrorMessage = "El ID del rol es obligatorio.")]
-        int? IdRol
+        string CorreoContacto
     );
 }

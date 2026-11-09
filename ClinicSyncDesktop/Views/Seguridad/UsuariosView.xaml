@@ -294,7 +294,7 @@
 
                         <!-- ROL -->
                         <DataGridTextColumn Header="Rol"
-                                            Binding="{Binding IdRol}"
+                                            Binding="{Binding NombreRol}"
                                             Width="1.3*">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">

@@ -12,9 +12,12 @@ namespace ClinicSyncServer.Features.Auth.Requests
 
     public record RefreshRequest([property: Required] string RefreshToken);
 
+    public record ValidarTokenRequest([property: Required] string Token);
+
     public record ActivarCuentaRequest(
         [property: Required] string Token,
-        [property: Required] string NuevaPassword);
+        [property: Required] string NuevaPassword,
+        string? ConfirmarPassword = null);
 
     public record OlvideContrasenaRequest(
     [property: Required, EmailAddress]

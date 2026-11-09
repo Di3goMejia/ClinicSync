@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="ClinicSyncDesktop.Views.SeguridadView"
+﻿<UserControl x:Class="ClinicSyncDesktop.Views.Seguridad.SeguridadView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="#F0F3EF">

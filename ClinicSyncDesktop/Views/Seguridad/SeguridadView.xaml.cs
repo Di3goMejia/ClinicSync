@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace ClinicSyncDesktop.Views
+namespace ClinicSyncDesktop.Views.Seguridad
 {
     public partial class SeguridadView : UserControl
     {

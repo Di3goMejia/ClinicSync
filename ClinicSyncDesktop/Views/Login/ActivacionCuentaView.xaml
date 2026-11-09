@@ -1,0 +1,222 @@
+<Window x:Class="ClinicSyncDesktop.Views.ActivacionCuentaView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ClinicSync | Activación de cuenta"
+        Height="550"
+        Width="650"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#2197AA">
+
+    <Window.Resources>
+
+        <!-- BOTONES REDONDEADOS -->
+        <Style x:Key="BotonRedondeado"
+               TargetType="Button">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Background" Value="#0789AB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="BordeBoton"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BordeBoton"
+                                        Property="Opacity"
+                                        Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ESTILO PARA MENSAJES DE ERROR -->
+        <Style x:Key="EstiloError"
+               TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#B91C1C"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,4,0,0"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+
+        <!-- ESTILO DE LOS CAMPOS -->
+        <Style x:Key="EstiloTextBox"
+               TargetType="TextBox">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style x:Key="EstiloPasswordBox"
+               TargetType="PasswordBox">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid>
+
+        <Border Background="#78BDCC"
+                Width="400"
+                Padding="25"
+                CornerRadius="15"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+
+            <StackPanel>
+
+                <TextBlock Text="CLINIC SYNC"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,20"/>
+
+                <!-- PANTALLA 1: TOKEN / CÓDIGO DE ACTIVACIÓN -->
+                <StackPanel x:Name="PanelToken">
+
+                    <TextBlock Text="Activar cuenta"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"/>
+
+                    <TextBlock Text="Ingrese el código de 6 dígitos recibido en su correo:"
+                               Foreground="White"
+                               TextWrapping="Wrap"
+                               Margin="0,15,0,5"/>
+
+                    <Grid Margin="0,5,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox x:Name="TxtToken"
+                                 Grid.Column="0"
+                                 Style="{StaticResource EstiloTextBox}"
+                                 MaxLength="6"
+                                 HorizontalContentAlignment="Center"
+                                 VerticalContentAlignment="Center"
+                                 FontSize="18"
+                                 FontWeight="Bold"
+                                 PreviewTextInput="TxtToken_PreviewTextInput"
+                                 TextChanged="TxtToken_TextChanged"/>
+
+                        <Button x:Name="BtnPegar"
+                                Grid.Column="1"
+                                Content="Pegar"
+                                Width="70"
+                                Height="35"
+                                Margin="8,0,0,0"
+                                Background="#0789AB"
+                                Style="{StaticResource BotonRedondeado}"
+                                ToolTip="Pegar código desde el portapapeles"
+                                Click="BtnPegar_Click"/>
+                    </Grid>
+
+                    <!-- ERROR DE TOKEN -->
+                    <TextBlock x:Name="LblErrorToken"
+                               Style="{StaticResource EstiloError}"/>
+
+                    <Button x:Name="BtnValidarToken"
+                            Content="Continuar"
+                            Height="38"
+                            Margin="0,20,0,0"
+                            Background="#087FA4"
+                            Foreground="White"
+                            Style="{StaticResource BotonRedondeado}"
+                            Click="BtnValidarToken_Click"/>
+
+                </StackPanel>
+
+                <!-- PANTALLA 2: CONTRASEÑA -->
+                <StackPanel x:Name="PanelNuevaPassword"
+                            Visibility="Collapsed">
+
+                    <TextBlock Text="Establecer contraseña"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"/>
+
+                    <TextBlock Text="Nueva contraseña:"
+                               Foreground="White"
+                               Margin="0,15,0,5"/>
+
+                    <PasswordBox x:Name="TxtNuevaPassword"
+                                 Style="{StaticResource EstiloPasswordBox}"
+                                 PasswordChanged="TxtNuevaPassword_PasswordChanged"/>
+
+                    <!-- ERROR DE CONTRASEÑA -->
+                    <TextBlock x:Name="LblErrorPassword"
+                               Style="{StaticResource EstiloError}"/>
+
+                    <TextBlock Text="Confirmar contraseña:"
+                               Foreground="White"
+                               Margin="0,15,0,5"/>
+
+                    <PasswordBox x:Name="TxtConfirmarPassword"
+                                 Style="{StaticResource EstiloPasswordBox}"
+                                 PasswordChanged="TxtConfirmarPassword_PasswordChanged"/>
+
+                    <!-- ERROR DE CONFIRMACIÓN -->
+                    <TextBlock x:Name="LblErrorConfirmar"
+                               Style="{StaticResource EstiloError}"/>
+
+                    <TextBlock Text="Mínimo 8 caracteres, con letras y números."
+                               Foreground="White"
+                               FontSize="11"
+                               Margin="0,10,0,0"/>
+
+                    <Button x:Name="BtnActivarCuenta"
+                            Content="Activar cuenta"
+                            Height="38"
+                            Margin="0,20,0,0"
+                            Background="#087FA4"
+                            Style="{StaticResource BotonRedondeado}"
+                            Foreground="White"
+                            Click="BtnActivarCuenta_Click"/>
+
+                </StackPanel>
+
+                <!-- MENSAJES GENERALES -->
+                <TextBlock x:Name="LblMensajeGeneral"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           FontWeight="SemiBold"
+                           Margin="0,15,0,0"
+                           Visibility="Collapsed"/>
+
+                <Button Content="Regresar"
+                        Margin="0,15,0,0"
+                        Background="#0789AB"
+                        Style="{StaticResource BotonRedondeado}"
+                        Click="BtnRegresar_Click"/>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+</Window>

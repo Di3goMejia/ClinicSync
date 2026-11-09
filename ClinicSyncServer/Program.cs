@@ -88,6 +88,7 @@ app.UseAntiforgery();
 
 /* Endpoints */
 app.MapAuth();
+app.MapPermisos();
 app.MapUsuarios();
 app.MapRoles();
 app.MapTratamientos();

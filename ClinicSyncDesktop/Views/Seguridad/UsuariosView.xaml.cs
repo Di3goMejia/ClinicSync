@@ -1,5 +1,6 @@
 ﻿using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Views.Seguridad;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -14,6 +15,7 @@ namespace ClinicSyncDesktop.Views
     public partial class UsuariosView : UserControl
     {
         private readonly UsuariosApiService? _usuariosService;
+        private readonly RolesApiService _rolesService = new();
         private ICollectionView? _vista;
 
         public static string FechaRelativa(DateTime fecha)
@@ -90,16 +92,33 @@ namespace ClinicSyncDesktop.Views
             try
             {
                 var listado = await _usuariosService.ListarAsync();
-
-                var usuarios = listado.Select(u => new UsuarioListado()
+                Dictionary<int, string> nombresRoles = [];
+                try
                 {
-                    IdUsuario = u.IdUsuario,
-                    IdRol = u.IdRol,
-                    NombreCompleto = $"{u.Nombres} {u.Apellidos}",
-                    UltimoAcceso = u.UltimoAcceso != DateTime.MinValue 
-                        ? FechaRelativa(u.UltimoAcceso)
-                        : null,
-                    Estado = u.Estado
+                    var roles = await _rolesService.ListarAsync();
+                    nombresRoles = roles.ToDictionary(r => r.IdRol, r => r.Nombre);
+                }
+                catch
+                {
+                    // Si no se pueden obtener roles adicionales, se usa el NombreRol provisto por el servidor
+                }
+
+                var usuarios = listado.Select(u =>
+                {
+                    var ultimoAcceso = u.UltimoAcceso ?? u.UltimoLogin;
+                    return new UsuarioListado()
+                    {
+                        IdUsuario = u.IdUsuario,
+                        IdRol = u.IdRol,
+                        NombreRol = !string.IsNullOrWhiteSpace(u.NombreRol)
+                            ? u.NombreRol
+                            : (nombresRoles.TryGetValue(u.IdRol, out var nombre) ? nombre : $"Rol #{u.IdRol}"),
+                        NombreCompleto = $"{u.Nombres} {u.Apellidos}",
+                        UltimoAcceso = ultimoAcceso.HasValue
+                            ? FechaRelativa(ultimoAcceso.Value)
+                            : null,
+                        Estado = u.Estado
+                    };
                 });
 
                 var coleccion = new ObservableCollection<UsuarioListado>(usuarios);
@@ -122,37 +141,32 @@ namespace ClinicSyncDesktop.Views
             object sender,
             RoutedEventArgs e)
         {
-            //if (_usuariosService is null)
-            //{
-            //    MostrarAviso(
-            //        "La conexión con la API todavía no está configurada.",
-            //        false);
+            if (_usuariosService is null)
+            {
+                MostrarAviso(
+                    "La conexión con la API todavía no está configurada.",
+                    exitoso: false);
+                return;
+            }
 
-            //    return;
-            //}
+            var ventana = new AgregarUsuarioWindow(
+                _usuariosService,
+                new RolesApiService())
+            {
+                Owner = Window.GetWindow(this)
+            };
 
-            //var ventana = new AgregarTratamientoWindow(
-            //    _usuariosService)
-            //{
-            //    Owner = Window.GetWindow(this)
-            //};
+            var resultado = ventana.ShowDialog();
 
-            //bool? resultado = ventana.ShowDialog();
-
-            //if (resultado == true)
-            //{
-            //    await CargarUsuariosAsync();
-
-            //    MostrarAviso(
-            //        "Tratamiento registrado exitosamente.",
-            //        true);
-            //}
-            //else if (ventana.ErrorAlRegistrar)
-            //{
-            //    MostrarAviso(
-            //        ventana.MensajeError,
-            //        false);
-            //}
+            if (resultado == true)
+            {
+                await CargarUsuariosAsync();
+                MostrarAviso("Usuario registrado exitosamente.", exitoso: true);
+            }
+            else if (ventana.ErrorAlRegistrar)
+            {
+                MostrarAviso(ventana.MensajeError, exitoso: false);
+            }
         }
 
         public event EventHandler? VolverAlMenuSolicitado;
@@ -190,46 +204,30 @@ namespace ClinicSyncDesktop.Views
             object sender,
             RoutedEventArgs e)
         {
-            /*
-            if (sender is not Button boton ||
-                boton.DataContext is not Tratamiento tratamiento)
-            {
+            if (_usuariosService is null || sender is not Button boton || boton.DataContext is not UsuarioListado seleccionado)
                 return;
-            }
 
-            if (_usuariosService is null)
+            try
             {
-                MostrarAviso(
-                    "La conexión con la API todavía no está configurada.",
-                    false);
+                var detalle = await _usuariosService.ObtenerUsuarioAsync(seleccionado.IdUsuario);
+                var ventana = new EditarUsuarioWindow(detalle, _usuariosService, new RolesApiService())
+                {
+                    Owner = Window.GetWindow(this)
+                };
 
-                return;
+                if (ventana.ShowDialog() == true)
+                {
+                    await CargarUsuariosAsync();
+                    MostrarAviso("Usuario actualizado exitosamente.", exitoso: true);
+                }
+                else if (ventana.ErrorAlGuardar)
+                    MostrarAviso(ventana.MensajeError, exitoso: false);
             }
-
-            var ventana = new EditarTratamientoWindow(
-                tratamiento,
-                _usuariosService)
+            catch (Exception ex)
             {
-                Owner = Window.GetWindow(this)
-            };
-
-            bool? resultado = ventana.ShowDialog();
-
-            if (resultado == true)
-            {
-                await CargarUsuariosAsync();
-
-                MostrarAviso(
-                    "Tratamiento actualizado exitosamente.",
-                    true);
+                Debug.WriteLine(ex);
+                MostrarAviso("No fue posible abrir la edición del usuario.", exitoso: false);
             }
-            else if (ventana.ErrorAlGuardar)
-            {
-                MostrarAviso(
-                    ventana.MensajeError,
-                    false);
-            }
-            */
         }
     }
 }

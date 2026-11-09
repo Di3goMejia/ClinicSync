@@ -164,16 +164,7 @@
 
                             </Grid>
                         </Border>
-
                     </StackPanel>
-
-                    <CheckBox x:Name="ChkRecordarSesion"
-                              IsEnabled="False"
-                              Content="Recordar mi sesión"
-                              Foreground="White"
-                              FontSize="15"
-                              FontWeight="SemiBold"
-                              Margin="0,0,0,28"/>
 
                     <Button Content="Acceder"
                             Style="{StaticResource BotonAcceder}"
@@ -188,6 +179,16 @@
                             FontWeight="SemiBold"
                             Cursor="Hand"
                             Click="OlvidoContrasena_Click"/>
+
+                    <Button Content="Activar cuenta"
+                            Margin="0,8,0,0"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="White"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Cursor="Hand"
+                            Click="ActivarCuenta_Click"/>
 
                 </StackPanel>
             </Border>
