@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -18,6 +19,7 @@ namespace ClinicSyncDesktop.Data
         public string? RefreshToken { get; set; }
     }
 
+
     public sealed class PerfilActual
     {
         public string NombreUsuario { get; set; } = "";
@@ -25,7 +27,37 @@ namespace ClinicSyncDesktop.Data
         public bool TieneFinanzas { get; set; }
         public int IdEmpleado { get; set; }
         public string NombreEmpleado { get; set; } = "";
+
+        public string Identidad { get; set; } = "";
+        public string Nombres { get; set; } = "";
+        public string Apellidos { get; set; } = "";
+        public DateTime FechaNacimiento { get; set; }
+        public string Genero { get; set; } = "";
+        public string Telefono { get; set; } = "";
+        public string? CorreoContacto { get; set; }
+        public string? ImagenPerfil { get; set; }
+
+        public string NombreCorto
+        {
+            get
+            {
+                string primerNombre = Nombres
+                    .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                    .FirstOrDefault() ?? "";
+
+                string primerApellido = Apellidos
+                    .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                    .FirstOrDefault() ?? "";
+
+                string nombre = $"{primerNombre} {primerApellido}".Trim();
+
+                return string.IsNullOrWhiteSpace(nombre)
+                    ? NombreUsuario
+                    : nombre;
+            }
+        }
     }
+
 
     public static class ClienteApi
     {
@@ -1005,5 +1037,51 @@ namespace ClinicSyncDesktop.Data
 
             return await respuesta.Content.ReadAsByteArrayAsync();
         }
+
+
+        // SUBIR IMAGEN DEL PERFIL AUTENTICADO
+        public static async Task SubirMiImagenPerfilAsync(
+            string rutaArchivo,
+            CancellationToken ct = default)
+        {
+            await SubirArchivoAutenticadoAsync(
+                "api/auth/me/imagen",
+                rutaArchivo,
+                "archivo",
+                ct);
+        }
+
+
+        // DESCARGAR IMAGEN DEL PERFIL AUTENTICADO
+        public static async Task<byte[]?>
+        DescargarMiImagenPerfilAsync(
+            CancellationToken ct = default)
+        {
+            using var respuesta = await EnviarAutenticadoAsync(
+                HttpMethod.Get,
+                "api/auth/me/imagen");
+
+            if (respuesta.StatusCode ==
+                System.Net.HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            await VerificarRespuestaAsync(respuesta);
+
+            return await respuesta.Content
+                .ReadAsByteArrayAsync(ct);
+        }
+
+        // ELIMINAR IMAGEN DEL PERFIL AUTENTICADO
+        public static async Task EliminarMiImagenPerfilAsync()
+        {
+            using var respuesta = await EnviarAutenticadoAsync(
+                HttpMethod.Delete,
+                "api/auth/me/imagen");
+
+            await VerificarRespuestaAsync(respuesta);
+        }
+
     }
 }

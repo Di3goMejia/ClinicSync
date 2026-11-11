@@ -148,7 +148,7 @@ namespace ClinicSync.Views
                 PerfilActual perfil =
                     await ClienteApi.ObtenerPerfilAsync();
 
-                NombrePerfil.Text = perfil.NombreUsuario;
+                NombrePerfil.Text = perfil.NombreCorto;
                 RolPerfil.Text = perfil.Rol;
             }
             catch (Exception)
@@ -224,15 +224,17 @@ namespace ClinicSync.Views
         }
 
         private void Configuracion_Click(
-            object sender, RoutedEventArgs e)
+            object sender,
+            RoutedEventArgs e)
         {
             PopupPerfil.IsOpen = false;
 
-            MessageBox.Show(
-                "El módulo de configuración estará disponible próximamente.",
-                "ClinicSync",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            MenuLateral menu = new MenuLateral("Perfil");
+
+            Application.Current.MainWindow = menu;
+
+            menu.Show();
+            Close();
         }
 
         private async void CerrarSesion_Click(

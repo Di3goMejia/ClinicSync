@@ -27,5 +27,6 @@ namespace ClinicSyncServer.Features.Usuarios
         Task DesactivarAsync(int idUsuario, int idAdministrador, string password, CancellationToken ct = default);
         Task ReactivarAsync(int idUsuario, int idAdministrador, string password, CancellationToken ct = default);
         Task RestablecerPasswordAsync(int idUsuario, int idAdministrador, string password, CancellationToken ct = default);
+        Task EliminarImagenPerfilAsync(int idUsuario, CancellationToken ct = default);
     }
 }

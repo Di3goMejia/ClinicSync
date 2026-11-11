@@ -1,0 +1,447 @@
+﻿<UserControl x:Class="ClinicSyncDesktop.Views.EditarPerfilView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#F0F3EF">
+
+    <UserControl.Resources>
+
+        <!-- CAMPOS DE TEXTO -->
+        <Style x:Key="CampoPerfil" TargetType="TextBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#555555"/>
+            <Setter Property="Background" Value="#D9DDDA"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,4"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="16">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ETIQUETAS -->
+        <Style x:Key="EtiquetaPerfil" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- BOTONES INFERIORES -->
+        <Style x:Key="BotonPerfil" TargetType="Button">
+            <Setter Property="Width" Value="145"/>
+            <Setter Property="Height" Value="41"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="13">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fondo"
+                                        Property="Opacity"
+                                        Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Fondo"
+                                        Property="Opacity"
+                                        Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BOTONES DE IMAGEN -->
+        <Style x:Key="BotonImagen" TargetType="Button">
+            <Setter Property="Background" Value="#D9DDDA"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="9,4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="12"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fondo"
+                                        Property="Opacity"
+                                        Value="0.75"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Fondo"
+                                        Property="Opacity"
+                                        Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- FECHA -->
+        <Style x:Key="FechaPerfil" TargetType="DatePicker">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="#D9DDDA"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#555555"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- SEXO -->
+        <Style x:Key="SexoPerfil" TargetType="ComboBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="#D9DDDA"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#555555"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+    </UserControl.Resources>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <Grid Margin="45,25,35,20">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="75"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- ENCABEZADO -->
+                <StackPanel Grid.Row="0"
+                            Orientation="Horizontal">
+
+                    <Grid Width="105"
+                          Height="105"
+                          Margin="0,0,25,0">
+
+                        <!-- FOTO PRINCIPAL SIN BOTÓN DE LÁPIZ -->
+                        <Border Width="95"
+                                Height="95"
+                                CornerRadius="48"
+                                Background="#D9DDDA"
+                                ClipToBounds="True">
+
+                            <Image x:Name="ImgPerfil"
+                                   Source="/Resources/ImagenesPerfil/perfil.png"
+                                   Stretch="UniformToFill"/>
+                        </Border>
+
+                    </Grid>
+
+                    <StackPanel VerticalAlignment="Center">
+
+                        <TextBlock x:Name="TxtNombrePerfil"
+                                   FontSize="29"
+                                   FontWeight="Bold"
+                                   Foreground="#17475A"/>
+
+                        <TextBlock x:Name="TxtRolPerfil"
+                                   FontSize="17"
+                                   Foreground="#222222"
+                                   Margin="0,5,0,0"/>
+
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- CONTENIDO -->
+                <Grid Grid.Row="2">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="195"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- MENÚ INTERNO -->
+                    <StackPanel Grid.Column="0"
+                                Margin="0,0,25,0">
+
+                        <TextBlock Text="Datos personales"
+                                   Style="{StaticResource EtiquetaPerfil}"
+                                   Margin="0,0,0,18"/>
+
+                        <TextBlock Text="Seguridad"
+                                   FontSize="17"
+                                   Foreground="#222222"
+                                   Margin="0,0,0,18"/>
+
+                        <TextBlock Text="Acerca de"
+                                   FontSize="17"
+                                   Foreground="#222222"/>
+                    </StackPanel>
+
+                    <!-- FORMULARIO -->
+                    <StackPanel Grid.Column="1">
+
+                        <!-- IDENTIDAD -->
+                        <TextBlock Style="{StaticResource EtiquetaPerfil}">
+                            Identidad:
+                            <Run Text="*" Foreground="#E34462"/>
+                        </TextBlock>
+
+                        <TextBox x:Name="TxtIdentidad"
+                                 Style="{StaticResource CampoPerfil}"
+                                 MaxLength="13"
+                                 Margin="0,6,0,18"/>
+
+                        <!-- NOMBRE COMPLETO -->
+                        <TextBlock Style="{StaticResource EtiquetaPerfil}">
+                            Nombre Completo:
+                            <Run Text="*" Foreground="#E34462"/>
+                        </TextBlock>
+
+                        <Grid Margin="0,6,0,18">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="15"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox x:Name="TxtNombres"
+                                     Grid.Column="0"
+                                     Style="{StaticResource CampoPerfil}"/>
+
+                            <TextBox x:Name="TxtApellidos"
+                                     Grid.Column="2"
+                                     Style="{StaticResource CampoPerfil}"/>
+                        </Grid>
+
+                        <!-- FECHA Y SEXO -->
+                        <Grid Margin="0,0,0,18">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="25"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- FECHA -->
+                            <StackPanel Grid.Column="0">
+
+                                <TextBlock Style="{StaticResource EtiquetaPerfil}">
+                                    Fecha de nacimiento:
+                                    <Run Text="*" Foreground="#E34462"/>
+                                </TextBlock>
+
+                                <Border Background="#D9DDDA"
+                                        CornerRadius="16"
+                                        Height="30"
+                                        Margin="0,6,0,0"
+                                        ClipToBounds="True">
+
+                                    <DatePicker x:Name="DpFechaNacimiento"
+                                                Style="{StaticResource FechaPerfil}"/>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- SEXO -->
+                            <StackPanel Grid.Column="2">
+
+                                <TextBlock Style="{StaticResource EtiquetaPerfil}">
+                                    Sexo:
+                                    <Run Text="*" Foreground="#E34462"/>
+                                </TextBlock>
+
+                                <Border Background="#D9DDDA"
+                                        CornerRadius="16"
+                                        Height="30"
+                                        Margin="0,6,0,0"
+                                        ClipToBounds="True">
+
+                                    <ComboBox x:Name="CmbSexo"
+                                              Style="{StaticResource SexoPerfil}">
+
+                                        <ComboBoxItem Content="Femenino"
+                                                      Tag="F"/>
+
+                                        <ComboBoxItem Content="Masculino"
+                                                      Tag="M"/>
+                                    </ComboBox>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- TELÉFONO Y CORREO -->
+                        <Grid Margin="0,0,0,28">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="25"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- TELÉFONO -->
+                            <StackPanel Grid.Column="0">
+
+                                <TextBlock Style="{StaticResource EtiquetaPerfil}">
+                                    Teléfono:
+                                    <Run Text="*" Foreground="#E34462"/>
+                                </TextBlock>
+
+                                <TextBox x:Name="TxtTelefono"
+                                         Style="{StaticResource CampoPerfil}"
+                                         Margin="0,6,0,0"/>
+                            </StackPanel>
+
+                            <!-- CORREO -->
+                            <StackPanel Grid.Column="2">
+
+                                <TextBlock Style="{StaticResource EtiquetaPerfil}">
+                                    Correo:
+                                    <Run Text="*" Foreground="#E34462"/>
+                                </TextBlock>
+
+                                <TextBox x:Name="TxtCorreo"
+                                         Style="{StaticResource CampoPerfil}"
+                                         Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- IMAGEN -->
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0,0,0,15">
+
+                            <!-- VISTA PREVIA -->
+                            <Border Width="48"
+                                    Height="55"
+                                    Background="#D9DDDA"
+                                    Margin="0,0,16,0">
+
+                                <Image x:Name="ImgVistaPrevia"
+                                       Source="/Resources/ImagenesPerfil/subir-imagen-perfil.png"
+                                       Stretch="UniformToFill"/>
+                            </Border>
+
+                            <StackPanel>
+
+                                <TextBlock Text="Imagen:"
+                                           Style="{StaticResource EtiquetaPerfil}"
+                                           Margin="0,0,0,6"/>
+
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+
+                                    <!-- ELEGIR IMAGEN -->
+                                    <Button x:Name="BtnElegirImagen"
+                                            Style="{StaticResource BotonImagen}"
+                                            Click="ElegirImagen_Click">
+
+                                        <StackPanel Orientation="Horizontal">
+
+                                            <Image Source="/Resources/ImagenesPacientes/ImagenesExpediente/subir-archivo.png"
+                                                   Width="22"
+                                                   Height="22"
+                                                   Stretch="Uniform"
+                                                   Margin="0,0,7,0"/>
+
+                                            <TextBlock Text="Elegir imagen"
+                                                       Foreground="#168FA7"
+                                                       FontSize="14"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+
+                                    <!-- QUITAR IMAGEN SELECCIONADA -->
+                                    <Button x:Name="BtnEliminarImagen"
+                                            Style="{StaticResource BotonImagen}"
+                                            Margin="10,0,0,0"
+                                            ToolTip="Quitar imagen seleccionada"
+                                            IsEnabled="False"
+                                            Click="EliminarImagen_Click">
+
+                                        <Image Source="/Resources/ImagenesInventario/IconoBasurero.png"
+                                               Width="20"
+                                               Height="20"
+                                               Stretch="Uniform"/>
+                                    </Button>
+
+                                    <TextBlock Text="ⓘ"
+                                               Foreground="#E34462"
+                                               FontSize="19"
+                                               Margin="12,0,6,0"/>
+
+                                    <TextBlock Text="Tipos de archivo aceptados: JPG, PNG"
+                                               Foreground="#A7ACAC"
+                                               FontSize="12"
+                                               Width="195"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- ERROR -->
+                        <TextBlock x:Name="TxtError"
+                                   Foreground="#E34462"
+                                   FontSize="13"
+                                   TextWrapping="Wrap"
+                                   Visibility="Collapsed"
+                                   Margin="0,18,0,0"/>
+
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- BOTONES INFERIORES -->
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
+
+            <Button Content="Cancelar"
+                    Style="{StaticResource BotonPerfil}"
+                    Background="White"
+                    Foreground="#2298A9"
+                    Margin="0,0,25,0"
+                    Click="Cancelar_Click"/>
+
+            <Button x:Name="BtnGuardar"
+                    Content="Guardar"
+                    Style="{StaticResource BotonPerfil}"
+                    Background="#2298A9"
+                    Foreground="White"
+                    Click="Guardar_Click"/>
+        </StackPanel>
+
+    </Grid>
+</UserControl>

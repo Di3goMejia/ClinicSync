@@ -6,6 +6,14 @@ namespace ClinicSyncServer.Features.Auth.Responses
         string Rol,
         bool TieneFinanzas,
         int IdEmpleado,
-        string NombreEmpleado
+        string NombreEmpleado,
+        string Identidad,
+        string Nombres,
+        string Apellidos,
+        DateOnly FechaNacimiento,
+        char Genero,
+        string Telefono,
+        string? CorreoContacto,
+        string? ImagenPerfil
     );
 }

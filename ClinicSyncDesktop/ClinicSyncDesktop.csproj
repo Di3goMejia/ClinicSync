@@ -39,6 +39,9 @@
     <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\seleccion-sin-marcar.png" />
     <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\subir-archivo.png" />
     <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\volver-pacientes.png" />
+    <None Remove="Resources\ImagenesPerfil\editar-perfil.png" />
+    <None Remove="Resources\ImagenesPerfil\perfil.png" />
+    <None Remove="Resources\ImagenesPerfil\subir-imagen-perfil.png" />
     <None Remove="Resources\ImagenesTabla\IconoEngranaje.png" />
     <None Remove="Resources\ImagenesTabla\IconoMas.png" />
   </ItemGroup>
@@ -99,10 +102,18 @@
     <Resource Include="Resources\ImagenesAvisos\IconoError.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\ImagenesInventario\IconoBasurero.png" />
-    <Resource Include="Resources\ImagenesInventario\IconoImagen.png" />
-    <Resource Include="Resources\ImagenesInventario\IconoLupa.png" />
-    <Resource Include="Resources\ImagenesInventario\IconoSinImagen.png" />
+    <Resource Include="Resources\ImagenesInventario\IconoBasurero.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesInventario\IconoImagen.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesInventario\IconoLupa.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesInventario\IconoSinImagen.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\ImagenesLogin\mostrar-contraseña.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -128,6 +139,15 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\ImagenesPacientes\ImagenesExpediente\volver-pacientes.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesPerfil\editar-perfil.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesPerfil\perfil.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesPerfil\subir-imagen-perfil.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\ImagenesTabla\IconoEngranaje.png">

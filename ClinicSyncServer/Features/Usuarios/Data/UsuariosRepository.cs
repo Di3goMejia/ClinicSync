@@ -199,5 +199,22 @@ namespace ClinicSyncServer.Features.Usuarios.Data
             if (filas == 0)
                 throw new KeyNotFoundException("El usuario no existe.");
         }
+
+        public async Task EliminarImagenPerfilAsync(
+            int idUsuario,
+            CancellationToken ct = default)
+        {
+            await using var db = factory.Crear();
+            await db.OpenAsync(ct);
+
+            await db.ExecuteAsync(
+                new CommandDefinition(
+                    "api.usp_Usuarios_EliminarImagen",
+                    new { IdUsuario = idUsuario },
+                    commandType: CommandType.StoredProcedure,
+                    cancellationToken: ct
+                )
+            );
+        }
     }
 }
