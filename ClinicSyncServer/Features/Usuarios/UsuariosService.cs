@@ -38,6 +38,15 @@ namespace ClinicSyncServer.Features.Usuarios
             return resp;
         }
 
+        public async Task EliminarImagenPerfilAsync(
+            int idUsuario,
+            CancellationToken ct = default)
+        {
+            // Desvincular la fotografía del usuario.
+            // NO eliminar el archivo físico.
+            await repo.EliminarImagenPerfilAsync(idUsuario, ct);
+        }
+
         public async Task<UsuarioDetalleResponse?> ObtenerAsync(int idSolicitado, int idSolicitante, bool puedeVerTodos, CancellationToken ct = default)
         {
             // Una persona sin el permiso de leer usuarios solo puede consultar la información de su
@@ -114,8 +123,6 @@ namespace ClinicSyncServer.Features.Usuarios
                 throw;
             }
 
-            if (!string.IsNullOrWhiteSpace(claveAnterior) && claveAnterior != clave)
-                await almacen.EliminarAsync(claveAnterior, CancellationToken.None);
         }
 
         public async Task<ContenidoAlmacenado?> ObtenerImagenPerfilAsync(int idUsuario, CancellationToken ct = default)
