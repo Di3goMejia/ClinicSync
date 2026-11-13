@@ -1,8 +1,10 @@
 ﻿
+using ClinicSyncServer.Features.Auth.Data;
 using ClinicSyncServer.Features.Auth.Requests;
 using ClinicSyncServer.Features.Auth.Responses;
-using ClinicSyncServer.Features.Usuarios;
+using ClinicSyncServer.Features.Auth.Services;
 using ClinicSyncServer.Features.Permisos;
+using ClinicSyncServer.Features.Usuarios;
 using ClinicSyncServer.Features.Usuarios.Requests;
 using ClinicSyncServer.Infrastructure.Auth;
 using System.Security.Claims;
@@ -116,6 +118,95 @@ namespace ClinicSyncServer.Features.Auth
             });
 
             // ==========================================
+            // REGISTRAR RECONOCIMIENTO FACIAL
+            // ==========================================
+
+            app.MapPost("/api/auth/2fa/facial", async (
+                ClaimsPrincipal usuario,
+                RegistrarCredencialFacialRequest req,
+                RegistroCredencialFacialService registro,
+                CancellationToken ct) =>
+            {
+                if (!int.TryParse(
+                    usuario.FindFirstValue("sub"),
+                    out int idUsuario))
+                {
+                    return Results.Unauthorized();
+                }
+
+                await registro.RegistrarAsync(
+                    idUsuario,
+                    req.Muestras,
+                    ct);
+
+                return Results.Ok(new
+                {
+                    Mensaje = "Credencial facial registrada correctamente."
+                });
+            })
+            .RequireAuthorization();
+
+            // DESACTIVAR RECONOCIMIENTO FACIAL
+            app.MapDelete("/api/auth/2fa/facial", async (
+                ClaimsPrincipal usuario,
+                Metodos2FARepository metodos2FA,
+                CancellationToken ct) =>
+            {
+                if (!int.TryParse(
+                    usuario.FindFirstValue("sub"),
+                    out int idUsuario))
+                {
+                    return Results.Unauthorized();
+                }
+
+                bool desactivado = await metodos2FA.DesactivarAsync(
+                    idUsuario,
+                    ct);
+
+                if (!desactivado)
+                {
+                    return Results.NotFound(new
+                    {
+                        Mensaje = "No existe un método facial activo para este usuario."
+                    });
+                }
+
+                return Results.Ok(new
+                {
+                    Mensaje = "Reconocimiento facial desactivado correctamente."
+                });
+            })
+            .RequireAuthorization();
+
+            // ==========================================
+            // CONSULTAR ESTADO DE AUTENTICACIÓN 2FA
+            // ==========================================
+
+            app.MapGet("/api/auth/2fa/estado", async (
+                ClaimsPrincipal usuario,
+                Metodos2FARepository metodos2FA,
+                CancellationToken ct) =>
+            {
+                if (!int.TryParse(
+                    usuario.FindFirstValue("sub"),
+                    out int idUsuario))
+                {
+                    return Results.Unauthorized();
+                }
+
+                bool configurado =
+                    await metodos2FA.TieneMetodoActivoAsync(
+                        idUsuario,
+                        ct);
+
+                return Results.Ok(new
+                {
+                    Configurado = configurado
+                });
+            })
+            .RequireAuthorization();
+
+            // ==========================================
             // PERFIL DEL USUARIO AUTENTICADO
             // ==========================================
 
@@ -187,6 +278,7 @@ namespace ClinicSyncServer.Features.Auth
             // MODIFICAR DATOS PERSONALES DEL PERFIL
             // ==========================================
 
+            // MODIFICAR DATOS DEL USUARIO AUTENTICADO
             app.MapPut("/api/auth/me/datos", async (
                 ClaimsPrincipal usuario,
                 ModificarUsuarioRequest req,
@@ -208,8 +300,7 @@ namespace ClinicSyncServer.Features.Auth
                     IdUsuario = idUsuario
                 };
 
-                // ACTUALIZAR DATOS EN LA MISMA TABLA
-                // UTILIZADA POR SEGURIDAD -> USUARIOS
+                // ACTUALIZAR DATOS
                 await usuarios.ModificarAsync(
                     solicitud,
                     idUsuario,
@@ -276,7 +367,6 @@ namespace ClinicSyncServer.Features.Auth
             })
             .RequireAuthorization();
 
-
             // ELIMINAR FOTO DEL USUARIO AUTENTICADO
             app.MapDelete("/api/auth/me/imagen", async (
                 ClaimsPrincipal usuario,
@@ -290,7 +380,9 @@ namespace ClinicSyncServer.Features.Auth
                     return Results.Unauthorized();
                 }
 
-                await usuarios.EliminarImagenPerfilAsync(idUsuario, ct);
+                await usuarios.EliminarImagenPerfilAsync(
+                    idUsuario,
+                    ct);
 
                 return Results.NoContent();
             })

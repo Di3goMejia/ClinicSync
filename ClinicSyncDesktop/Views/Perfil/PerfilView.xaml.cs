@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using ClinicSyncDesktop.Views.Perfil._2FA;
 
 namespace ClinicSyncDesktop.Views
 {
@@ -14,6 +15,7 @@ namespace ClinicSyncDesktop.Views
     {
         private bool cargandoPerfil = false;
         private PerfilActual? perfilActual;
+        private bool dosFAConfigurado = false;
 
         // EVENTO PARA ABRIR EDICIÓN
         public event Action<PerfilActual>? EditarSolicitado;
@@ -27,6 +29,7 @@ namespace ClinicSyncDesktop.Views
         // ==========================================
         // NAVEGACIÓN INTERNA
         // ==========================================
+
         private void MostrarSeccion(string seccion)
         {
             PanelDatosPersonales.Visibility =
@@ -99,6 +102,7 @@ namespace ClinicSyncDesktop.Views
         // ==========================================
         // CAMBIAR CONTRASEÑA
         // ==========================================
+
         private void CambiarPassword_Click(
             object sender,
             RoutedEventArgs e)
@@ -113,25 +117,159 @@ namespace ClinicSyncDesktop.Views
         }
 
         // ==========================================
-        // CONFIGURAR 2FA
+        // ACTIVAR / DESACTIVAR AUTENTICACIÓN 2FA
         // ==========================================
-        private void Configurar2FA_Click(
+
+        private async void Configurar2FA_Click(
             object sender,
             RoutedEventArgs e)
         {
-            MessageBox.Show(
-                "La configuración de 2FA requiere consultar " +
-                "el estado real de la cuenta y completar la " +
-                "verificación antes de activarla. " +
-                "Esta función todavía no está conectada.",
-                "ClinicSync - Seguridad",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            // ==========================================
+            // SI EL 2FA YA ESTÁ CONFIGURADO: DESACTIVAR
+            // ==========================================
+
+            if (dosFAConfigurado)
+            {
+                ConfirmarDescarteWindow confirmacion =
+                    new ConfirmarDescarteWindow(
+                       "¿Deseas desactivar el 2FA? Ya no se solicitará " +
+                        "la verificación facial al iniciar sesión.")
+                    {
+                        Owner = Window.GetWindow(this)
+                    };
+
+                bool? resultadoConfirmacion = confirmacion.ShowDialog();
+
+                if (resultadoConfirmacion != true)
+                    return;
+
+                try
+                {
+                    await ClienteApi.Desactivar2FAAsync();
+
+                    await CargarEstado2FAAsync();
+
+                    PanelAvisos.Visibility = Visibility.Visible;
+
+                    PanelAvisos.Children.Add(
+                        new AvisoNotificacion(
+                            "La autenticación de dos factores se desactivó correctamente.",
+                            true));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        "No se pudo desactivar la autenticación 2FA:\n\n" +
+                        ex.Message,
+                        "ClinicSync - Seguridad",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+
+                return;
+            }
+
+            // ==========================================
+            // SI EL 2FA NO ESTÁ CONFIGURADO: ACTIVAR
+            // ==========================================
+
+            Activar2FAWindow ventana = new Activar2FAWindow
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            bool? resultado = ventana.ShowDialog();
+
+            if (resultado == true)
+            {
+                await CargarEstado2FAAsync();
+
+                if (dosFAConfigurado)
+                {
+                    PanelAvisos.Visibility = Visibility.Visible;
+
+                    PanelAvisos.Children.Add(
+                        new AvisoNotificacion(
+                            "La autenticación de dos factores se activó correctamente.",
+                            true));
+                }
+            }
+        }
+
+        // ==========================================
+        // CARGAR ESTADO DE AUTENTICACIÓN 2FA
+        // ==========================================
+
+        private async Task CargarEstado2FAAsync()
+        {
+            try
+            {
+                Estado2FA estado =
+                    await ClienteApi.ObtenerEstado2FAAsync();
+
+                dosFAConfigurado = estado.Configurado;
+
+                TxtEstado2FA.Text =
+                    dosFAConfigurado
+                        ? "Configurado"
+                        : "No configurado";
+                ActualizarVisual2FA();
+            }
+            catch (Exception ex)
+            {
+                TxtEstado2FA.Text = "No disponible";
+
+                System.Diagnostics.Debug.WriteLine(
+                    "Error al consultar el estado 2FA: " + ex.Message);
+                dosFAConfigurado = false;
+                ActualizarVisual2FA();
+            }
+        }
+
+        // ==========================================
+        // ACTUALIZAR INTERRUPTOR VISUAL 2FA
+        // ==========================================
+
+        private void ActualizarVisual2FA()
+        {
+            if (dosFAConfigurado)
+            {
+                // ESTADO ACTIVADO
+                FondoInterruptor2FA.Background =
+                    new SolidColorBrush(
+                        Color.FromRgb(34, 152, 169));
+
+                IndicadorInterruptor2FA.HorizontalAlignment =
+                    HorizontalAlignment.Right;
+
+                IndicadorInterruptor2FA.Margin =
+                    new Thickness(0, 0, 3, 0);
+
+                BtnInterruptor2FA.ToolTip =
+                    "Autenticación de dos factores configurada";
+            }
+            else
+            {
+                // ESTADO DESACTIVADO
+                FondoInterruptor2FA.Background =
+                    new SolidColorBrush(
+                        Color.FromRgb(217, 221, 218));
+
+                IndicadorInterruptor2FA.HorizontalAlignment =
+                    HorizontalAlignment.Left;
+
+                IndicadorInterruptor2FA.Margin =
+                    new Thickness(3, 0, 0, 0);
+
+                BtnInterruptor2FA.ToolTip =
+                    "Configuración de dos factores pendiente";
+            }
         }
 
         // ==========================================
         // CARGAR PERFIL
         // ==========================================
+
         private async void PerfilView_Loaded(
             object sender,
             RoutedEventArgs e)
@@ -171,6 +309,7 @@ namespace ClinicSyncDesktop.Views
                 TxtCorreo.Text = perfil.CorreoContacto ?? "";
 
                 await CargarFotografiaAsync();
+                await CargarEstado2FAAsync();
             }
             catch (Exception ex)
             {
@@ -191,6 +330,7 @@ namespace ClinicSyncDesktop.Views
         // ==========================================
         // CARGAR FOTOGRAFÍA
         // ==========================================
+
         private async Task CargarFotografiaAsync()
         {
             try
@@ -234,6 +374,7 @@ namespace ClinicSyncDesktop.Views
         // ==========================================
         // FORMATEAR ROL
         // ==========================================
+
         private string FormatearRol(string? rol)
         {
             if (string.IsNullOrWhiteSpace(rol))
@@ -259,6 +400,7 @@ namespace ClinicSyncDesktop.Views
         // ==========================================
         // FORMATEAR SEXO
         // ==========================================
+
         private string FormatearSexo(string? genero)
         {
             if (string.IsNullOrWhiteSpace(genero))
@@ -280,6 +422,7 @@ namespace ClinicSyncDesktop.Views
         // ==========================================
         // ABRIR EDICIÓN
         // ==========================================
+
         private void EditarFoto_Click(
             object sender,
             RoutedEventArgs e)

@@ -6,6 +6,8 @@ using ClinicSyncServer.Infrastructure.Auth;
 using ClinicSyncServer.Infrastructure.Email;
 using ClinicSyncServer.Infrastructure.Storage;
 using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.DataProtection;
+using ClinicSyncServer.Infrastructure.Facial;
 
 namespace ClinicSyncServer.Infrastructure
 {
@@ -46,6 +48,20 @@ namespace ClinicSyncServer.Infrastructure
             });
 
             services.AddSingleton<IStorageService, R2StorageService>();
+
+            string rutaClaves = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "ClinicSync",
+                "DataProtectionKeys"
+            );
+
+            Directory.CreateDirectory(rutaClaves);
+
+            services.AddDataProtection()
+                .SetApplicationName("ClinicSync")
+                .PersistKeysToFileSystem(new DirectoryInfo(rutaClaves));
+
+            services.AddSingleton<ProtectorCredencialFacial>();
 
             return services;
         }
