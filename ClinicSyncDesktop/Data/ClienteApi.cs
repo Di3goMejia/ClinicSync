@@ -58,6 +58,10 @@ namespace ClinicSyncDesktop.Data
         }
     }
 
+    public sealed class Estado2FA
+    {
+        public bool Configurado { get; set; }
+    }
 
     public static class ClienteApi
     {
@@ -123,6 +127,57 @@ namespace ClinicSyncDesktop.Data
             return resultado;
         }
 
+
+        // ==========================================
+        // VERIFICAR SEGUNDO FACTOR FACIAL
+        // ==========================================
+
+        public static async Task<RespuestaLogin> VerificarSegundoFactorAsync(
+            string desafio,
+            string imagenBase64)
+        {
+            if (string.IsNullOrWhiteSpace(desafio))
+                throw new ArgumentException(
+                    "El desafío de autenticación es obligatorio.",
+                    nameof(desafio));
+
+            if (string.IsNullOrWhiteSpace(imagenBase64))
+                throw new ArgumentException(
+                    "La captura facial es obligatoria.",
+                    nameof(imagenBase64));
+
+            using var respuesta = await cliente.PostAsJsonAsync(
+                "api/auth/2fa",
+                new
+                {
+                    Desafio = desafio,
+                    Prueba = imagenBase64
+                },
+                opciones);
+
+            await VerificarRespuestaAsync(respuesta);
+
+            var resultado =
+                await respuesta.Content.ReadFromJsonAsync<RespuestaLogin>(
+                    opciones)
+                ?? throw new InvalidOperationException(
+                    "El servidor no devolvió el resultado de la verificación facial.");
+
+            if (resultado.Requiere2fa ||
+                string.IsNullOrWhiteSpace(resultado.AccessToken) ||
+                string.IsNullOrWhiteSpace(resultado.RefreshToken))
+            {
+                throw new InvalidOperationException(
+                    "El servidor no devolvió una sesión válida después de verificar el segundo factor.");
+            }
+
+            accessToken = resultado.AccessToken;
+            refreshToken = resultado.RefreshToken;
+
+            return resultado;
+        }
+
+
         // OBTENER PERFIL
         public static async Task<PerfilActual> ObtenerPerfilAsync()
         {
@@ -136,6 +191,22 @@ namespace ClinicSyncDesktop.Data
                 opciones)
                 ?? throw new InvalidOperationException(
                     "No se pudieron obtener los datos del usuario.");
+        }
+
+        // OBTENER ESTADO DE AUTENTICACIÓN 2FA
+        public static async Task<Estado2FA> ObtenerEstado2FAAsync()
+        {
+            return await ObtenerAutenticadoAsync<Estado2FA>(
+                "api/auth/2fa/estado");
+        }
+
+        // DESACTIVAR AUTENTICACIÓN DE DOS FACTORES
+        public static async Task Desactivar2FAAsync()
+        {
+            using var respuesta = await DeleteAutenticadoAsync(
+                "api/auth/2fa/facial");
+
+            await VerificarRespuestaAsync(respuesta);
         }
 
         // OBTENER DATOS DESDE LA API
@@ -177,6 +248,15 @@ namespace ClinicSyncDesktop.Data
             CancellationToken ct = default)
         {
             return await EnviarJsonAutenticadoAsync<T>(HttpMethod.Patch, ruta, contenido, ct);
+        }
+
+        // ENVIAR SOLICITUD MEDIANTE DELETE
+        public static async Task<HttpResponseMessage> DeleteAutenticadoAsync(
+            string ruta)
+        {
+            return await EnviarAutenticadoAsync(
+                HttpMethod.Delete,
+                ruta);
         }
 
         public static async Task SubirArchivoAutenticadoAsync(

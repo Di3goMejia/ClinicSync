@@ -476,7 +476,7 @@
                                     BorderThickness="0"
                                     Cursor="Hand"
                                     Click="Configuracion_Click">
-                                <Image Source="/Resources/Imagenes MenuPrincipal/ajuste.png"
+                                <Image Source="/Resources/ImagenesTabla/IconoEngranaje.png"
                                        Width="23"
                                        Height="23"/>
                             </Button>

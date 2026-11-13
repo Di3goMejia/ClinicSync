@@ -1,0 +1,184 @@
+﻿<Window x:Class="ClinicSyncDesktop.Views.Auth.VerificarFacialWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Verificación facial"
+        Width="550"
+        Height="520"
+        MinWidth="500"
+        MinHeight="460"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent">
+
+    <Window.Resources>
+        <LinearGradientBrush x:Key="Turquesa"
+                             StartPoint="0,0"
+                             EndPoint="1,0">
+            <GradientStop Color="#32A5AB" Offset="0"/>
+            <GradientStop Color="#138DAA" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Resources>
+
+    <Border Margin="9"
+            CornerRadius="15"
+            Background="White"
+            ClipToBounds="True">
+
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="16"
+                              ShadowDepth="5"
+                              Opacity="0.28"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="75"/>
+            </Grid.RowDefinitions>
+
+            <!-- ENCABEZADO -->
+            <Border Grid.Row="0"
+                    Background="{StaticResource Turquesa}"
+                    CornerRadius="15,15,0,0">
+
+                <Grid Margin="16,0,12,0">
+                    <TextBlock Text="Verificación facial"
+                               Foreground="White"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"
+                               Margin="0,0,48,0"/>
+
+                    <Button Width="32"
+                            Height="32"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Padding="0"
+                            Background="#EF4056"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Click="Cancelar_Click">
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        CornerRadius="7">
+                                    <TextBlock Text="×"
+                                               FontFamily="Arial"
+                                               FontSize="23"
+                                               FontWeight="Bold"
+                                               Foreground="White"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               TextAlignment="Center"
+                                               Margin="0,-1,0,0"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- CÁMARA -->
+            <Grid Grid.Row="1"
+                  Margin="24,16,24,15">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock x:Name="TxtEstadoCamara"
+                           Grid.Row="0"
+                           Text="Iniciando cámara..."
+                           FontSize="13"
+                           Foreground="#687477"
+                           Margin="0,0,0,13"/>
+
+                <Border Grid.Row="1"
+                        Background="#252525"
+                        CornerRadius="10"
+                        ClipToBounds="True">
+
+                    <Grid>
+                        <Image x:Name="ImgCamara"
+                               Stretch="Uniform"/>
+
+                        <TextBlock x:Name="TxtSinCamara"
+                                   Text="Coloca tu rostro frente a la cámara"
+                                   FontSize="11"
+                                   Foreground="White"
+                                   Background="#168FA8"
+                                   Padding="9,5"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Top"
+                                   Margin="8,8,8,0"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap"/>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- BOTONES -->
+            <Border Grid.Row="2"
+                    Background="{StaticResource Turquesa}"
+                    CornerRadius="0,0,15,15">
+
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+
+                    <Button Content="Cancelar"
+                            Width="125"
+                            Height="40"
+                            Margin="0,0,12,0"
+                            Background="White"
+                            Foreground="#164C5B"
+                            FontSize="13"
+                            FontWeight="SemiBold"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Click="Cancelar_Click">
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        CornerRadius="20">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <Button x:Name="BtnVerificar"
+                            Content="Verificar rostro"
+                            Width="160"
+                            Height="40"
+                            Background="#83D3DB"
+                            Foreground="#164C5B"
+                            FontSize="13"
+                            FontWeight="Bold"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            IsEnabled="False"
+                            Click="Verificar_Click">
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        CornerRadius="20">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

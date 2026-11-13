@@ -3,6 +3,7 @@ using System;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
+using ClinicSyncDesktop.Views.Auth;
 
 namespace ClinicSync.Views
 {
@@ -94,15 +95,31 @@ namespace ClinicSync.Views
 
                 if (resultado.Requiere2fa)
                 {
-                    MessageBox.Show(
-                        "Esta cuenta requiere verificación en dos pasos. " +
-                        "El servidor todavía tiene pendiente implementar " +
-                        "la comprobación del segundo factor.",
-                        "ClinicSync",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
+                    if (string.IsNullOrWhiteSpace(resultado.Desafio))
+                    {
+                        throw new InvalidOperationException(
+                            "El servidor no proporcionó un desafío de autenticación válido.");
+                    }
 
-                    return;
+                    var ventanaFacial = new VerificarFacialWindow
+                    {
+                        Owner = this
+                    };
+
+                    bool? verificacion = ventanaFacial.ShowDialog();
+
+                    // Si el usuario cancela o no obtiene una captura,
+                    // se interrumpe el inicio de sesión.
+                    if (verificacion != true ||
+                        string.IsNullOrWhiteSpace(ventanaFacial.ImagenBase64))
+                    {
+                        return;
+                    }
+
+                    // Enviar la captura al servidor para validar el segundo factor.
+                    await ClienteApi.VerificarSegundoFactorAsync(
+                        resultado.Desafio,
+                        ventanaFacial.ImagenBase64);
                 }
 
                 // Comprobar que la sesión permite consultar el perfil.

@@ -1,0 +1,265 @@
+﻿<Window x:Class="ClinicSyncDesktop.Views.Perfil._2FA.Activar2FAWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Activar autenticación de dos factores"
+        Width="600"
+        Height="440"
+        MinWidth="560"
+        MinHeight="420"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False">
+
+    <Window.Resources>
+
+        <!-- DEGRADADO TURQUESA -->
+        <LinearGradientBrush x:Key="Turquesa"
+                             StartPoint="0,0"
+                             EndPoint="1,0">
+            <GradientStop Color="#32A5AB" Offset="0"/>
+            <GradientStop Color="#138DAA" Offset="1"/>
+        </LinearGradientBrush>
+
+        <SolidColorBrush x:Key="AzulOscuro" Color="#17465B"/>
+        <SolidColorBrush x:Key="TextoSecundario" Color="#66716F"/>
+
+    </Window.Resources>
+
+    <!-- CONTENEDOR PRINCIPAL REDONDEADO -->
+    <Border Margin="9"
+            CornerRadius="15"
+            Background="White"
+            ClipToBounds="True">
+
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="16"
+                              ShadowDepth="5"
+                              Opacity="0.28"/>
+        </Border.Effect>
+
+        <Grid>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="76"/>
+            </Grid.RowDefinitions>
+
+            <!-- ENCABEZADO CON DEGRADADO -->
+            <Border Grid.Row="0"
+                    Background="{StaticResource Turquesa}"
+                    CornerRadius="15,15,0,0">
+
+                <Grid Margin="24,0,16,0">
+
+                    <TextBlock
+                        Text="Activar autenticación de dos factores"
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        VerticalAlignment="Center"
+                        TextWrapping="Wrap"
+                        Margin="0,0,35,0"/>
+
+                    <!-- BOTÓN CERRAR -->
+                    <Button Width="27"
+                            Height="27"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Background="#EF4056"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Click="Cancelar_Click">
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        CornerRadius="7">
+                                    <TextBlock Text="×"
+                                               FontFamily="Arial"
+                                               FontSize="21"
+                                               FontWeight="Bold"
+                                               Foreground="White"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               TextAlignment="Center"
+                                               Margin="0,-1,0,0"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+
+                    </Button>
+
+                </Grid>
+            </Border>
+
+            <!-- CONTENIDO PRINCIPAL -->
+            <StackPanel Grid.Row="1"
+                        Margin="32,24,32,16">
+
+                <TextBlock
+                    Text="Para activar el reconocimiento facial pulsa continuar"
+                    FontSize="19"
+                    FontWeight="Bold"
+                    Foreground="{StaticResource AzulOscuro}"
+                    TextWrapping="Wrap"/>
+
+                <TextBlock
+                    Text="Configura el reconocimiento facial para añadir una capa de protección a tu cuenta."
+                    FontSize="13"
+                    Foreground="{StaticResource TextoSecundario}"
+                    TextWrapping="Wrap"
+                    Margin="0,10,0,22"/>
+
+                <!-- TARJETA DE RECONOCIMIENTO FACIAL -->
+                <Border Background="#E3E8E8"
+                        BorderBrush="#E3E8E8"
+                        BorderThickness="1"
+                        CornerRadius="17"
+                        Padding="18">
+
+                    <Grid>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="48"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- ICONO FACIAL -->
+                        <Viewbox Grid.Column="0"
+                                 Width="36"
+                                 Height="36"
+                                 VerticalAlignment="Center">
+
+                            <Canvas Width="40" Height="40">
+
+                                <Path Stroke="#263A42"
+                                      StrokeThickness="2.8"
+                                      StrokeStartLineCap="Round"
+                                      StrokeEndLineCap="Round"
+                                      Data="M 4,13 L 4,5 L 12,5
+                                            M 28,5 L 36,5 L 36,13
+                                            M 4,27 L 4,35 L 12,35
+                                            M 28,35 L 36,35 L 36,27"/>
+
+                                <Ellipse Canvas.Left="15"
+                                         Canvas.Top="9"
+                                         Width="10"
+                                         Height="10"
+                                         Stroke="#263A42"
+                                         StrokeThickness="2.5"/>
+
+                                <Path Stroke="#263A42"
+                                      StrokeThickness="2.5"
+                                      StrokeStartLineCap="Round"
+                                      StrokeEndLineCap="Round"
+                                      Data="M 10,31
+                                            C 10,24 14,22 20,22
+                                            C 26,22 30,24 30,31"/>
+
+                            </Canvas>
+                        </Viewbox>
+
+                        <!-- TEXTO -->
+                        <StackPanel Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Margin="12,0,0,0">
+
+                            <TextBlock
+                                Text="Reconocimiento facial"
+                                FontSize="17"
+                                FontWeight="Bold"
+                                Foreground="#172A32"
+                                TextWrapping="Wrap"/>
+
+                            <TextBlock
+                                Text="Configurar 2FA mediante un factor biométrico (reconocimiento facial)."
+                                FontSize="12"
+                                Foreground="#263A42"
+                                TextWrapping="Wrap"
+                                Margin="0,6,0,0"/>
+
+                        </StackPanel>
+
+                    </Grid>
+                </Border>
+
+                <!-- TEXTO INFORMATIVO -->
+                <TextBlock
+                    Text="En el siguiente paso podrás configurar la cámara y registrar tu rostro."
+                    FontSize="12"
+                    Foreground="{StaticResource TextoSecundario}"
+                    TextWrapping="Wrap"
+                    Margin="0,18,0,0"/>
+
+            </StackPanel>
+
+            <!-- BARRA INFERIOR CON DEGRADADO -->
+            <Border Grid.Row="2"
+                    Background="{StaticResource Turquesa}"
+                    CornerRadius="0,0,15,15"
+                    Padding="22,12">
+
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+
+                    <!-- CANCELAR -->
+                    <Button Content="Cancelar"
+                            Width="100"
+                            Height="38"
+                            Margin="0,0,12,0"
+                            FontSize="12"
+                            Foreground="{StaticResource AzulOscuro}"
+                            Background="White"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Click="Cancelar_Click">
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        CornerRadius="8">
+                                    <ContentPresenter
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+
+                    </Button>
+
+                    <!-- CONTINUAR -->
+                    <Button Content="Continuar"
+                            Width="120"
+                            Height="38"
+                            FontSize="12"
+                            FontWeight="SemiBold"
+                            Foreground="White"
+                            Background="#17465B"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Click="Continuar_Click">
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        CornerRadius="8">
+                                    <ContentPresenter
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+
+                    </Button>
+
+                </StackPanel>
+            </Border>
+
+        </Grid>
+    </Border>
+</Window>

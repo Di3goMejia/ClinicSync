@@ -47,7 +47,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\haarcascade_frontalface_default.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.5" />
+
+	<!-- RECONOCIMIENTO FACIAL -->
+	<PackageReference Include="Emgu.CV" Version="5.0.0.6584" />
+	<PackageReference Include="Emgu.CV.Bitmap" Version="5.0.0.6584" />
+	<PackageReference Include="Emgu.CV.runtime.windows" Version="5.0.0.6584" />
   </ItemGroup>
 
   <ItemGroup>
