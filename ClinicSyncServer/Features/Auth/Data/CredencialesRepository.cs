@@ -62,5 +62,39 @@ namespace ClinicSyncServer.Features.Auth.Data
                 throw SqlErrorTranslator.Traducir(ex);
             }
         }
+
+
+        // OBTENER HASH DE CONTRASEÑA DEL USUARIO
+        public async Task<string?> ObtenerClaveAsync(int idUsuario)
+        {
+            await using SqlConnection db = factory.Crear();
+            await db.OpenAsync();
+
+            return await db.QuerySingleOrDefaultAsync<string>(
+                "api.usp_Usuarios_ObtenerClave",
+                new { IdUsuario = idUsuario },
+                commandType: CommandType.StoredProcedure);
+        }
+
+        // CAMBIAR CONTRASEÑA DESDE PERFIL
+        public async Task CambiarMiPasswordAsync(
+            int idUsuario,
+            Guid idSesionActual,
+            string claveHash)
+        {
+            await using SqlConnection db = factory.Crear();
+            await db.OpenAsync();
+
+            await db.ExecuteAsync(
+                "api.usp_Usuarios_CambiarMiPassword",
+                new
+                {
+                    IdUsuario = idUsuario,
+                    IdSesionActual = idSesionActual,
+                    ClaveHash = claveHash
+                },
+                commandType: CommandType.StoredProcedure);
+        }
+
     }
 }

@@ -290,5 +290,77 @@ namespace ClinicSyncServer.Features.Auth
         }
 
         private static string Normalizar(string valor) => valor.Trim().ToLowerInvariant();
+
+
+        // CAMBIAR CONTRASEÑA DESDE PERFIL
+        public async Task CambiarMiContrasenaAsync(
+            int idUsuario,
+            Guid idSesionActual,
+            string actual,
+            string nueva,
+            string confirmacion)
+        {
+            if (string.IsNullOrWhiteSpace(actual))
+            {
+                throw new ReglaNegocioException(
+                    "Ingrese su contraseña actual.", 50012);
+            }
+
+            if (string.IsNullOrWhiteSpace(nueva))
+            {
+                throw new ReglaNegocioException(
+                    "Ingrese la nueva contraseña.", 50012);
+            }
+
+            if (nueva != confirmacion)
+            {
+                throw new ReglaNegocioException(
+                    "Las contraseñas no coinciden.", 50012);
+            }
+
+            if (actual == nueva)
+            {
+                throw new ReglaNegocioException(
+                    "La nueva contraseña debe ser diferente a la actual.",
+                    50012);
+            }
+
+            // VALIDAR LOS REQUISITOS DE LA INTERFAZ
+            if (nueva.Length < 8 ||
+                !nueva.Any(char.IsUpper) ||
+                !nueva.Any(char.IsLower) ||
+                !nueva.Any(char.IsDigit) ||
+                !nueva.Any(c =>
+                    !char.IsLetterOrDigit(c) &&
+                    !char.IsWhiteSpace(c)))
+            {
+                throw new ReglaNegocioException(
+                    "La nueva contraseña debe contener al menos " +
+                    "8 caracteres, una mayúscula, una minúscula, " +
+                    "un número y un carácter especial.",
+                    50012);
+            }
+
+            // OBTENER EL HASH ACTUAL DESDE SQL SERVER
+            string? claveActual =
+                await credenciales.ObtenerClaveAsync(idUsuario);
+
+            if (string.IsNullOrWhiteSpace(claveActual) ||
+                !hasher.Comparar(actual, claveActual))
+            {
+                throw new ReglaNegocioException(
+                    "La contraseña actual es incorrecta.", 50012);
+            }
+
+            // GENERAR HASH ARGON2 CON EL SERVICIO EXISTENTE
+            string nuevoHash = hasher.Hash(nueva);
+
+            // GUARDAR Y REVOCAR LAS OTRAS SESIONES
+            await credenciales.CambiarMiPasswordAsync(
+                idUsuario,
+                idSesionActual,
+                nuevoHash);
+        }
+
     }
 }

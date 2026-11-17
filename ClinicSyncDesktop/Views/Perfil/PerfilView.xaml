@@ -116,308 +116,322 @@
 
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Disabled">
+    <!-- CONTENEDOR PRINCIPAL -->
+    <Grid>
 
-        <Grid Margin="45,25,35,30">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="25"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
 
-            <!-- ENCABEZADO -->
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Grid Margin="45,25,35,30">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <Grid Width="105" Height="105"
-                      Margin="0,0,25,0"
-                      Background="Transparent">
+                <!-- ENCABEZADO -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
 
-                    <Image x:Name="ImgPerfil"
-                           Source="/Resources/ImagenesPerfil/perfil.png"
-                           Width="95" Height="95"
-                           Stretch="Uniform"/>
+                    <Grid Width="105" Height="105"
+                          Margin="0,0,25,0"
+                          Background="Transparent">
 
-                    <Button x:Name="BtnEditarFoto"
-                            Style="{StaticResource BotonEditarFoto}"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Bottom"
-                            Margin="0,0,-5,-3"
-                            Opacity="0"
-                            Click="EditarFoto_Click"/>
+                        <Image x:Name="ImgPerfil"
+                               Source="/Resources/ImagenesPerfil/perfil.png"
+                               Width="95" Height="95"
+                               Stretch="Uniform"/>
 
-                    <Grid.Triggers>
-                        <EventTrigger RoutedEvent="MouseEnter">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="BtnEditarFoto"
-                                        Storyboard.TargetProperty="Opacity"
-                                        To="1" Duration="0:0:0.2"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="MouseLeave">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="BtnEditarFoto"
-                                        Storyboard.TargetProperty="Opacity"
-                                        To="0" Duration="0:0:0.2"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </Grid.Triggers>
-                </Grid>
-
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock x:Name="TxtNombrePerfil"
-                               Text="Cargando perfil..."
-                               FontSize="29"
-                               FontWeight="Bold"
-                               Foreground="#17475A"/>
-
-                    <TextBlock x:Name="TxtRolPerfil"
-                               FontSize="17"
-                               Foreground="#222222"
-                               Margin="0,5,0,0"/>
-                </StackPanel>
-            </StackPanel>
-
-            <!-- CONTENIDO -->
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="195"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- NAVEGACIÓN -->
-                <StackPanel Grid.Column="0" Margin="0,0,25,0">
-                    <Button x:Name="BtnDatosPersonales"
-                            Content="Datos personales"
-                            Style="{StaticResource BotonMenuPerfil}"
-                            Click="DatosPersonales_Click"
-                            Margin="0,0,0,12"/>
-
-                    <Button x:Name="BtnSeguridad"
-                            Content="Seguridad"
-                            Style="{StaticResource BotonMenuPerfil}"
-                            Click="Seguridad_Click"
-                            Margin="0,0,0,12"/>
-
-                    <Button x:Name="BtnAcercaDe"
-                            Content="Acerca de"
-                            Style="{StaticResource BotonMenuPerfil}"
-                            Click="AcercaDe_Click"/>
-                </StackPanel>
-
-                <!-- DATOS PERSONALES -->
-                <StackPanel x:Name="PanelDatosPersonales"
-                            Grid.Column="1">
-
-                    <TextBlock Text="Identidad:"
-                               Style="{StaticResource EtiquetaPerfil}"/>
-                    <TextBox x:Name="TxtIdentidad"
-                             Style="{StaticResource CampoPerfil}"
-                             Margin="0,6,0,18"/>
-
-                    <TextBlock Text="Nombre Completo:"
-                               Style="{StaticResource EtiquetaPerfil}"/>
-
-                    <Grid Margin="0,6,0,18">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBox x:Name="TxtNombres"
-                                 Grid.Column="0"
-                                 Style="{StaticResource CampoPerfil}"/>
-                        <TextBox x:Name="TxtApellidos"
-                                 Grid.Column="2"
-                                 Style="{StaticResource CampoPerfil}"/>
-                    </Grid>
-
-                    <Grid Margin="0,0,0,18">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="25"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Fecha de nacimiento:"
-                                       Style="{StaticResource EtiquetaPerfil}"/>
-                            <Grid Margin="0,6,0,0">
-                                <TextBox x:Name="TxtFechaNacimiento"
-                                         Style="{StaticResource CampoPerfil}"
-                                         Padding="10,4,36,4"/>
-                                <Image
-                                    Source="/Resources/ImagenesPacientes/ImagenesExpediente/calendario.png"
-                                    Width="20" Height="20"
-                                    HorizontalAlignment="Right"
-                                    Margin="0,0,9,0"
-                                    IsHitTestVisible="False"/>
-                            </Grid>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Sexo:"
-                                       Style="{StaticResource EtiquetaPerfil}"/>
-                            <TextBox x:Name="TxtSexo"
-                                     Style="{StaticResource CampoPerfil}"
-                                     Margin="0,6,0,0"/>
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="25"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Teléfono:"
-                                       Style="{StaticResource EtiquetaPerfil}"/>
-                            <TextBox x:Name="TxtTelefono"
-                                     Style="{StaticResource CampoPerfil}"
-                                     Margin="0,6,0,0"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Correo:"
-                                       Style="{StaticResource EtiquetaPerfil}"/>
-                            <TextBox x:Name="TxtCorreo"
-                                     Style="{StaticResource CampoPerfil}"
-                                     Margin="0,6,0,0"/>
-                        </StackPanel>
-                    </Grid>
-
-                    <TextBlock x:Name="TxtError"
-                               Foreground="#E34462"
-                               FontSize="12"
-                               TextWrapping="Wrap"
-                               Visibility="Collapsed"
-                               Margin="0,20,0,0"/>
-                </StackPanel>
-
-                <!-- SEGURIDAD -->
-                <StackPanel x:Name="PanelSeguridad"
-                            Grid.Column="1"
-                            Visibility="Collapsed">
-
-                    <!-- CAMBIAR CONTRASEÑA -->
-                    <Grid Margin="0,0,0,22">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="135"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Cambiar contraseña"
-                                       Style="{StaticResource EtiquetaPerfil}"/>
-                            <TextBlock
-                                Text="Actualiza tu contraseña para mantener tu cuenta segura."
-                                Foreground="#333333"
-                                FontSize="12"
-                                Margin="0,8,0,0"/>
-                        </StackPanel>
-
-                        <Button Grid.Column="1"
-                                Content="Cambiar"
-                                Click="CambiarPassword_Click"
-                                Width="115" Height="30"
+                        <Button x:Name="BtnEditarFoto"
+                                Style="{StaticResource BotonEditarFoto}"
                                 HorizontalAlignment="Right"
-                                Background="#2298A9"
-                                Foreground="White"
-                                FontSize="16"
-                                FontWeight="Bold"
-                                BorderThickness="0"
-                                Cursor="Hand">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border
-                                        Background="{TemplateBinding Background}"
-                                        CornerRadius="12">
-                                        <ContentPresenter
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
+                                VerticalAlignment="Bottom"
+                                Margin="0,0,-5,-3"
+                                Opacity="0"
+                                Click="EditarFoto_Click"/>
+
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BtnEditarFoto"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BtnEditarFoto"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Grid.Triggers>
                     </Grid>
 
-                    <!-- AUTENTICACIÓN DE DOS FACTORES -->
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock x:Name="TxtNombrePerfil"
+                                   Text="Cargando perfil..."
+                                   FontSize="29"
+                                   FontWeight="Bold"
+                                   Foreground="#17475A"/>
 
-                        <StackPanel Grid.Column="0">
-                            <TextBlock
-                                Text="Autenticación de dos factores"
-                                Style="{StaticResource EtiquetaPerfil}"/>
-                            <TextBlock
-                                Text="Habilite la autenticación de dos factores (2FA) para una mayor protección de su cuenta."
-                                Foreground="#333333"
-                                FontSize="12"
-                                Margin="0,8,0,0"
-                                TextWrapping="Wrap"/>
-                        </StackPanel>
+                        <TextBlock x:Name="TxtRolPerfil"
+                                   FontSize="17"
+                                   Foreground="#222222"
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
+                </StackPanel>
 
-                        <StackPanel Grid.Column="1"
-                                    Orientation="Horizontal"
-                                    VerticalAlignment="Top"
-                                    Margin="20,0,0,0">
+                <!-- CONTENIDO -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="195"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                            <TextBlock x:Name="TxtEstado2FA"
-                                       Text="No configurado"
-                                       Foreground="#333333"
-                                       FontSize="14"
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,10,0"/>
+                    <!-- NAVEGACIÓN -->
+                    <StackPanel Grid.Column="0" Margin="0,0,25,0">
+                        <Button x:Name="BtnDatosPersonales"
+                                Content="Datos personales"
+                                Style="{StaticResource BotonMenuPerfil}"
+                                Click="DatosPersonales_Click"
+                                Margin="0,0,0,12"/>
 
-                            <Button Width="40"
-                                    Height="22"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Cursor="Hand"
-                                    ToolTip="Configuración de dos factores pendiente"
-                                    Click="Configurar2FA_Click">
+                        <Button x:Name="BtnSeguridad"
+                                Content="Seguridad"
+                                Style="{StaticResource BotonMenuPerfil}"
+                                Click="Seguridad_Click"
+                                Margin="0,0,0,12"/>
 
-                                <Grid Width="40" Height="22">
-                                    <Border Background="#D9DDDA"
-                                            CornerRadius="11"/>
-                                    <Ellipse Width="17"
-                                             Height="17"
-                                             Fill="#F0F3EF"
-                                             HorizontalAlignment="Left"
-                                             Margin="3,0,0,0"/>
+                        <Button x:Name="BtnAcercaDe"
+                                Content="Acerca de"
+                                Style="{StaticResource BotonMenuPerfil}"
+                                Click="AcercaDe_Click"/>
+                    </StackPanel>
+
+                    <!-- DATOS PERSONALES -->
+                    <StackPanel x:Name="PanelDatosPersonales"
+                                Grid.Column="1">
+
+                        <TextBlock Text="Identidad:"
+                                   Style="{StaticResource EtiquetaPerfil}"/>
+                        <TextBox x:Name="TxtIdentidad"
+                                 Style="{StaticResource CampoPerfil}"
+                                 Margin="0,6,0,18"/>
+
+                        <TextBlock Text="Nombre Completo:"
+                                   Style="{StaticResource EtiquetaPerfil}"/>
+
+                        <Grid Margin="0,6,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox x:Name="TxtNombres"
+                                     Grid.Column="0"
+                                     Style="{StaticResource CampoPerfil}"/>
+                            <TextBox x:Name="TxtApellidos"
+                                     Grid.Column="2"
+                                     Style="{StaticResource CampoPerfil}"/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="25"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Fecha de nacimiento:"
+                                           Style="{StaticResource EtiquetaPerfil}"/>
+                                <Grid Margin="0,6,0,0">
+                                    <TextBox x:Name="TxtFechaNacimiento"
+                                             Style="{StaticResource CampoPerfil}"
+                                             Padding="10,4,36,4"/>
+                                    <Image
+                                        Source="/Resources/ImagenesPacientes/ImagenesExpediente/calendario.png"
+                                        Width="20" Height="20"
+                                        HorizontalAlignment="Right"
+                                        Margin="0,0,9,0"
+                                        IsHitTestVisible="False"/>
                                 </Grid>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Sexo:"
+                                           Style="{StaticResource EtiquetaPerfil}"/>
+                                <TextBox x:Name="TxtSexo"
+                                         Style="{StaticResource CampoPerfil}"
+                                         Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="25"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Teléfono:"
+                                           Style="{StaticResource EtiquetaPerfil}"/>
+                                <TextBox x:Name="TxtTelefono"
+                                         Style="{StaticResource CampoPerfil}"
+                                         Margin="0,6,0,0"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Correo:"
+                                           Style="{StaticResource EtiquetaPerfil}"/>
+                                <TextBox x:Name="TxtCorreo"
+                                         Style="{StaticResource CampoPerfil}"
+                                         Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock x:Name="TxtError"
+                                   Foreground="#E34462"
+                                   FontSize="12"
+                                   TextWrapping="Wrap"
+                                   Visibility="Collapsed"
+                                   Margin="0,20,0,0"/>
+                    </StackPanel>
+
+                    <!-- SEGURIDAD -->
+                    <StackPanel x:Name="PanelSeguridad"
+                                Grid.Column="1"
+                                Visibility="Collapsed">
+
+                        <!-- CAMBIAR CONTRASEÑA -->
+                        <Grid Margin="0,0,0,22">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="135"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Cambiar contraseña"
+                                           Style="{StaticResource EtiquetaPerfil}"/>
+                                <TextBlock
+                                    Text="Actualiza tu contraseña para mantener tu cuenta segura."
+                                    Foreground="#333333"
+                                    FontSize="12"
+                                    Margin="0,8,0,0"/>
+                            </StackPanel>
+
+                            <Button Grid.Column="1"
+                                    Content="Cambiar"
+                                    Click="CambiarPassword_Click"
+                                    Width="115" Height="30"
+                                    HorizontalAlignment="Right"
+                                    Background="#2298A9"
+                                    Foreground="White"
+                                    FontSize="16"
+                                    FontWeight="Bold"
+                                    BorderThickness="0"
+                                    Cursor="Hand">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="12">
+                                            <ContentPresenter
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
                             </Button>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
+                        </Grid>
 
-                <!-- ACERCA DE -->
-                <StackPanel x:Name="PanelAcercaDe"
-                            Grid.Column="1"
-                            Visibility="Collapsed">
+                        <!-- AUTENTICACIÓN DE DOS FACTORES -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Acerca de ClinicSync"
-                               Style="{StaticResource EtiquetaPerfil}"/>
-                    <TextBlock
-                        Text="Sistema de gestión para clínicas dentales."
-                        Foreground="#333333"
-                        FontSize="13"
-                        Margin="0,8,0,0"/>
-                </StackPanel>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock
+                                    Text="Autenticación de dos factores"
+                                    Style="{StaticResource EtiquetaPerfil}"/>
+                                <TextBlock
+                                    Text="Habilite la autenticación de dos factores (2FA) para una mayor protección de su cuenta."
+                                    Foreground="#333333"
+                                    FontSize="12"
+                                    Margin="0,8,0,0"
+                                    TextWrapping="Wrap"/>
+                            </StackPanel>
 
+                            <StackPanel Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        VerticalAlignment="Top"
+                                        Margin="20,0,0,0">
+
+                                <TextBlock x:Name="TxtEstado2FA"
+                                           Text="No configurado"
+                                           Foreground="#333333"
+                                           FontSize="14"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,10,0"/>
+
+                                <Button Width="40"
+                                        Height="22"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Cursor="Hand"
+                                        ToolTip="Configuración de dos factores pendiente"
+                                        Click="Configurar2FA_Click">
+
+                                    <Grid Width="40" Height="22">
+                                        <Border Background="#D9DDDA"
+                                                CornerRadius="11"/>
+                                        <Ellipse Width="17"
+                                                 Height="17"
+                                                 Fill="#F0F3EF"
+                                                 HorizontalAlignment="Left"
+                                                 Margin="3,0,0,0"/>
+                                    </Grid>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- ACERCA DE -->
+                    <StackPanel x:Name="PanelAcercaDe"
+                                Grid.Column="1"
+                                Visibility="Collapsed">
+
+                        <TextBlock Text="Acerca de ClinicSync"
+                                   Style="{StaticResource EtiquetaPerfil}"/>
+                        <TextBlock
+                            Text="Sistema de gestión para clínicas dentales."
+                            Foreground="#333333"
+                            FontSize="13"
+                            Margin="0,8,0,0"/>
+                    </StackPanel>
+
+                </Grid>
             </Grid>
-        </Grid>
-    </ScrollViewer>
+        </ScrollViewer>
+
+        <!-- NOTIFICACIONES DE ÉXITO Y ERROR -->
+        <StackPanel x:Name="PanelAvisos"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,15,20"
+                    Panel.ZIndex="100"
+                    Visibility="Collapsed"/>
+
+    </Grid>
+
 </UserControl>
