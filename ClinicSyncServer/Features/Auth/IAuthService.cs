@@ -19,5 +19,12 @@ namespace ClinicSyncServer.Features.Auth
         string codigo,
         string nuevaPassword,
         string confirmarPassword);
+
+        Task CambiarMiContrasenaAsync(
+            int idUsuario,
+            Guid idSesionActual,
+            string actual,
+            string nueva,
+            string confirmacion);
     }
 }

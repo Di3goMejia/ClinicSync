@@ -312,6 +312,68 @@ namespace ClinicSyncServer.Features.Auth
             .RequireAuthorization();
 
             // ==========================================
+            // CAMBIAR CONTRASEÑA DESDE PERFIL
+            // ==========================================
+
+            app.MapPut("/api/auth/me/contrasena", async (
+                ClaimsPrincipal usuario,
+                CambiarMiContrasenaRequest req,
+                IAuthService auth,
+                ILogger<AuthService> logger) =>
+            {
+                string idSolicitud = Guid.NewGuid().ToString("N")[..8];
+
+                logger.LogInformation(
+                    "CAMBIO CONTRASEÑA: inicio de solicitud {IdSolicitud}",
+                    idSolicitud);
+
+                // IDENTIFICAR AL USUARIO AUTENTICADO
+                if (!int.TryParse(
+                    usuario.FindFirstValue("sub"),
+                    out int idUsuario))
+                {
+                    return Results.Unauthorized();
+                }
+
+                // IDENTIFICAR LA SESIÓN ACTUAL
+                if (!Guid.TryParse(
+                    usuario.FindFirstValue("sid"),
+                    out Guid idSesion))
+                {
+                    return Results.Unauthorized();
+                }
+
+                // VERIFICAR Y ACTUALIZAR LA CONTRASEÑA
+
+                try
+                {
+                    await auth.CambiarMiContrasenaAsync(
+                        idUsuario,
+                        idSesion,
+                        req.ContrasenaActual,
+                        req.NuevaContrasena,
+                        req.ConfirmarContrasena);
+
+                    logger.LogInformation(
+                        "CAMBIO CONTRASEÑA: solicitud {IdSolicitud} completada",
+                        idSolicitud);
+
+                    return Results.NoContent();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(
+                        ex,
+                        "CAMBIO CONTRASEÑA: solicitud {IdSolicitud} falló",
+                        idSolicitud);
+
+                    throw;
+                }
+
+            })
+            .RequireAuthorization();
+
+            // ==========================================
             // FOTOGRAFÍA DEL PERFIL
             // ==========================================
 
