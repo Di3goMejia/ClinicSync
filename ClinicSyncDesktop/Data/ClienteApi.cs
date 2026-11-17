@@ -71,6 +71,82 @@ namespace ClinicSyncDesktop.Data
             Timeout = TimeSpan.FromSeconds(60)
         };
 
+        // CAMBIAR CONTRASEÑA DEL USUARIO AUTENTICADO
+        public static async Task CambiarMiContrasenaAsync(
+            string actual,
+            string nueva,
+            string confirmacion)
+        {
+            if (string.IsNullOrWhiteSpace(actual))
+                throw new InvalidOperationException(
+                    "Debe ingresar su contraseña actual.");
+
+            if (string.IsNullOrWhiteSpace(nueva))
+                throw new InvalidOperationException(
+                    "Debe ingresar una nueva contraseña.");
+
+            if (nueva != confirmacion)
+                throw new InvalidOperationException(
+                    "Las contraseñas no coinciden.");
+
+            if (actual == nueva)
+                throw new InvalidOperationException(
+                    "La nueva contraseña debe ser diferente a la actual.");
+
+            var datos = new
+            {
+                ContrasenaActual = actual,
+                NuevaContrasena = nueva,
+                ConfirmarContrasena = confirmacion
+            };
+
+            using var solicitud =
+                CrearSolicitudCambioContrasena(datos);
+
+            using var respuesta =
+                await cliente.SendAsync(solicitud);
+
+            System.Diagnostics.Debug.WriteLine(
+                "CAMBIO CONTRASEÑA - HTTP: " +
+                (int)respuesta.StatusCode);
+
+            System.Diagnostics.Debug.WriteLine(
+                "CAMBIO CONTRASEÑA - ÉXITO: " +
+                respuesta.IsSuccessStatusCode);
+
+            await VerificarRespuestaAsync(respuesta);
+
+            System.Diagnostics.Debug.WriteLine(
+                "CAMBIO CONTRASEÑA - ClienteApi finalizó correctamente.");
+        }
+
+
+        private static HttpRequestMessage CrearSolicitudCambioContrasena<T>(
+            T datos)
+        {
+            string token = accessToken
+                ?? throw new InvalidOperationException(
+                    "No hay una sesión iniciada.");
+
+            var solicitud = new HttpRequestMessage(
+                HttpMethod.Put,
+                "api/auth/me/contrasena");
+
+            solicitud.Headers.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue(
+                    "Bearer", token);
+
+            solicitud.Headers.Add(
+                "X-Equipo",
+                Environment.MachineName);
+
+            solicitud.Content = JsonContent.Create(
+                datos,
+                options: opciones);
+
+            return solicitud;
+        }
+
         private static readonly SemaphoreSlim bloqueoRenovacion =
             new(1, 1);
 

@@ -17,6 +17,16 @@ namespace ClinicSyncDesktop.Views
         private PerfilActual? perfilActual;
         private bool dosFAConfigurado = false;
 
+        private void MostrarNotificacion(string mensaje, bool exitoso)
+        {
+            PanelAvisos.Children.Clear();
+
+            PanelAvisos.Visibility = Visibility.Visible;
+
+            PanelAvisos.Children.Add(
+                new AvisoNotificacion(mensaje, exitoso));
+        }
+
         // EVENTO PARA ABRIR EDICIÓN
         public event Action<PerfilActual>? EditarSolicitado;
 
@@ -107,13 +117,23 @@ namespace ClinicSyncDesktop.Views
             object sender,
             RoutedEventArgs e)
         {
-            MessageBox.Show(
-                "El cambio de contraseña desde el perfil requiere " +
-                "un endpoint autenticado en ClinicSyncServer. " +
-                "Todavía no se ha conectado esta función.",
-                "ClinicSync - Seguridad",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            var ventana = new CambiarContrasenaWindow
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            if (ventana.ShowDialog() == true)
+            {
+                MostrarNotificacion(
+                    "Se cambió la contraseña.",
+                    true);
+            }
+            else if (!string.IsNullOrWhiteSpace(ventana.ErrorCambio))
+            {
+                MostrarNotificacion(
+                    "Error al cambiar la contraseña.",
+                    false);
+            }
         }
 
         // ==========================================

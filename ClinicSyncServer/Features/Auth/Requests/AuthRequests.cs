@@ -41,4 +41,10 @@ namespace ClinicSyncServer.Features.Auth.Requests
         [property: Required]
     string ConfirmarPassword
     );
+
+    public record CambiarMiContrasenaRequest(
+        string ContrasenaActual,
+        string NuevaContrasena,
+        string ConfirmarContrasena
+    );
 }
