@@ -3,25 +3,24 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-              mc:Ignorable="d"
-              Background="#F4F6F3"
-               d:DesignHeight="375"
-                 d:DesignWidth="900">
-
+             mc:Ignorable="d"
+             Background="#F4F6F3"
+             d:DesignHeight="560"
+             d:DesignWidth="900">
 
     <UserControl.Resources>
 
+        <!-- DEGRADADO TURQUESA HORIZONTAL -->
         <LinearGradientBrush x:Key="DegradadoTurquesa"
                              StartPoint="0,0"
-                             EndPoint="0,1">
+                             EndPoint="1,0">
             <GradientStop Color="#32A5AB" Offset="0"/>
             <GradientStop Color="#138DAA" Offset="1"/>
         </LinearGradientBrush>
 
-
-        <!-- COMBOBOX REDONDEADO PARA FILTRAR ESTADOS -->
+        <!-- COMBOBOX REDONDEADO -->
         <Style x:Key="ComboFiltroRedondo"
-       TargetType="ComboBox">
+               TargetType="ComboBox">
 
             <Setter Property="Width" Value="110"/>
             <Setter Property="Height" Value="29"/>
@@ -34,58 +33,53 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
-
                         <Grid>
-                            <!-- FONDO REDONDEADO -->
                             <Border Background="{TemplateBinding Background}"
-                            CornerRadius="15"/>
+                                    CornerRadius="15"/>
 
-                            <!-- BOTÓN PARA ABRIR OPCIONES -->
                             <ToggleButton
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Focusable="False"
-                        IsChecked="{Binding IsDropDownOpen,
-                            RelativeSource={RelativeSource TemplatedParent},
-                            Mode=TwoWay}">
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Focusable="False"
+                                IsChecked="{Binding IsDropDownOpen,
+                                    RelativeSource={RelativeSource TemplatedParent},
+                                    Mode=TwoWay}">
 
                                 <Grid>
                                     <ContentPresenter
-                                Content="{TemplateBinding SelectionBoxItem}"
-                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Left"
-                                Margin="12,0,25,0"
-                                IsHitTestVisible="False"/>
+                                        Content="{TemplateBinding SelectionBoxItem}"
+                                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Left"
+                                        Margin="12,0,25,0"
+                                        IsHitTestVisible="False"/>
 
                                     <TextBlock Text="▼"
-                                       Foreground="#168FA7"
-                                       FontSize="10"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,12,0"/>
+                                               Foreground="#168FA7"
+                                               FontSize="10"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,12,0"/>
                                 </Grid>
                             </ToggleButton>
 
-                            <!-- LISTA DESPLEGABLE -->
                             <Popup x:Name="PART_Popup"
-                           IsOpen="{TemplateBinding IsDropDownOpen}"
-                           Placement="Bottom"
-                           AllowsTransparency="True"
-                           Focusable="False">
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   Placement="Bottom"
+                                   AllowsTransparency="True"
+                                   Focusable="False">
 
                                 <Border Background="White"
-                                BorderBrush="#B5CECE"
-                                BorderThickness="1"
-                                CornerRadius="12"
-                                MinWidth="{Binding ActualWidth,
-                                    RelativeSource={RelativeSource TemplatedParent}}">
+                                        BorderBrush="#B5CECE"
+                                        BorderThickness="1"
+                                        CornerRadius="12"
+                                        MinWidth="{Binding ActualWidth,
+                                            RelativeSource={RelativeSource TemplatedParent}}">
 
                                     <ScrollViewer MaxHeight="180"
-                                          VerticalScrollBarVisibility="Auto">
+                                                  VerticalScrollBarVisibility="Auto">
                                         <ItemsPresenter/>
                                     </ScrollViewer>
-
                                 </Border>
                             </Popup>
                         </Grid>
@@ -94,9 +88,10 @@
             </Setter>
         </Style>
 
-
         <!-- BOTÓN AGREGAR -->
-        <Style x:Key="BotonAgregar" TargetType="{x:Type Button}">
+        <Style x:Key="BotonAgregar"
+               TargetType="{x:Type Button}">
+
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -104,11 +99,13 @@
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Padding" Value="8,0"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <Border Background="{TemplateBinding Background}"
                                 SnapsToDevicePixels="True">
+
                             <ContentPresenter
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
@@ -119,30 +116,37 @@
             </Setter>
         </Style>
 
-        <!-- BOTONES DE FILTRO (HOY, SEMANA, MES, TODOS) -->
-        <Style x:Key="BotonFiltro" TargetType="{x:Type RadioButton}">
+        <!-- BOTONES DE FILTRO -->
+        <Style x:Key="BotonFiltro"
+               TargetType="{x:Type RadioButton}">
+
             <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Margin" Value="8,0,0,0"/>
+            <Setter Property="Margin" Value="6,0,0,0"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type RadioButton}">
                         <Border x:Name="Borde"
                                 Background="#F7F9F7"
                                 CornerRadius="15"
-                                Padding="16,5">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
+                                Padding="12,3">
+
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
                         </Border>
+
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="Borde"
                                         Property="Background"
                                         Value="#86C5D0"/>
                             </Trigger>
+
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="Borde"
                                         Property="Opacity"
@@ -154,8 +158,10 @@
             </Setter>
         </Style>
 
-        <!-- ENGRANAJE -->
-        <Style x:Key="BotonEngranaje" TargetType="{x:Type Button}">
+        <!-- BOTÓN ENGRANAJE -->
+        <Style x:Key="BotonEngranaje"
+               TargetType="{x:Type Button}">
+
             <Setter Property="Width" Value="30"/>
             <Setter Property="Height" Value="30"/>
             <Setter Property="Padding" Value="0"/>
@@ -165,20 +171,26 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Border Background="Transparent" BorderThickness="0">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
+                        <Border Background="Transparent"
+                                BorderThickness="0">
+
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
-        <!-- TEXTO DE LAS CELDAS -->
-        <Style x:Key="CeldaCentrada" TargetType="{x:Type TextBlock}">
+        <!-- CELDAS -->
+        <Style x:Key="CeldaCentrada"
+               TargetType="{x:Type TextBlock}">
+
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="TextAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -188,42 +200,51 @@
         <Style x:Key="CeldaConcepto"
                TargetType="{x:Type TextBlock}"
                BasedOn="{StaticResource CeldaCentrada}">
+
             <Setter Property="ToolTip" Value="{Binding Concepto}"/>
         </Style>
 
         <Style x:Key="CeldaTotal"
                TargetType="{x:Type TextBlock}"
                BasedOn="{StaticResource CeldaCentrada}">
+
             <Setter Property="Foreground" Value="#C93C55"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
         </Style>
 
-        <!-- TABLA -->
-        <Style x:Key="TablaEgresos" TargetType="{x:Type DataGrid}">
+        <!-- TABLA DE EGRESOS -->
+        <Style x:Key="TablaEgresos"
+               TargetType="{x:Type DataGrid}">
+
             <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="RowBackground" Value="#D9DDD8"/>
+            <Setter Property="AlternatingRowBackground" Value="#E8EBE7"/>
+            <Setter Property="AlternationCount" Value="2"/>
             <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="RowHeaderWidth" Value="0"/>
             <Setter Property="AutoGenerateColumns" Value="False"/>
             <Setter Property="CanUserAddRows" Value="False"/>
             <Setter Property="CanUserDeleteRows" Value="False"/>
-            <Setter Property="CanUserReorderColumns" Value="False"/>
             <Setter Property="CanUserResizeRows" Value="False"/>
+            <Setter Property="CanUserReorderColumns" Value="False"/>
             <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="RowHeaderWidth" Value="0"/>
             <Setter Property="HeadersVisibility" Value="Column"/>
-            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
-            <Setter Property="HorizontalGridLinesBrush" Value="#E8EBE7"/>
-            <Setter Property="VerticalGridLinesBrush" Value="#D9DDD8"/>
-            <Setter Property="RowHeight" Value="32"/>
-            <Setter Property="ColumnHeaderHeight" Value="38"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="RowHeight" Value="36"/>
+            <Setter Property="ColumnHeaderHeight" Value="40"/>
             <Setter Property="FontSize" Value="15"/>
-            <Setter Property="AlternationCount" Value="2"/>
             <Setter Property="SelectionUnit" Value="FullRow"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
+                    Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
+                    Value="Auto"/>
         </Style>
 
+        <!-- ENCABEZADOS -->
         <Style TargetType="{x:Type DataGridColumnHeader}">
+
             <Setter Property="Background" Value="#D9DDD8"/>
             <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -234,17 +255,22 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
 
+        <!-- FILAS -->
         <Style TargetType="{x:Type DataGridRow}">
+
             <Setter Property="Background" Value="#D9DDD8"/>
             <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="BorderThickness" Value="0"/>
+
             <Style.Triggers>
                 <Trigger Property="AlternationIndex" Value="0">
                     <Setter Property="Background" Value="#D9DDD8"/>
                 </Trigger>
+
                 <Trigger Property="AlternationIndex" Value="1">
                     <Setter Property="Background" Value="#E8EBE7"/>
                 </Trigger>
+
                 <Trigger Property="IsSelected" Value="True">
                     <Setter Property="Background" Value="#C9DCD8"/>
                     <Setter Property="Foreground" Value="#17475A"/>
@@ -252,7 +278,9 @@
             </Style.Triggers>
         </Style>
 
+        <!-- ESTILO DE CELDAS -->
         <Style TargetType="{x:Type DataGridCell}">
+
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -260,6 +288,7 @@
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+
             <Style.Triggers>
                 <Trigger Property="IsSelected" Value="True">
                     <Setter Property="Background" Value="#C9DCD8"/>
@@ -270,163 +299,180 @@
 
     </UserControl.Resources>
 
-    <Grid ClipToBounds="True">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="592*"/>
-            <ColumnDefinition Width="87*"/>
-            <ColumnDefinition Width="0*"/>
-        </Grid.ColumnDefinitions>
+    <!-- CONTENEDOR PRINCIPAL -->
+    <Grid Margin="0">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="52"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <Border Background="#D9DDD8"
+                CornerRadius="12"
+                ClipToBounds="True">
 
-        <!-- BARRA SUPERIOR -->
-        <Border Grid.Row="0"
-                Background="{StaticResource DegradadoTurquesa}"
-                CornerRadius="13,13,0,0" Grid.ColumnSpan="2" Margin="0,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <Grid Margin="12,0,12,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                <!-- BARRA SUPERIOR -->
+                <Border Grid.Row="0"
+                        Background="{StaticResource DegradadoTurquesa}"
+                        CornerRadius="12,12,0,0">
 
-                <Button x:Name="btnAgregar"
-                        Grid.Column="0"
-                        Style="{StaticResource BotonAgregar}"
-                        HorizontalContentAlignment="Left"
-                        Click="btnAgregar_Click">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="/Resources/ImagenesTabla/IconoMas.png"
-                               Width="22"
-                               Height="22"
-                               Stretch="Uniform"
-                               VerticalAlignment="Center"
-                               Margin="0,0,11,0"/>
-                        <TextBlock Text="AGREGAR NUEVO"
-                                   FontSize="16"
-                                   VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
+                    <Grid Margin="10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="1"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Center">
+                        <!-- AGREGAR NUEVO -->
+                        <Button x:Name="btnAgregar"
+                                Grid.Column="0"
+                                Style="{StaticResource BotonAgregar}"
+                                HorizontalAlignment="Left"
+                                HorizontalContentAlignment="Left"
+                                Click="btnAgregar_Click">
 
-                    <TextBlock Text="Filtrar:"
-                               Foreground="White"
-                               FontSize="15"
-                               VerticalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Center">
 
-                    <RadioButton Content="Hoy" Tag="Hoy"
-                                 GroupName="FiltroEgresos"
-                                 Style="{StaticResource BotonFiltro}"
-                                 Click="Filtro_Click"/>
+                                <Image Source="/Resources/ImagenesTabla/IconoMas.png"
+                                       Width="20"
+                                       Height="20"
+                                       Stretch="Uniform"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,9,0"/>
 
-                    <RadioButton Content="Semana" Tag="Semana"
-                                 GroupName="FiltroEgresos"
-                                 Style="{StaticResource BotonFiltro}"
-                                 Click="Filtro_Click"/>
+                                <TextBlock Text="AGREGAR NUEVO"
+                                           FontSize="14"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
-                    <RadioButton Content="Mes" Tag="Mes"
-                                 GroupName="FiltroEgresos"
-                                 Style="{StaticResource BotonFiltro}"
-                                 Click="Filtro_Click"/>
+                        <!-- FILTROS -->
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center">
 
-                    <RadioButton Content="Todos" Tag="Todos"
-                                 GroupName="FiltroEgresos"
-                                 IsChecked="True"
-                                 Style="{StaticResource BotonFiltro}"
-                                 Click="Filtro_Click"/>
+                            <TextBlock Text="Filtrar:"
+                                       Foreground="White"
+                                       FontSize="14"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,4,0"/>
 
+                            <RadioButton Content="Hoy"
+                                         Tag="Hoy"
+                                         GroupName="FiltroEgresos"
+                                         Style="{StaticResource BotonFiltro}"
+                                         Click="Filtro_Click"/>
 
-                    <ComboBox x:Name="CmbEstadoEgresos"
-                              Style="{StaticResource ComboFiltroRedondo}"
-                              Margin="10,0,0,0"
-                              SelectedIndex="0"
-                              VerticalAlignment="Center"
-                              SelectionChanged="CmbEstadoEgresos_SelectionChanged"> 
+                            <RadioButton Content="Semana"
+                                         Tag="Semana"
+                                         GroupName="FiltroEgresos"
+                                         Style="{StaticResource BotonFiltro}"
+                                         Click="Filtro_Click"/>
 
-                        <ComboBoxItem Content="Todos" Tag="Todos"/>
-                        <ComboBoxItem Content="Activos" Tag="Activos"/>
-                        <ComboBoxItem Content="Inactivos" Tag="Inactivos"/>
+                            <RadioButton Content="Mes"
+                                         Tag="Mes"
+                                         GroupName="FiltroEgresos"
+                                         Style="{StaticResource BotonFiltro}"
+                                         Click="Filtro_Click"/>
 
-                    </ComboBox>
+                            <RadioButton Content="Todos"
+                                         Tag="Todos"
+                                         GroupName="FiltroEgresos"
+                                         IsChecked="True"
+                                         Style="{StaticResource BotonFiltro}"
+                                         Click="Filtro_Click"/>
 
+                            <ComboBox x:Name="CmbEstadoEgresos"
+                                      Style="{StaticResource ComboFiltroRedondo}"
+                                      Width="95"
+                                      Height="25"
+                                      Margin="8,0,0,0"
+                                      SelectedIndex="0"
+                                      VerticalAlignment="Center"
+                                      SelectionChanged="CmbEstadoEgresos_SelectionChanged">
 
-                </StackPanel>
+                                <ComboBoxItem Content="Todos" Tag="Todos"/>
+                                <ComboBoxItem Content="Activos" Tag="Activos"/>
+                                <ComboBoxItem Content="Inactivos" Tag="Inactivos"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- TABLA -->
+                <DataGrid x:Name="dgEgresos"
+                          Grid.Row="1"
+                          Style="{StaticResource TablaEgresos}">
+
+                    <DataGrid.Columns>
+
+                        <DataGridTextColumn Header="#"
+                                            Binding="{Binding IdEgreso}"
+                                            Width="0.5*"
+                                            ElementStyle="{StaticResource CeldaCentrada}"/>
+
+                        <DataGridTextColumn Header="Fecha"
+                                            Binding="{Binding Fecha, StringFormat=\{0:yyyy/MM/dd HH:mm\}}"
+                                            Width="1.1*"
+                                            ElementStyle="{StaticResource CeldaCentrada}"/>
+
+                        <DataGridTextColumn Header="Tipo"
+                                            Binding="{Binding TipoTexto}"
+                                            Width="1.1*"
+                                            ElementStyle="{StaticResource CeldaCentrada}"/>
+
+                        <DataGridTextColumn Header="Concepto"
+                                            Binding="{Binding Concepto}"
+                                            Width="2.3*"
+                                            ElementStyle="{StaticResource CeldaConcepto}"/>
+
+                        <DataGridTextColumn Header="Medio de pago"
+                                            Binding="{Binding MedioPagoTexto}"
+                                            Width="1.4*"
+                                            ElementStyle="{StaticResource CeldaCentrada}"/>
+
+                        <DataGridTextColumn Header="Total"
+                                            Binding="{Binding Monto, StringFormat=L \{0:N2\}}"
+                                            Width="1.2*"
+                                            ElementStyle="{StaticResource CeldaTotal}"/>
+
+                        <!-- EDITAR -->
+                        <DataGridTemplateColumn Header=""
+                                                Width="0.5*">
+
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+
+                                    <Button Style="{StaticResource BotonEngranaje}"
+                                            ToolTip="Editar egreso"
+                                            Click="EditarEgreso_Click">
+
+                                        <Image Source="/Resources/ImagenesTabla/IconoEngranaje.png"
+                                               Width="25"
+                                               Height="25"
+                                               Stretch="Uniform"
+                                               SnapsToDevicePixels="True"/>
+                                    </Button>
+
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+
             </Grid>
         </Border>
 
-        <!-- TABLA -->
-        <DataGrid x:Name="dgEgresos"
-                  Grid.Row="1"
-                  Style="{StaticResource TablaEgresos}" Grid.ColumnSpan="3">
-
-            <DataGrid.Columns>
-
-                <DataGridTextColumn Header="#"
-                                    Binding="{Binding IdEgreso}"
-                                    Width="0.5*"
-                                    ElementStyle="{StaticResource CeldaCentrada}"/>
-
-                <DataGridTextColumn Header="Fecha"
-                                    Binding="{Binding Fecha, StringFormat=\{0:yyyy/MM/dd HH:mm\}}"
-                                    Width="1.1*"
-                                    ElementStyle="{StaticResource CeldaCentrada}"/>
-
-                <DataGridTextColumn Header="Tipo"
-                                    Binding="{Binding TipoTexto}"
-                                    Width="1.1*"
-                                    ElementStyle="{StaticResource CeldaCentrada}"/>
-
-                <DataGridTextColumn Header="Concepto"
-                                    Binding="{Binding Concepto}"
-                                    Width="2.3*"
-                                    ElementStyle="{StaticResource CeldaConcepto}"/>
-
-                <DataGridTextColumn Header="Medio de pago"
-                                    Binding="{Binding MedioPagoTexto}"
-                                    Width="1.4*"
-                                    ElementStyle="{StaticResource CeldaCentrada}"/>
-
-                <DataGridTextColumn Header="Total"
-                                    Binding="{Binding Monto, StringFormat=L \{0:N2\}}"
-                                    Width="1.2*"
-                                    ElementStyle="{StaticResource CeldaTotal}"/>
-
-                <!-- EDITAR -->
-                <DataGridTemplateColumn Header="" Width="0.5*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Style="{StaticResource BotonEngranaje}"
-                                    ToolTip="Editar egreso"
-                                    Click="EditarEgreso_Click">
-                                <Image Source="/Resources/ImagenesTabla/IconoEngranaje.png"
-                                       Width="25"
-                                       Height="25"
-                                       Stretch="Uniform"
-                                       SnapsToDevicePixels="True"/>
-                            </Button>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-
-            </DataGrid.Columns>
-        </DataGrid>
-
-        <!-- AVISOS (ÉXITO / ERROR) -->
-
+        <!-- NOTIFICACIONES -->
         <StackPanel x:Name="PanelAvisos"
-            Grid.Column="1"
-            Grid.Row="1"
-            Panel.ZIndex="10"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Margin="0,8,16,0"
-            MaxWidth="420"/>
+                    Panel.ZIndex="10"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,0,20"
+                    MaxWidth="420"/>
 
     </Grid>
 </UserControl>
+
