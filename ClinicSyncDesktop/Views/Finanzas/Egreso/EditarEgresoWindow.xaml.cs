@@ -1,6 +1,7 @@
 
 using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -120,6 +121,21 @@ namespace ClinicSyncDesktop.Views
                 return;
 
             txtError.Text = "";
+
+            var medioSeleccionado = cmbMedio.SelectedItem as ComboBoxItem;
+            var resultadoValidacion = new ValidadorEgreso().Validar(new EntradaEgreso(
+                "NORMAL", medioSeleccionado?.Tag as string ?? medioSeleccionado?.Content?.ToString(),
+                txtConcepto.Text.Trim(), dpFecha.SelectedDate?.ToString("yyyy/MM/dd") ?? "", dpFecha.SelectedDate,
+                txtHora.Text.Trim(), txtMonto.Text.Trim()));
+            if (!HelperValidacion.AplicarResultado(resultadoValidacion,
+                new Dictionary<string, Control>
+                {
+                    [nameof(EntradaEgreso.Medio)] = cmbMedio,
+                    [nameof(EntradaEgreso.Concepto)] = txtConcepto,
+                    [nameof(EntradaEgreso.TextoFecha)] = dpFecha,
+                    [nameof(EntradaEgreso.TextoMonto)] = txtMonto
+                }, mensaje => txtError.Text = mensaje, () => txtError.Text = ""))
+                return;
 
             // VALIDAR FECHA Y HORA
             if (!TryObtenerFechaHora(out DateTime fecha) ||

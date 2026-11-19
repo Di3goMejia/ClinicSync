@@ -1,10 +1,12 @@
 ﻿using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 using Microsoft.Win32;
 using System;
 using System.Globalization;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace ClinicSyncDesktop.Views
@@ -383,130 +385,28 @@ namespace ClinicSyncDesktop.Views
             decimal stockMinimo;
             decimal stockActual;
 
-            // 1. NOMBRE
-            if (string.IsNullOrWhiteSpace(nombre))
-            {
-                MostrarErrorValidacion("Ingresa el nombre del material.");
-                txtNombre.Focus();
+            var resultadoValidacion = new ValidadorMaterialEdicion().Validar(
+                new EntradaMaterialEdicion(nombre, codigo, unidadMedida,
+                    txtPrecioCompra.Text.Trim(), txtStockMinimo.Text.Trim(),
+                    txtStockActual.Text.Trim(), motivoAjuste,
+                    materialOriginal.StockActual));
+            if (!HelperValidacion.AplicarResultado(resultadoValidacion,
+                new Dictionary<string, Control>
+                {
+                    [nameof(EntradaMaterialEdicion.Nombre)] = txtNombre,
+                    [nameof(EntradaMaterialEdicion.Codigo)] = txtCodigo,
+                    [nameof(EntradaMaterialEdicion.UnidadMedida)] = txtUnidadMedida,
+                    [nameof(EntradaMaterialEdicion.TextoPrecioCompra)] = txtPrecioCompra,
+                    [nameof(EntradaMaterialEdicion.TextoStockMinimo)] = txtStockMinimo,
+                    [nameof(EntradaMaterialEdicion.TextoStockActual)] = txtStockActual,
+                    [nameof(EntradaMaterialEdicion.MotivoAjuste)] = txtMotivoAjuste
+                }, MostrarErrorValidacion, LimpiarErrorValidacion))
                 return;
-            }
+            precioCompra = resultadoValidacion.PrecioCompra;
+            stockMinimo = resultadoValidacion.StockMinimo;
+            stockActual = resultadoValidacion.StockActual;
 
-            // 2. CÓDIGO
-            if (string.IsNullOrWhiteSpace(codigo))
-            {
-                MostrarErrorValidacion("Ingresa un código.");
-                txtCodigo.Focus();
-                return;
-            }
-
-            // 3. PRECIO
-            if (string.IsNullOrWhiteSpace(txtPrecioCompra.Text))
-            {
-                MostrarErrorValidacion("Ingresa el precio por unidad.");
-                txtPrecioCompra.Focus();
-                return;
-            }
-
-            if (!TryLeerDecimal(txtPrecioCompra.Text, out precioCompra))
-            {
-                MostrarErrorValidacion("Ingresa un precio válido.");
-                txtPrecioCompra.Focus();
-                return;
-            }
-
-            // 4. CANTIDAD MÍNIMA
-            if (string.IsNullOrWhiteSpace(txtStockMinimo.Text))
-            {
-                MostrarErrorValidacion("Ingresa la cantidad mínima.");
-                txtStockMinimo.Focus();
-                return;
-            }
-
-            if (!TryLeerDecimal(txtStockMinimo.Text, out stockMinimo))
-            {
-                MostrarErrorValidacion("Ingresa una cantidad mínima válida.");
-                txtStockMinimo.Focus();
-                return;
-            }
-
-            // 5. STOCK ACTUAL
-            if (string.IsNullOrWhiteSpace(txtStockActual.Text))
-            {
-                MostrarErrorValidacion("Ingresa el stock actual.");
-                txtStockActual.Focus();
-                return;
-            }
-
-            if (!TryLeerDecimal(txtStockActual.Text, out stockActual))
-            {
-                MostrarErrorValidacion("Ingresa una cantidad de stock válida.");
-                txtStockActual.Focus();
-                return;
-            }
-
-            if (stockActual < 0)
-            {
-                MostrarErrorValidacion("El stock actual no puede ser negativo.");
-                txtStockActual.Focus();
-                return;
-            }
-
-            if (stockActual > 9999999999.99m)
-            {
-                MostrarErrorValidacion(
-                    "El stock actual supera el máximo permitido.");
-
-                txtStockActual.Focus();
-                return;
-            }
-
-            // 6. MOTIVO OBLIGATORIO SI CAMBIA EL STOCK
             bool cambioStock = stockActual != materialOriginal.StockActual;
-
-            if (cambioStock && string.IsNullOrWhiteSpace(motivoAjuste))
-            {
-                MostrarErrorValidacion(
-                    "Indica el motivo del ajuste de stock.");
-
-                txtMotivoAjuste.Focus();
-                return;
-            }
-
-            // 7. UNIDAD DE MEDIDA
-            if (string.IsNullOrWhiteSpace(unidadMedida))
-            {
-                MostrarErrorValidacion("Ingresa una unidad de medida.");
-                txtUnidadMedida.Focus();
-                return;
-            }
-
-            // 8. VALORES NEGATIVOS
-            if (precioCompra < 0 || stockMinimo < 0)
-            {
-                MostrarErrorValidacion(
-                    "Las cantidades y el precio no pueden ser negativos.");
-
-                return;
-            }
-
-            // 9. LÍMITES ADMITIDOS
-            if (stockMinimo > 9999999999.99m ||
-                precioCompra > 99999999.99m)
-            {
-                MostrarErrorValidacion(
-                    "Uno de los valores supera el máximo permitido.");
-
-                return;
-            }
-
-            if (motivoAjuste.Length > 200)
-            {
-                MostrarErrorValidacion(
-                    "El motivo no puede superar los 200 caracteres.");
-
-                txtMotivoAjuste.Focus();
-                return;
-            }
 
             btnGuardar.IsEnabled = false;
 

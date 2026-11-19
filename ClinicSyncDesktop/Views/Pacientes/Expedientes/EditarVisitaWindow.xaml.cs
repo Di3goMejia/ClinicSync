@@ -1,5 +1,6 @@
 ﻿
 using ClinicSyncDesktop.Data;
+using ClinicSyncDesktop.Validations;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
@@ -532,40 +533,17 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
-            // VALIDAR MOTIVO
-            if (string.IsNullOrWhiteSpace(txtMotivo.Text))
+            var resultadoValidacion = new ValidadorVisitaEdicion().Validar(
+                new EntradaVisitaEdicion(txtFecha.Text, txtMotivo.Text));
+            if (!resultadoValidacion.EsValido)
             {
-                MostrarError(
-                    "Debes ingresar el motivo de la visita.");
-
+                MostrarError(resultadoValidacion.Errores[0].Mensaje);
                 MostrarPestana("Antecedentes");
                 return;
             }
 
-            // VALIDAR FECHA
-            if (!DateTime.TryParseExact(
-                txtFecha.Text.Trim(),
-                "yyyy/MM/dd",
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None,
-                out DateTime fecha))
-            {
-                MostrarError(
-                    "La fecha debe tener el formato año/mes/día.");
-
-                MostrarPestana("Antecedentes");
-                return;
-            }
-
-            if (fecha.Date > DateTime.Today)
-            {
-                MostrarError(
-                    "La fecha de la visita no puede ser posterior " +
-                    "a la fecha actual.");
-
-                MostrarPestana("Antecedentes");
-                return;
-            }
+            DateTime fecha = DateTime.ParseExact(txtFecha.Text.Trim(),
+                "yyyy/MM/dd", CultureInfo.InvariantCulture);
 
             guardando = true;
             btnGuardar.IsEnabled = false;

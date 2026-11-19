@@ -1,4 +1,5 @@
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -82,27 +83,22 @@ public partial class EditarUsuarioWindow : Window
     private bool Validar()
     {
         TxtError.Visibility = Visibility.Collapsed;
-        if (string.IsNullOrWhiteSpace(TxtIdentidad.Text))
-            return Error("La identidad es obligatoria.", TxtIdentidad);
-
-        if (string.IsNullOrWhiteSpace(TxtNombres.Text))
-            return Error("Los nombres son obligatorios.", TxtNombres);
-
-        if (string.IsNullOrWhiteSpace(TxtApellidos.Text))
-            return Error("Los apellidos son obligatorios.", TxtApellidos);
-
-        if (DpFechaNacimiento.SelectedDate is null)
-            return Error("La fecha de nacimiento es obligatoria.", DpFechaNacimiento);
-
-        if (CmbGenero.SelectedItem is null)
-            return Error("Selecciona el género del usuario.", CmbGenero);
-
-        if (string.IsNullOrWhiteSpace(TxtTelefono.Text))
-            return Error("El teléfono es obligatorio.", TxtTelefono);
-
-        if (CmbRol.SelectedItem is not Rol)
-            return Error("Selecciona el rol del usuario.", CmbRol);
-
+        var resultado = new ValidadorUsuario().ValidarDatosPersonales(new EntradaUsuario(
+            TxtIdentidad.Text.Trim(), TxtNombres.Text.Trim(), TxtApellidos.Text.Trim(),
+            TxtTelefono.Text.Trim(), DpFechaNacimiento.SelectedDate,
+            CmbGenero.SelectedItem, CmbRol.SelectedItem, "válido", "valido@clinic.local"));
+        if (!HelperValidacion.AplicarResultado(resultado,
+            new Dictionary<string, Control>
+            {
+                [nameof(EntradaUsuario.Identidad)] = TxtIdentidad,
+                [nameof(EntradaUsuario.Nombres)] = TxtNombres,
+                [nameof(EntradaUsuario.Apellidos)] = TxtApellidos,
+                [nameof(EntradaUsuario.Telefono)] = TxtTelefono,
+                [nameof(EntradaUsuario.FechaNacimiento)] = DpFechaNacimiento,
+                [nameof(EntradaUsuario.Genero)] = CmbGenero,
+                [nameof(EntradaUsuario.Rol)] = CmbRol
+            }, mensaje => Error(mensaje, TxtIdentidad), () => { }))
+            return false;
         return true;
     }
 

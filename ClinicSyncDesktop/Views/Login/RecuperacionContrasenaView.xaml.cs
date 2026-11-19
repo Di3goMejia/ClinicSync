@@ -1,5 +1,5 @@
-﻿
-using ClinicSyncDesktop.Data;
+﻿using ClinicSyncDesktop.Data;
+using ClinicSyncDesktop.Validations;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -82,30 +82,13 @@ namespace ClinicSyncDesktop.Views
             string correo = TxtCorreo.Text.Trim();
 
             LimpiarError(TxtCorreo, LblErrorCorreo);
-
-            if (string.IsNullOrWhiteSpace(correo))
-            {
-                MostrarError(
-                    TxtCorreo,
-                    LblErrorCorreo,
-                    "El correo electrónico es obligatorio.");
-
-                return false;
-            }
-
-            if (!Regex.IsMatch(
-                correo,
-                @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-            {
-                MostrarError(
-                    TxtCorreo,
-                    LblErrorCorreo,
-                    "Ingrese un correo electrónico válido.");
-
-                return false;
-            }
-
-            return true;
+            var resultado = new ResultadoValidacion();
+            resultado.Campo<string?>("Correo", correo)
+                .Requerido("El correo electrónico es obligatorio.")
+                .CorreoValido("Ingrese un correo electrónico válido.");
+            if (resultado.EsValido) return true;
+            MostrarError(TxtCorreo, LblErrorCorreo, resultado.Errores[0].Mensaje);
+            return false;
         }
 
         // ============================================
@@ -117,28 +100,13 @@ namespace ClinicSyncDesktop.Views
             string codigo = TxtCodigo.Text.Trim();
 
             LimpiarError(TxtCodigo, LblErrorCodigo);
-
-            if (string.IsNullOrWhiteSpace(codigo))
-            {
-                MostrarError(
-                    TxtCodigo,
-                    LblErrorCodigo,
-                    "El código de recuperación es obligatorio.");
-
-                return false;
-            }
-
-            if (!Regex.IsMatch(codigo, @"^[0-9]{6}$"))
-            {
-                MostrarError(
-                    TxtCodigo,
-                    LblErrorCodigo,
-                    "El código debe tener exactamente 6 dígitos.");
-
-                return false;
-            }
-
-            return true;
+            var resultado = new ResultadoValidacion();
+            resultado.Campo<string?>("Codigo", codigo)
+                .Requerido("El código de recuperación es obligatorio.")
+                .CodigoNumerico(6, "El código debe tener exactamente 6 dígitos.");
+            if (resultado.EsValido) return true;
+            MostrarError(TxtCodigo, LblErrorCodigo, resultado.Errores[0].Mensaje);
+            return false;
         }
 
         // ============================================
@@ -149,42 +117,13 @@ namespace ClinicSyncDesktop.Views
         {
             string password = TxtNuevaPassword.Password;
 
-            LimpiarError(
-                TxtNuevaPassword,
-                LblErrorPassword);
+            LimpiarError(TxtNuevaPassword, LblErrorPassword);
 
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                MostrarError(
-                    TxtNuevaPassword,
-                    LblErrorPassword,
-                    "La nueva contraseña es obligatoria.");
-
-                return false;
-            }
-
-            if (password.Length < 8)
-            {
-                MostrarError(
-                    TxtNuevaPassword,
-                    LblErrorPassword,
-                    "La contraseña debe tener 8 caracteres o más.");
-
-                return false;
-            }
-
-            if (!password.Any(char.IsLetter) ||
-                !password.Any(char.IsDigit))
-            {
-                MostrarError(
-                    TxtNuevaPassword,
-                    LblErrorPassword,
-                    "La contraseña debe contener letras y números.");
-
-                return false;
-            }
-
-            return true;
+            var resultado = new ValidadorNuevaContrasena().ValidarNueva(password);
+            if (resultado.EsValido)
+                return true;
+            MostrarError(TxtNuevaPassword, LblErrorPassword, resultado.Errores[0].Mensaje);
+            return false;
         }
 
         // ============================================
@@ -196,31 +135,14 @@ namespace ClinicSyncDesktop.Views
             string password = TxtNuevaPassword.Password;
             string confirmar = TxtConfirmarPassword.Password;
 
-            LimpiarError(
-                TxtConfirmarPassword,
-                LblErrorConfirmar);
+            LimpiarError(TxtConfirmarPassword, LblErrorConfirmar);
 
-            if (string.IsNullOrWhiteSpace(confirmar))
-            {
-                MostrarError(
-                    TxtConfirmarPassword,
-                    LblErrorConfirmar,
-                    "Debe confirmar la contraseña.");
-
-                return false;
-            }
-
-            if (password != confirmar)
-            {
-                MostrarError(
-                    TxtConfirmarPassword,
-                    LblErrorConfirmar,
-                    "Las contraseñas no coinciden.");
-
-                return false;
-            }
-
-            return true;
+            var resultado = new ValidadorNuevaContrasena().ValidarConfirmacion(
+                new EntradaNuevaContrasena(password, confirmar));
+            if (resultado.EsValido)
+                return true;
+            MostrarError(TxtConfirmarPassword, LblErrorConfirmar, resultado.Errores[0].Mensaje);
+            return false;
         }
 
         // ============================================

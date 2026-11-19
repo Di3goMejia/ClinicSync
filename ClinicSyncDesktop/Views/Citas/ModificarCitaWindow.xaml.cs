@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 
 namespace ClinicSyncDesktop.Views.Citas
 {
@@ -107,6 +108,23 @@ namespace ClinicSyncDesktop.Views.Citas
                 cmbHoraFin.IsEnabled = !cita.TodoElDia;
 
                 LimpiarError();
+
+            bool todoElDia = chkTodoElDia.IsChecked == true;
+            var resultadoValidacion = new ValidadorCita().Validar(new EntradaCita(
+                cmbPaciente.SelectedItem, txtTitulo.Text.Trim(), dpInicio.SelectedDate,
+                dpFin.SelectedDate, todoElDia,
+                cmbHoraInicio.SelectedItem?.ToString(), cmbHoraFin.SelectedItem?.ToString()));
+            if (!HelperValidacion.AplicarResultado(resultadoValidacion,
+                new Dictionary<string, Control>
+                {
+                    [nameof(EntradaCita.Paciente)] = cmbPaciente,
+                    [nameof(EntradaCita.Titulo)] = txtTitulo,
+                    [nameof(EntradaCita.FechaInicio)] = dpInicio,
+                    [nameof(EntradaCita.FechaFin)] = dpFin,
+                    [nameof(EntradaCita.HoraInicio)] = cmbHoraInicio,
+                    [nameof(EntradaCita.HoraFin)] = cmbHoraFin
+                }, MostrarError, LimpiarError))
+                return;
             }
             catch (Exception ex)
             {
@@ -277,6 +295,9 @@ namespace ClinicSyncDesktop.Views.Citas
 
             LimpiarError();
 
+            bool todoElDia =
+                chkTodoElDia.IsChecked == true;
+
             // VALIDAR PACIENTE
             if (cmbPaciente.SelectedItem is not PacienteOpcion paciente)
             {
@@ -298,8 +319,6 @@ namespace ClinicSyncDesktop.Views.Citas
                 MostrarError("Debe seleccionar las fechas de la cita.");
                 return;
             }
-
-            bool todoElDia = chkTodoElDia.IsChecked == true;
 
             DateTime inicio = dpInicio.SelectedDate.Value.Date;
             DateTime fin = dpFin.SelectedDate.Value.Date;

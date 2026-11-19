@@ -1,5 +1,6 @@
 using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +10,8 @@ namespace ClinicSyncDesktop.Views.Seguridad;
 
 public partial class EditarRolWindow : Window
 {
+    private readonly ValidadorRol _validador = new();
+    private readonly Dictionary<string, Control> _controles;
     private readonly Rol? _rol;
     private readonly ObservableCollection<PermisoFilaDesktop> _permisos = [];
     private readonly PermisosApiService _permisosService = new();
@@ -28,6 +31,13 @@ public partial class EditarRolWindow : Window
     public EditarRolWindow(Rol? rol = null)
     {
         InitializeComponent();
+
+        _controles = new Dictionary<string, Control>
+        {
+            [nameof(EntradaRol.Nombre)] = TxtNombre,
+            [nameof(EntradaRol.Descripcion)] = TxtDescripcion
+        };
+
         _rol = rol;
         if (rol is not null)
         {
@@ -82,7 +92,20 @@ public partial class EditarRolWindow : Window
                 p.Codigo.Contains(texto, StringComparison.OrdinalIgnoreCase)
             ) && (modulo is null || modulo == "Todos" || p.Modulo == modulo)).ToList();
     }
-    private void Guardar_Click(object sender, RoutedEventArgs e) { if (string.IsNullOrWhiteSpace(Nombre)) { MostrarError("El nombre del rol es obligatorio."); TxtNombre.Focus(); return; } DialogResult = true; }
+    private void Guardar_Click(object sender, RoutedEventArgs e) 
+    {
+        var entrada = new EntradaRol(
+            Nombre: TxtNombre.Text.Trim(),
+            Descripcion: TxtDescripcion.Text.Trim()
+        );
+
+        var resultado = _validador.Validar(entrada);
+
+        if (!HelperValidacion.AplicarResultado(resultado, _controles, MostrarError, () => { }))
+            return;
+
+        DialogResult = true; 
+    }
     private void MostrarError(string mensaje) { TxtError.Text = mensaje; TxtError.Visibility = Visibility.Visible; }
     private void Cancelar_Click(object sender, RoutedEventArgs e) => DialogResult = false;
     private void Encabezado_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) { if (e.LeftButton == MouseButtonState.Pressed) DragMove(); }

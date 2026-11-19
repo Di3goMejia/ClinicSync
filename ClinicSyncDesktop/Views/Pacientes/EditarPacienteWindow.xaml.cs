@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using ClinicSyncDesktop.Data;
+using ClinicSyncDesktop.Validations;
 
 namespace ClinicSyncDesktop.Views
 {
@@ -453,24 +454,31 @@ namespace ClinicSyncDesktop.Views
             string telefono =
                 telefonoTexto.Replace("-", "");
 
-            // =================================
-            // VALIDAR IDENTIDAD
-            // =================================
-            if (string.IsNullOrWhiteSpace(identidadTexto))
-            {
-                MostrarError("Ingresa una identidad.");
-                return;
-            }
+            string? sexoSeleccionado =
+                (cmbSexo.SelectedItem as ComboBoxItem)?.Tag as string;
+            var resultadoValidacion = new ValidadorPaciente().Validar(
+                new EntradaPaciente(identidadTexto, nombres, apellidos,
+                    txtFechaNacimiento.Text, sexoSeleccionado, telefonoTexto));
 
-            if (!Regex.IsMatch(
-                identidadTexto,
-                @"^(\d{13}|\d{4}-\d{4}-\d{5}|\d{4} \d{4} \d{5})$"))
-            {
-                MostrarError(
-                    "Ingresa una identidad válida de 13 dígitos.");
-
+            if (!HelperValidacion.AplicarResultado(
+                resultadoValidacion,
+                new Dictionary<string, Control>
+                {
+                    [nameof(EntradaPaciente.Identidad)] = txtIdentidad,
+                    [nameof(EntradaPaciente.Nombres)] = txtNombres,
+                    [nameof(EntradaPaciente.Apellidos)] = txtApellidos,
+                    [nameof(EntradaPaciente.TextoFechaNacimiento)] = txtFechaNacimiento,
+                    [nameof(EntradaPaciente.Sexo)] = cmbSexo,
+                    [nameof(EntradaPaciente.Telefono)] = txtTelefono
+                },
+                mensaje => MostrarError(mensaje),
+                LimpiarError))
                 return;
-            }
+
+            identidad = resultadoValidacion.IdentidadNormalizada;
+            nombres = resultadoValidacion.NombresNormalizados;
+            apellidos = resultadoValidacion.ApellidosNormalizados;
+            telefono = resultadoValidacion.TelefonoNormalizado;
 
             if (IdentidadYaRegistrada?.Invoke(identidad) == true)
             {
@@ -480,107 +488,8 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
-            // =================================
-            // VALIDAR NOMBRES
-            // =================================
-            if (string.IsNullOrWhiteSpace(nombres))
-            {
-                MostrarError(
-                    "Ingresa los nombres del paciente.");
-
-                return;
-            }
-
-            if (!Regex.IsMatch(
-                nombres,
-                @"^[\p{L}]+(?:[ '\-][\p{L}]+)*$") ||
-                nombres.Length > 50)
-            {
-                MostrarError("Ingresa nombres válidos.");
-                return;
-            }
-
-            // =================================
-            // VALIDAR APELLIDOS
-            // =================================
-            if (string.IsNullOrWhiteSpace(apellidos))
-            {
-                MostrarError(
-                    "Ingresa los apellidos del paciente.");
-
-                return;
-            }
-
-            if (!Regex.IsMatch(
-                apellidos,
-                @"^[\p{L}]+(?:[ '\-][\p{L}]+)*$") ||
-                apellidos.Length > 50)
-            {
-                MostrarError("Ingresa apellidos válidos.");
-                return;
-            }
-
-            // =================================
-            // VALIDAR FECHA
-            // =================================
-            if (string.IsNullOrWhiteSpace(
-                txtFechaNacimiento.Text))
-            {
-                MostrarError(
-                    "Ingresa una fecha de nacimiento.");
-
-                return;
-            }
-
-            if (!TryObtenerFecha(
-                out DateTime fechaNacimiento))
-            {
-                MostrarError(
-                    "Ingresa una fecha válida (YYYY/MM/DD).");
-
-                return;
-            }
-
-            if (fechaNacimiento.Year < 1900 ||
-                fechaNacimiento.Date > DateTime.Today)
-            {
-                MostrarError(
-                    "Ingresa una fecha de nacimiento válida.");
-
-                return;
-            }
-
-            // =================================
-            // VALIDAR SEXO
-            // =================================
-            if (cmbSexo.SelectedItem is not ComboBoxItem opcion ||
-                opcion.Tag is not string sexo ||
-                (sexo != "F" && sexo != "M"))
-            {
-                MostrarError(
-                    "Selecciona una opción de sexo.");
-
-                return;
-            }
-
-            // =================================
-            // VALIDAR TELÉFONO
-            // =================================
-            if (string.IsNullOrWhiteSpace(telefonoTexto))
-            {
-                MostrarError("Ingresa un teléfono.");
-                return;
-            }
-
-            if (!Regex.IsMatch(
-                telefonoTexto,
-                @"^(\d{8}|\d{4}-\d{4})$"))
-            {
-                MostrarError(
-                    "Ingresa un teléfono válido de 8 dígitos.");
-
-                return;
-            }
+            DateTime fechaNacimiento = resultadoValidacion.FechaNacimiento;
+            string sexo = sexoSeleccionado!;
 
             // =================================
             // FORMATEAR INFORMACIÓN
