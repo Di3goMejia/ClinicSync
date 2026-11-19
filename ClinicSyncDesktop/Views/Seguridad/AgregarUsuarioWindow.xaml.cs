@@ -1,5 +1,6 @@
 ﻿using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;
@@ -16,6 +17,8 @@ public partial class AgregarUsuarioWindow : Window
     private readonly RolesApiService? _rolesService;
     private bool _credenciales;
     private string? _rutaImagen;
+    private readonly ValidadorUsuario _validador = new();
+    private readonly Dictionary<string, Control> _controles;
 
     public bool ErrorAlRegistrar { get; private set; }
     public string MensajeError { get; private set; } = string.Empty;
@@ -23,6 +26,18 @@ public partial class AgregarUsuarioWindow : Window
     public AgregarUsuarioWindow()
     {
         InitializeComponent();
+        _controles = new Dictionary<string, Control>
+        {
+            [nameof(EntradaUsuario.Identidad)] = TxtIdentidad,
+            [nameof(EntradaUsuario.Nombres)] = TxtNombres,
+            [nameof(EntradaUsuario.Apellidos)] = TxtApellidos,
+            [nameof(EntradaUsuario.Telefono)] = TxtTelefono,
+            [nameof(EntradaUsuario.FechaNacimiento)] = DpFechaNacimiento,
+            [nameof(EntradaUsuario.Genero)] = CmbGenero,
+            [nameof(EntradaUsuario.Rol)] = CmbRol,
+            [nameof(EntradaUsuario.NombreUsuario)] = TxtNombreUsuario,
+            [nameof(EntradaUsuario.Correo)] = TxtCorreo
+        };
     }
 
     public AgregarUsuarioWindow(UsuariosApiService usuariosService, RolesApiService rolesService) : this()
@@ -104,33 +119,22 @@ public partial class AgregarUsuarioWindow : Window
 
     private bool ValidarDatosPersonales()
     {
-        if (string.IsNullOrWhiteSpace(TxtIdentidad.Text) ||
-            string.IsNullOrWhiteSpace(TxtNombres.Text) ||
-            string.IsNullOrWhiteSpace(TxtApellidos.Text) ||
-            DpFechaNacimiento.SelectedDate is null ||
-            CmbGenero.SelectedItem is null || CmbRol.SelectedItem is not Rol ||
-            string.IsNullOrWhiteSpace(TxtTelefono.Text))
-        {
-            MostrarError("Completa todos los campos obligatorios.");
-            return false;
-        }
-
-        LimpiarError();
-        return true;
+        var resultado = _validador.ValidarDatosPersonales(CrearEntrada());
+        return HelperValidacion.AplicarResultado(resultado, _controles,
+            mensaje => MostrarError(mensaje), LimpiarError);
     }
 
     private bool ValidarCredenciales()
     {
-        if (string.IsNullOrWhiteSpace(TxtNombreUsuario.Text) ||
-            string.IsNullOrWhiteSpace(TxtCorreo.Text) || !TxtCorreo.Text.Contains('@'))
-        {
-            MostrarError("Indica un nombre de usuario y un correo válido.", true);
-            return false;
-        }
-
-        LimpiarError();
-        return true;
+        var resultado = _validador.ValidarCredenciales(CrearEntrada());
+        return HelperValidacion.AplicarResultado(resultado, _controles,
+            mensaje => MostrarError(mensaje, true), LimpiarError);
     }
+
+    private EntradaUsuario CrearEntrada() => new(
+        TxtIdentidad.Text.Trim(), TxtNombres.Text.Trim(), TxtApellidos.Text.Trim(),
+        TxtTelefono.Text.Trim(), DpFechaNacimiento.SelectedDate, CmbGenero.SelectedItem,
+        CmbRol.SelectedItem, TxtNombreUsuario.Text.Trim(), TxtCorreo.Text.Trim());
 
     private void SeleccionarImagen_Click(object sender, RoutedEventArgs e)
     {

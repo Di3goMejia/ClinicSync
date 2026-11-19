@@ -1,4 +1,5 @@
 ﻿using ClinicSyncDesktop.Data;
+using ClinicSyncDesktop.Validations;
 using System;
 using System.Linq;
 using System.Windows;
@@ -60,6 +61,9 @@ namespace ClinicSyncDesktop.Views
             bool coinciden =
                 nueva.Length > 0 && nueva == confirmar;
 
+            var resultadoValidacion = new ValidadorCambioContrasena().Validar(
+                new EntradaCambioContrasena(actual, nueva, confirmar));
+
             Regla(ReglaLongitud, longitud,
                 "Mínimo de 8 caracteres");
 
@@ -95,14 +99,7 @@ namespace ClinicSyncDesktop.Views
 
             BtnGuardar.IsEnabled =
                 !guardando &&
-                actual.Length > 0 &&
-                longitud &&
-                mayuscula &&
-                minuscula &&
-                numero &&
-                especial &&
-                coinciden &&
-                actual != nueva;
+                resultadoValidacion.EsValido;
         }
 
         // VALIDAR MIENTRAS ESCRIBE

@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 using ClinicSyncDesktop.Views.Auth;
+using ClinicSyncDesktop.Validations;
 
 namespace ClinicSync.Views
 {
@@ -69,18 +70,18 @@ namespace ClinicSync.Views
                 ? TxtContrasenaVisible.Text
                 : TxtContrasena.Password;
 
-            if (string.IsNullOrWhiteSpace(usuario))
-            {
-                MessageBox.Show("Ingrese su usuario.", "ClinicSync");
-                TxtUsuario.Focus();
+            var validacion = new ResultadoValidacion();
+            validacion.Campo<string?>("Usuario", usuario).Requerido("Ingrese su usuario.");
+            validacion.Campo<string?>("Contrasena", password).Requerido("Ingrese su contraseña.");
+            if (!HelperValidacion.AplicarResultado(validacion,
+                new Dictionary<string, Control>
+                {
+                    ["Usuario"] = TxtUsuario,
+                    ["Contrasena"] = TxtContrasena
+                },
+                mensaje => MessageBox.Show(mensaje, "ClinicSync"),
+                () => { }))
                 return;
-            }
-
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                MessageBox.Show("Ingrese su contraseña.", "ClinicSync");
-                return;
-            }
 
             iniciandoSesion = true;
 

@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 using System.Windows.Controls.Primitives;
 
 namespace ClinicSyncDesktop.Views
@@ -184,6 +185,22 @@ namespace ClinicSyncDesktop.Views
         private void TodoElDia_Click(object sender, RoutedEventArgs e)
         {
             bool todoElDia = chkTodoElDia.IsChecked == true;
+
+            var resultadoValidacion = new ValidadorCita().Validar(new EntradaCita(
+                cmbPaciente.SelectedItem, txtTitulo.Text.Trim(), dpInicio.SelectedDate,
+                dpFin.SelectedDate, todoElDia,
+                cmbHoraInicio.SelectedItem as string, cmbHoraFin.SelectedItem as string));
+            if (!HelperValidacion.AplicarResultado(resultadoValidacion,
+                new Dictionary<string, Control>
+                {
+                    [nameof(EntradaCita.Paciente)] = cmbPaciente,
+                    [nameof(EntradaCita.Titulo)] = txtTitulo,
+                    [nameof(EntradaCita.FechaInicio)] = dpInicio,
+                    [nameof(EntradaCita.FechaFin)] = dpFin,
+                    [nameof(EntradaCita.HoraInicio)] = cmbHoraInicio,
+                    [nameof(EntradaCita.HoraFin)] = cmbHoraFin
+                }, MostrarError, LimpiarError))
+                return;
 
             cmbHoraInicio.IsEnabled = !todoElDia;
             cmbHoraFin.IsEnabled = !todoElDia;

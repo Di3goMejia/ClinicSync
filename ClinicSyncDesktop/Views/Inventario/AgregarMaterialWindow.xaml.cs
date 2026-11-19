@@ -1,8 +1,10 @@
 ﻿using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 using Microsoft.Win32;
 using System;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace ClinicSyncDesktop.Views
@@ -11,11 +13,22 @@ namespace ClinicSyncDesktop.Views
     {
         private readonly InventarioApiService inventarioService;
         private string? rutaImagen;
+        private readonly ValidadorMaterial validador = new();
+        private readonly Dictionary<string, Control> controles;
 
         public AgregarMaterialWindow(InventarioApiService servicio)
         {
             InitializeComponent();
             inventarioService = servicio;
+            controles = new Dictionary<string, Control>
+            {
+                [nameof(EntradaMaterial.Nombre)] = txtNombre,
+                [nameof(EntradaMaterial.Codigo)] = txtCodigo,
+                [nameof(EntradaMaterial.UnidadMedida)] = txtUnidadMedida,
+                [nameof(EntradaMaterial.TextoPrecioCompra)] = txtPrecioCompra,
+                [nameof(EntradaMaterial.TextoCantidadInicial)] = txtCantidadInicial,
+                [nameof(EntradaMaterial.TextoStockMinimo)] = txtStockMinimo
+            };
         }
 
         // SELECCIONAR IMAGEN
@@ -157,116 +170,21 @@ namespace ClinicSyncDesktop.Views
         {
             LimpiarErrorValidacion();
 
-            string nombre = txtNombre.Text.Trim();
-            string codigo = txtCodigo.Text.Trim();
-            string unidadMedida = txtUnidadMedida.Text.Trim();
+            var entrada = new EntradaMaterial(txtNombre.Text.Trim(), txtCodigo.Text.Trim(),
+                txtUnidadMedida.Text.Trim(), txtPrecioCompra.Text.Trim(),
+                txtCantidadInicial.Text.Trim(), txtStockMinimo.Text.Trim());
+            var resultado = validador.Validar(entrada);
+            if (!HelperValidacion.AplicarResultado(resultado, controles,
+                MostrarErrorValidacion, LimpiarErrorValidacion))
+                return;
+
+            string nombre = entrada.Nombre;
+            string codigo = entrada.Codigo;
+            string unidadMedida = entrada.UnidadMedida;
             string descripcion = txtDescripcion.Text.Trim();
-
-            decimal precioCompra;
-            decimal cantidadInicial;
-            decimal stockMinimo;
-
-            // 1. NOMBRE DEL MATERIAL
-            if (string.IsNullOrWhiteSpace(nombre))
-            {
-                MostrarErrorValidacion(
-                    "Ingresa el nombre del material.");
-                txtNombre.Focus();
-                return;
-            }
-
-            // 2. CÓDIGO
-            if (string.IsNullOrWhiteSpace(codigo))
-            {
-                MostrarErrorValidacion("Ingresa un código.");
-                txtCodigo.Focus();
-                return;
-            }
-
-            // 3. PRECIO POR UNIDAD
-            if (string.IsNullOrWhiteSpace(txtPrecioCompra.Text))
-            {
-                MostrarErrorValidacion(
-                    "Ingresa el precio por unidad.");
-                txtPrecioCompra.Focus();
-                return;
-            }
-
-            if (!TryLeerDecimal(
-                txtPrecioCompra.Text,
-                out precioCompra))
-            {
-                MostrarErrorValidacion("Ingresa un precio válido.");
-                txtPrecioCompra.Focus();
-                return;
-            }
-
-            // 4. CANTIDAD INICIAL
-            if (string.IsNullOrWhiteSpace(txtCantidadInicial.Text))
-            {
-                MostrarErrorValidacion(
-                    "Ingresa la cantidad inicial.");
-                txtCantidadInicial.Focus();
-                return;
-            }
-
-            if (!TryLeerDecimal(
-                txtCantidadInicial.Text,
-                out cantidadInicial))
-            {
-                MostrarErrorValidacion(
-                    "Ingresa una cantidad inicial válida.");
-                txtCantidadInicial.Focus();
-                return;
-            }
-
-            // 5. CANTIDAD MÍNIMA
-            if (string.IsNullOrWhiteSpace(txtStockMinimo.Text))
-            {
-                MostrarErrorValidacion(
-                    "Ingresa la cantidad mínima.");
-                txtStockMinimo.Focus();
-                return;
-            }
-
-            if (!TryLeerDecimal(
-                txtStockMinimo.Text,
-                out stockMinimo))
-            {
-                MostrarErrorValidacion(
-                    "Ingresa una cantidad mínima válida.");
-                txtStockMinimo.Focus();
-                return;
-            }
-
-            // 6. UNIDAD DE MEDIDA
-            if (string.IsNullOrWhiteSpace(unidadMedida))
-            {
-                MostrarErrorValidacion(
-                    "Ingresa una unidad de medida.");
-                txtUnidadMedida.Focus();
-                return;
-            }
-
-            // VALIDAR VALORES NEGATIVOS
-            if (precioCompra < 0 ||
-                cantidadInicial < 0 ||
-                stockMinimo < 0)
-            {
-                MostrarErrorValidacion(
-                    "Las cantidades y el precio no pueden ser negativos.");
-                return;
-            }
-
-            // VALIDAR VALORES MÁXIMOS
-            if (cantidadInicial > 9999999999.99m ||
-                stockMinimo > 9999999999.99m ||
-                precioCompra > 99999999.99m)
-            {
-                MostrarErrorValidacion(
-                    "Uno de los valores supera el máximo permitido.");
-                return;
-            }
+            decimal precioCompra = resultado.PrecioCompra;
+            decimal cantidadInicial = resultado.CantidadInicial;
+            decimal stockMinimo = resultado.StockMinimo;
 
             btnGuardar.IsEnabled = false;
 
