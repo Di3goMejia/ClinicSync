@@ -1,5 +1,6 @@
 using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +10,8 @@ namespace ClinicSyncDesktop.Views.Seguridad;
 
 public partial class AgregarRolWindow : Window
 {
+    private readonly ValidadorRol _validador = new();
+    private readonly Dictionary<string, Control> _controles;
     private readonly ObservableCollection<PermisoFilaDesktop> _permisos = [];
     private readonly PermisosApiService _permisosService = new();
     private readonly RolesApiService _rolesService = new();
@@ -20,6 +23,12 @@ public partial class AgregarRolWindow : Window
     {
         InitializeComponent();
         Loaded += async (_, _) => await CargarAsync();
+
+        _controles = new Dictionary<string, Control>
+        {
+            [nameof(EntradaRol.Nombre)] = TxtNombre,
+            [nameof(EntradaRol.Descripcion)] = TxtDescripcion
+        };
     }
 
     private async Task CargarAsync()
@@ -27,8 +36,10 @@ public partial class AgregarRolWindow : Window
         try
         {
             CmbRolBase.ItemsSource = await _rolesService.ListarAsync(activo: true);
+
             foreach (var permiso in await _permisosService.ListarAsync())
                 _permisos.Add(new PermisoFilaDesktop(permiso.Codigo, permiso.Modulo, permiso.Nombre));
+            
             CmbModulo.ItemsSource = new[] { "Todos" }.Concat(_permisos.Select(p => p.Modulo).Distinct().Order()).ToList();
             ListaPermisos.ItemsSource = _permisos;
         }
@@ -37,9 +48,13 @@ public partial class AgregarRolWindow : Window
 
     private bool ValidarInfo()
     {
-        if (string.IsNullOrWhiteSpace(Nombre)) { MostrarError("El nombre del rol es obligatorio."); TxtNombre.Focus(); return false; }
-        if (Nombre.Length < 2 || Nombre.Length > 100) { MostrarError("El nombre del rol debe tener entre 2 y 100 caracteres."); TxtNombre.Focus(); return false; }
-        return true;
+        var entrada = new EntradaRol(
+            Nombre: TxtNombre.Text.Trim(),
+            Descripcion: TxtDescripcion.Text.Trim()
+        );
+
+        var resultado = _validador.Validar(entrada);
+        return HelperValidacion.AplicarResultado(resultado, _controles, MostrarError, () => { });
     }
 
     private void Siguiente_Click(object sender, RoutedEventArgs e)

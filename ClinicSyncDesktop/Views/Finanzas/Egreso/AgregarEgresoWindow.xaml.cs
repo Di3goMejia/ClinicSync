@@ -1,4 +1,5 @@
 ﻿using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -17,10 +18,21 @@ namespace ClinicSyncDesktop.Views
         private static readonly CultureInfo Cultura = CultureInfo.InvariantCulture;
         private bool _formateando;
         private List<MaterialParaEgreso> _materiales = new();
+        private readonly ValidadorEgreso _validador = new();
+        private readonly Dictionary<string, Control> _controles;
 
         public AgregarEgresoWindow(EgresosApiService egresosService)
         {
             InitializeComponent();
+
+            _controles = new Dictionary<string, Control>
+            {
+                [nameof(EntradaEgreso.Tipo)] = cmbTipo,
+                [nameof(EntradaEgreso.Medio)] = cmbMedio,
+                [nameof(EntradaEgreso.Concepto)] = txtConcepto,
+                [nameof(EntradaEgreso.TextoFecha)] = dpFecha,
+                [nameof(EntradaEgreso.TextoMonto)] = txtMonto
+            };
 
             _egresosService = egresosService;
 
@@ -270,56 +282,17 @@ namespace ClinicSyncDesktop.Views
             string textoMonto = txtMonto.Text.Trim();
             string textoFecha = txtFecha.Text.Trim();
 
-            // CAMPOS OBLIGATORIOS
-            if (tipo is null || medio is null ||
-                textoFecha.Length == 0 ||
-                textoMonto.Length == 0 ||
-                (!esMateriales && concepto.Length == 0) ||
-                (esMateriales && _materiales.Count == 0))
+            var resultado = _validador.Validar(new EntradaEgreso(tipo, medio, concepto,
+                textoFecha, dpFecha.SelectedDate, txtHora.Text, textoMonto));
+            if (!HelperValidacion.AplicarResultado(resultado, _controles, MostrarError, OcultarError))
+                return;
+            if (esMateriales && _materiales.Count == 0)
             {
-                MostrarError("Se deben llenar los campos obligatorios.");
+                MostrarError("Debe seleccionar al menos un material.");
                 return;
             }
-
-            // FECHA VÁLIDA
-            if (!TryObtenerFechaHora(out DateTime fecha))
-            {
-                MostrarError(
-                    "La fecha u hora no es válida. Usa AAAA/MM/DD y HH:mm.");
-                return;
-            }
-
-            if (fecha > DateTime.Now)
-            {
-                MostrarError("La fecha y hora no pueden ser futuras.");
-                return;
-            }
-
-            // MONTO NUMÉRICO
-            if (!decimal.TryParse(
-                    textoMonto,
-                    NumberStyles.AllowDecimalPoint,
-                    Cultura,
-                    out decimal monto))
-            {
-                MostrarError("El monto debe ser un valor numérico válido.");
-                return;
-            }
-
-            monto = Math.Round(monto, 2);
-
-            // MONTO MAYOR QUE CERO
-            if (monto <= 0)
-            {
-                MostrarError("El monto debe ser mayor que cero.");
-                return;
-            }
-
-            if (monto > 99999999.99m)
-            {
-                MostrarError("El monto es demasiado grande.");
-                return;
-            }
+            DateTime fecha = resultado.Fecha;
+            decimal monto = resultado.Monto;
 
             List<(int IdMaterial, decimal Cantidad)>? materiales =
                 esMateriales

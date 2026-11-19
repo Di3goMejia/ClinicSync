@@ -1,5 +1,6 @@
 ﻿
 using ClinicSyncDesktop.Data;
+using ClinicSyncDesktop.Validations;
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -361,77 +362,19 @@ namespace ClinicSyncDesktop.Views
 
         private bool ValidarDatos()
         {
-            // IDENTIDAD
-            if (!Regex.IsMatch(
-                TxtIdentidad.Text.Trim(),
-                @"^\d{13}$"))
+            var sexo = (CmbSexo.SelectedItem as ComboBoxItem)?.Tag as string;
+            var resultado = new ValidadorPaciente().Validar(new EntradaPaciente(
+                TxtIdentidad.Text.Trim(), TxtNombres.Text.Trim(), TxtApellidos.Text.Trim(),
+                DpFechaNacimiento.SelectedDate?.ToString("yyyy/MM/dd") ?? "", sexo,
+                TxtTelefono.Text.Trim()));
+            resultado.Campo<string?>("Correo", TxtCorreo.Text.Trim())
+                .Requerido("Ingresa un correo electrónico válido.")
+                .CorreoValido("Ingresa un correo electrónico válido.");
+            if (!resultado.EsValido)
             {
-                MostrarError(
-                    "La identidad debe contener exactamente 13 dígitos.");
-
+                MostrarError(resultado.Errores[0].Mensaje);
                 return false;
             }
-
-            // NOMBRES Y APELLIDOS
-            if (string.IsNullOrWhiteSpace(
-                    TxtNombres.Text) ||
-                string.IsNullOrWhiteSpace(
-                    TxtApellidos.Text))
-            {
-                MostrarError(
-                    "El nombre y el apellido son obligatorios.");
-
-                return false;
-            }
-
-            // FECHA DE NACIMIENTO
-            if (DpFechaNacimiento.SelectedDate == null)
-            {
-                MostrarError(
-                    "Selecciona una fecha de nacimiento.");
-
-                return false;
-            }
-
-            if (DpFechaNacimiento
-                .SelectedDate.Value.Date > DateTime.Today)
-            {
-                MostrarError(
-                    "La fecha de nacimiento no puede ser futura.");
-
-                return false;
-            }
-
-            // SEXO
-            if (CmbSexo.SelectedItem is not ComboBoxItem)
-            {
-                MostrarError(
-                    "Selecciona el sexo.");
-
-                return false;
-            }
-
-            // TELÉFONO
-            if (string.IsNullOrWhiteSpace(
-                TxtTelefono.Text))
-            {
-                MostrarError(
-                    "El teléfono es obligatorio.");
-
-                return false;
-            }
-
-            // CORREO
-            if (!Regex.IsMatch(
-                TxtCorreo.Text.Trim(),
-                @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-            {
-                MostrarError(
-                    "Ingresa un correo electrónico válido.");
-
-                return false;
-            }
-
             return true;
         }
 

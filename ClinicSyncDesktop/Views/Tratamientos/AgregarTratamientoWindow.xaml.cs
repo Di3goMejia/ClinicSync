@@ -1,5 +1,6 @@
 ﻿
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 using System;
 using System.Globalization;
 using System.Windows;
@@ -10,6 +11,8 @@ namespace ClinicSyncDesktop.Views
 {
     public partial class AgregarTratamientoWindow : Window
     {
+        private readonly ValidadorTratamiento _validador = new();
+        private readonly Dictionary<string, Control> _controles;
         private readonly TratamientosApiService? _tratamientosService;
         private bool _guardando;
 
@@ -23,6 +26,12 @@ namespace ClinicSyncDesktop.Views
         {
             InitializeComponent();
             _tratamientosService = tratamientosService;
+            _controles = new Dictionary<string, Control>
+            {
+                [nameof(EntradaTratamiento.Nombre)] = TxtNombre,
+                [nameof(EntradaTratamiento.TextoPrecio)] = TxtPrecio,
+                [nameof(EntradaTratamiento.Descripcion)] = TxtDescripcion
+            };
         }
 
         private void MostrarError(string mensaje)
@@ -85,88 +94,23 @@ namespace ClinicSyncDesktop.Views
             DialogResult = false;
         }
 
-        private bool ValidarFormulario(out decimal precio)
+        public bool ValidarFormulario(out decimal precio)
         {
-            OcultarError();
-            precio = 0;
+            var entrada = new EntradaTratamiento(
+                Nombre: TxtNombre.Text.Trim(),
+                TextoPrecio: TxtPrecio.Text.Trim(),
+                Descripcion: TxtDescripcion.Text.Trim()
+            );
 
-            string nombre = TxtNombre.Text.Trim();
-            string textoPrecio = TxtPrecio.Text.Trim();
-            string descripcion = TxtDescripcion.Text.Trim();
+            var resultado = _validador.Validar(entrada);
 
-            // Validar primero el nombre.
-            if (string.IsNullOrWhiteSpace(nombre))
+            if (!HelperValidacion.AplicarResultado(resultado, _controles, MostrarError, OcultarError))
             {
-                MostrarError("Ingresa el nombre del tratamiento.");
-                TxtNombre.Focus();
+                precio = 0m;
                 return false;
             }
 
-            if (nombre.Length > 100)
-            {
-                MostrarError(
-                    "El nombre no puede superar los 100 caracteres.");
-
-                TxtNombre.Focus();
-                return false;
-            }
-
-            // Validar el precio obligatorio.
-            if (string.IsNullOrWhiteSpace(textoPrecio))
-            {
-                MostrarError("Ingresa el precio base del tratamiento.");
-                TxtPrecio.Focus();
-                return false;
-            }
-
-            string normalizado = textoPrecio.Replace(',', '.');
-
-            if (!decimal.TryParse(
-                normalizado,
-                NumberStyles.AllowDecimalPoint,
-                CultureInfo.InvariantCulture,
-                out precio))
-            {
-                MostrarError(
-                    "Ingresa un precio válido, por ejemplo: 350.00.");
-
-                TxtPrecio.Focus();
-                return false;
-            }
-
-            if (precio < 0)
-            {
-                MostrarError("El precio no puede ser negativo.");
-                TxtPrecio.Focus();
-                return false;
-            }
-
-            if (precio > 99999999.99m)
-            {
-                MostrarError("El precio supera el límite permitido.");
-                TxtPrecio.Focus();
-                return false;
-            }
-
-            if (decimal.Round(precio, 2) != precio)
-            {
-                MostrarError(
-                    "El precio solo puede tener dos decimales.");
-
-                TxtPrecio.Focus();
-                return false;
-            }
-
-            // La descripción es opcional.
-            if (descripcion.Length > 200)
-            {
-                MostrarError(
-                    "La descripción no puede superar los 200 caracteres.");
-
-                TxtDescripcion.Focus();
-                return false;
-            }
-
+            precio = resultado.PrecioNormalizado;
             return true;
         }
 
@@ -181,9 +125,7 @@ namespace ClinicSyncDesktop.Views
 
             if (_tratamientosService is null)
             {
-                MostrarError(
-                    "La conexión con la API no está configurada.");
-
+                MostrarError("La conexión con la API no está configurada.");
                 return;
             }
 

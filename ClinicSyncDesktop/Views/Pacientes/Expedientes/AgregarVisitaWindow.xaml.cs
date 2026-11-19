@@ -2,6 +2,7 @@
 using ClinicSyncDesktop.Data;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
@@ -9,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using ClinicSyncDesktop.Validations;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -309,63 +311,33 @@ namespace ClinicSyncDesktop.Views
         // VALIDAR ANTECEDENTES
         private bool ValidarAntecedentes()
         {
-            // VALIDAR EMPLEADO
-            if (idEmpleadoActual <= 0)
-            {
-                MostrarError(
-                    "No se pudo identificar al empleado de la sesión.");
+            var resultado =
+                new ValidadorVisita().Validar(
+                    new EntradaVisita(
+                        idEmpleadoActual,
+                        txtDoctor.Text,
+                        txtFechaVisita.Text,
+                        txtMotivo.Text));
 
-                return false;
-            }
+            return HelperValidacion.AplicarResultado(
+                resultado,
+                new Dictionary<string, Control>
+                {
+                    [nameof(EntradaVisita.Doctor)] =
+                        txtDoctor,
+                    [nameof(EntradaVisita.TextoFecha)] =
+                        txtFechaVisita,
+                    [nameof(EntradaVisita.Motivo)] =
+                        txtMotivo
+                },
+                MostrarError,
+                () =>
+                {
+                    txtError.Text = "";
 
-            // VALIDAR NOMBRE
-            if (string.IsNullOrWhiteSpace(txtDoctor.Text))
-            {
-                MostrarError(
-                    "No se pudo obtener el nombre del empleado.");
-
-                return false;
-            }
-
-            // VALIDAR FECHA
-            if (!DateTime.TryParseExact(
-                txtFechaVisita.Text.Trim(),
-                "yyyy/MM/dd",
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None,
-                out DateTime fecha))
-            {
-                MostrarError(
-                    "Ingresa una fecha válida (YYYY/MM/DD).");
-
-                return false;
-            }
-
-            // NO PERMITIR FECHAS FUTURAS
-            if (fecha.Date > DateTime.Today)
-            {
-                MostrarError(
-                    "La fecha de la visita no puede ser posterior a hoy.");
-
-                return false;
-            }
-
-            // VALIDAR MOTIVO
-            if (string.IsNullOrWhiteSpace(txtMotivo.Text))
-            {
-                MostrarError(
-                    "Ingresa el motivo de la visita.");
-
-                return false;
-            }
-
-            // LIMPIAR ERROR
-            txtError.Text = "";
-
-            txtError.Visibility =
-                Visibility.Collapsed;
-
-            return true;
+                    txtError.Visibility =
+                        Visibility.Collapsed;
+                });
         }
 
         // BOTÓN SIGUIENTE

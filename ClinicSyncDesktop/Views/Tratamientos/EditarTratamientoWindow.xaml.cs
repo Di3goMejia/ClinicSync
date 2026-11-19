@@ -1,6 +1,7 @@
 ﻿
 using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 using System;
 using System.Globalization;
 using System.Windows;
@@ -11,6 +12,8 @@ namespace ClinicSyncDesktop.Views
 {
     public partial class EditarTratamientoWindow : Window
     {
+        private readonly ValidadorTratamiento _validador = new();
+        private readonly Dictionary<string, Control> _controles;
         private readonly TratamientosApiService _tratamientosService;
         private readonly Tratamiento _tratamiento;
 
@@ -32,6 +35,13 @@ namespace ClinicSyncDesktop.Views
 
             _tratamiento = tr;
             _tratamientosService = svc;
+
+            _controles = new Dictionary<string, Control>
+            {
+                [nameof(EntradaTratamiento.Nombre)] = TxtNombre,
+                [nameof(EntradaTratamiento.TextoPrecio)] = TxtPrecio,
+                [nameof(EntradaTratamiento.Descripcion)] = TxtDescripcion
+            };
 
             // Capturar el estado original antes de permitir cambios.
             _estadoInicialActivo = _tratamiento.Activo;
@@ -160,91 +170,21 @@ namespace ClinicSyncDesktop.Views
         // VALIDAR FORMULARIO
         private bool ValidarFormulario(out decimal precio)
         {
-            OcultarError();
-            precio = 0;
+            var entrada = new EntradaTratamiento(
+                Nombre: TxtNombre.Text.Trim(),
+                TextoPrecio: TxtPrecio.Text.Trim(),
+                Descripcion: TxtDescripcion.Text.Trim()
+            );
 
-            string nombre = TxtNombre.Text.Trim();
-            string textoPrecio = TxtPrecio.Text.Trim();
-            string descripcion = TxtDescripcion.Text.Trim();
+            var resultado = _validador.Validar(entrada);
 
-            if (string.IsNullOrWhiteSpace(nombre))
+            if (!HelperValidacion.AplicarResultado(resultado, _controles, MostrarError, OcultarError))
             {
-                MostrarError(
-                    "Ingresa el nombre del tratamiento.");
-
-                TxtNombre.Focus();
+                precio = 0m;
                 return false;
             }
 
-            if (nombre.Length > 100)
-            {
-                MostrarError(
-                    "El nombre no puede superar los 100 caracteres.");
-
-                TxtNombre.Focus();
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(textoPrecio))
-            {
-                MostrarError(
-                    "Ingresa el precio base del tratamiento.");
-
-                TxtPrecio.Focus();
-                return false;
-            }
-
-            string normalizado = textoPrecio.Replace(',', '.');
-
-            if (!decimal.TryParse(
-                normalizado,
-                NumberStyles.AllowDecimalPoint,
-                CultureInfo.InvariantCulture,
-                out precio))
-            {
-                MostrarError(
-                    "Ingresa un precio válido, por ejemplo: 350.00.");
-
-                TxtPrecio.Focus();
-                return false;
-            }
-
-            if (precio < 0)
-            {
-                MostrarError(
-                    "El precio no puede ser negativo.");
-
-                TxtPrecio.Focus();
-                return false;
-            }
-
-            if (precio > 99999999.99m)
-            {
-                MostrarError(
-                    "El precio supera el límite permitido.");
-
-                TxtPrecio.Focus();
-                return false;
-            }
-
-            if (decimal.Round(precio, 2) != precio)
-            {
-                MostrarError(
-                    "El precio solo puede tener dos decimales.");
-
-                TxtPrecio.Focus();
-                return false;
-            }
-
-            if (descripcion.Length > 200)
-            {
-                MostrarError(
-                    "La descripción no puede superar los 200 caracteres.");
-
-                TxtDescripcion.Focus();
-                return false;
-            }
-
+            precio = resultado.PrecioNormalizado;
             return true;
         }
 

@@ -1,0 +1,8 @@
+IF TYPE_ID(N'dbo.CodigosPermiso') IS NULL
+BEGIN
+	EXEC(N'CREATE TYPE dbo.CodigosPermiso AS TABLE
+	(
+		Codigo VARCHAR(50) NOT NULL PRIMARY KEY
+	)');
+END;
+GO

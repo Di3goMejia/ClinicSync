@@ -2,6 +2,7 @@
 using ClinicSyncDesktop.Data;
 using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -66,6 +67,7 @@ namespace ClinicSyncDesktop.Views
             BtnGuardarCambios.IsEnabled = false;
 
             ErrorGeneral.Text = "";
+
             ErrorPaciente.Text = "";
             ErrorTratamientos.Text = "";
 
@@ -433,59 +435,26 @@ namespace ClinicSyncDesktop.Views
             ErrorMedioPago.Text = "";
             ErrorGeneral.Text = "";
 
-            bool valido = true;
-
-            if (idPacienteSeleccionado <= 0)
+            var medioSeleccionado = CmbMedioPago.SelectedItem as ComboBoxItem;
+            var resultadoValidacion = new ValidadorIngreso().Validar(new EntradaIngreso(
+                idPacienteSeleccionado > 0 ? new object() : null,
+                DpFecha.SelectedDate, TxtHora.Text, TxtDescuento.Text,
+                medioSeleccionado?.Content?.ToString(), tratamientosElegidos.Sum(t => t.Importe)));
+            if (!resultadoValidacion.EsValido)
             {
-                ErrorPaciente.Text = "Seleccione un paciente.";
-                valido = false;
+                var error = resultadoValidacion.Errores.FirstOrDefault();
+                if (error?.Campo == nameof(EntradaIngreso.Paciente)) ErrorPaciente.Text = error.Mensaje;
+                else if (error?.Campo is nameof(EntradaIngreso.Fecha) or nameof(EntradaIngreso.TextoHora)) ErrorFecha.Text = error.Mensaje;
+                else if (error?.Campo == nameof(EntradaIngreso.TextoDescuento)) ErrorDescuento.Text = error.Mensaje;
+                else if (error?.Campo == nameof(EntradaIngreso.MedioPago)) ErrorMedioPago.Text = error.Mensaje;
             }
+
+            bool valido = resultadoValidacion.EsValido;
 
             if (tratamientosElegidos.Count == 0)
             {
                 ErrorTratamientos.Text =
                     "Seleccione al menos un tratamiento.";
-                valido = false;
-            }
-
-            if (DpFecha.SelectedDate == null)
-            {
-                ErrorFecha.Text = "Seleccione una fecha.";
-                valido = false;
-            }
-            else if (!TryObtenerFechaHora(out DateTime fechaHora))
-            {
-                ErrorFecha.Text = "Ingrese una hora válida con formato HH:mm.";
-                valido = false;
-            }
-            else if (fechaHora > DateTime.Now)
-            {
-                ErrorFecha.Text = "La fecha y hora no pueden ser futuras.";
-                valido = false;
-            }
-
-            decimal subtotal =
-                tratamientosElegidos.Sum(t => t.Importe);
-
-            if (!LeerDescuento(out decimal descuento))
-            {
-                ErrorDescuento.Text =
-                    "El descuento debe ser numérico.";
-                valido = false;
-            }
-            else if (descuento < 0 || descuento > subtotal)
-            {
-                ErrorDescuento.Text =
-                    "El descuento no puede superar el subtotal.";
-                valido = false;
-            }
-
-            if (CmbMedioPago.SelectedItem is not ComboBoxItem medio ||
-                (medio.Content?.ToString() != "Efectivo" &&
-                 medio.Content?.ToString() != "Transferencia"))
-            {
-                ErrorMedioPago.Text =
-                    "Seleccione Efectivo o Transferencia.";
                 valido = false;
             }
 
