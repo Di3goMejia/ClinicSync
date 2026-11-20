@@ -1,36 +1,34 @@
 ﻿using ClinicSyncDesktop.Data;
-using System;
-using System.Windows;
-using System.Windows.Controls;
 using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Validations;
 using ClinicSyncDesktop.Views.Notificaciones;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
-
 
 namespace ClinicSync.Views
 {
     public partial class MenuPrincipal : Window
     {
+        private readonly NotificacionesApiService servicioNotificaciones = new();
+
+        private readonly DispatcherTimer relojNotificaciones = new()
+        {
+            Interval = TimeSpan.FromMinutes(1)
+        };
+
+        private bool cargandoNotificaciones;
+        private bool esAdministrador;
+
         public MenuPrincipal()
         {
             InitializeComponent();
             PrepararNotificaciones();
-
         }
-
-
-        private readonly NotificacionesApiService
-            servicioNotificaciones = new();
-
-        private readonly DispatcherTimer relojNotificaciones =
-            new()
-            {
-                Interval = TimeSpan.FromMinutes(1)
-            };
-
-        private bool cargandoNotificaciones;
 
         private void PrepararNotificaciones()
         {
@@ -43,10 +41,8 @@ namespace ClinicSync.Views
                 await CargarNotificacionesAsync();
             };
 
-            Closed += (_, _) =>
-                relojNotificaciones.Stop();
+            Closed += (_, _) => relojNotificaciones.Stop();
         }
-
 
         private async Task CargarNotificacionesAsync()
         {
@@ -57,80 +53,57 @@ namespace ClinicSync.Views
 
             try
             {
-                // OBTENER NOTIFICACIONES
-                var todas =
-                    await servicioNotificaciones.ListarAsync();
+                var todas = await servicioNotificaciones.ListarAsync();
 
-                // SOLO NOTIFICACIONES VISIBLES
                 var visibles = todas
                     .Where(n => n.Vigente && !n.Archivada)
                     .OrderByDescending(n => n.FechaCreacion)
                     .Take(8)
                     .ToList();
 
-                // INDICADOR DE LA CAMPANA
-                PuntoPendientes.Visibility =
-                    todas.Any(n =>
-                        !n.Leida &&
-                        n.Vigente &&
-                        !n.Archivada)
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
+                PuntoPendientes.Visibility = todas.Any(n =>
+                    !n.Leida && n.Vigente && !n.Archivada)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
 
-                // LIMPIAR EL CONTENIDO ANTERIOR
                 ListaAhora.Children.Clear();
                 ListaAnteriores.Children.Clear();
 
-                // DISTRIBUIR LAS NOTIFICACIONES
                 foreach (var n in visibles)
                 {
-                    var destino =
-                        n.FechaCreacion.Date == DateTime.Today
-                            ? ListaAhora
-                            : ListaAnteriores;
+                    var destino = n.FechaCreacion.Date == DateTime.Today
+                        ? ListaAhora
+                        : ListaAnteriores;
 
                     destino.Children.Add(
                         NotificacionesVisuales.CrearTarjeta(
                             n,
-
-                            // MARCAR COMO LEÍDA
                             async () =>
                             {
                                 await servicioNotificaciones
-                                    .MarcarLeidaAsync(
-                                        n.IdNotificacion);
+                                    .MarcarLeidaAsync(n.IdNotificacion);
 
-                                // Volver a consultar después
-                                // de cambiar el estado.
                                 await CargarNotificacionesAsync();
                             },
-
                             null));
                 }
 
-                // MOSTRAR "AHORA" SOLO SI HAY NOTIFICACIONES
-                TituloAhora.Visibility =
-                    ListaAhora.Children.Count > 0
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
+                TituloAhora.Visibility = ListaAhora.Children.Count > 0
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
 
-                // MOSTRAR "MÁS TEMPRANO" SOLO SI HAY NOTIFICACIONES
-                TituloAnteriores.Visibility =
-                    ListaAnteriores.Children.Count > 0
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
+                TituloAnteriores.Visibility = ListaAnteriores.Children.Count > 0
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
 
-                // MENSAJE ÚNICO SI NO HAY NOTIFICACIONES
-                MensajeSinNotificaciones.Visibility =
-                    visibles.Count == 0
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
+                MensajeSinNotificaciones.Visibility = visibles.Count == 0
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(
-                    "Error al cargar notificaciones: " +
-                    ex.Message);
+                    "Error al cargar notificaciones: " + ex.Message);
             }
             finally
             {
@@ -138,18 +111,23 @@ namespace ClinicSync.Views
             }
         }
 
-
-
-        private async void Ventana_Loaded(
-            object sender, RoutedEventArgs e)
+        private async void Ventana_Loaded(object sender, RoutedEventArgs e)
         {
+            esAdministrador = false;
+            BtnSeguridad.Visibility = Visibility.Collapsed;
+
             try
             {
-                PerfilActual perfil =
-                    await ClienteApi.ObtenerPerfilAsync();
+                PerfilActual perfil = await ClienteApi.ObtenerPerfilAsync();
 
                 NombrePerfil.Text = perfil.NombreCorto;
                 RolPerfil.Text = perfil.Rol;
+
+                esAdministrador = ValidadorRol.EsAdministrador(perfil.Rol);
+
+                BtnSeguridad.Visibility = esAdministrador
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
             }
             catch (Exception)
             {
@@ -158,13 +136,14 @@ namespace ClinicSync.Views
             }
         }
 
-        private void BotonModulo_Click(
-            object sender, RoutedEventArgs e)
+        private void BotonModulo_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button boton)
             {
-                string modulo =
-                    boton.Tag?.ToString() ?? "Pacientes";
+                string modulo = boton.Tag?.ToString() ?? "Pacientes";
+
+                if (modulo == "Seguridad" && !esAdministrador)
+                    return;
 
                 MenuLateral menu = new MenuLateral(modulo);
 
@@ -174,13 +153,10 @@ namespace ClinicSync.Views
             }
         }
 
-        private async void Campana_Click(
-            object sender, RoutedEventArgs e)
+        private async void Campana_Click(object sender, RoutedEventArgs e)
         {
             PopupPerfil.IsOpen = false;
-
-            PopupNotificaciones.IsOpen =
-                !PopupNotificaciones.IsOpen;
+            PopupNotificaciones.IsOpen = !PopupNotificaciones.IsOpen;
 
             if (PopupNotificaciones.IsOpen)
             {
@@ -188,20 +164,17 @@ namespace ClinicSync.Views
             }
         }
 
-        private void PerfilMenu_Click(
-            object sender, RoutedEventArgs e)
+        private void PerfilMenu_Click(object sender, RoutedEventArgs e)
         {
             PopupNotificaciones.IsOpen = false;
             PopupPerfil.IsOpen = !PopupPerfil.IsOpen;
         }
 
-        private async void MarcarLeidas_Click(
-            object sender, RoutedEventArgs e)
+        private async void MarcarLeidas_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 await servicioNotificaciones.MarcarTodasAsync();
-
                 await CargarNotificacionesAsync();
             }
             catch (Exception ex)
@@ -210,35 +183,29 @@ namespace ClinicSync.Views
             }
         }
 
-        private void VerTodas_Click(
-            object sender, RoutedEventArgs e)
+        private void VerTodas_Click(object sender, RoutedEventArgs e)
         {
             PopupNotificaciones.IsOpen = false;
 
             MenuLateral menu = new MenuLateral("Notificaciones");
 
             Application.Current.MainWindow = menu;
-
             menu.Show();
             Close();
         }
 
-        private void Configuracion_Click(
-            object sender,
-            RoutedEventArgs e)
+        private void Configuracion_Click(object sender, RoutedEventArgs e)
         {
             PopupPerfil.IsOpen = false;
 
             MenuLateral menu = new MenuLateral("Perfil");
 
             Application.Current.MainWindow = menu;
-
             menu.Show();
             Close();
         }
 
-        private async void CerrarSesion_Click(
-            object sender, RoutedEventArgs e)
+        private async void CerrarSesion_Click(object sender, RoutedEventArgs e)
         {
             PopupPerfil.IsOpen = false;
 
@@ -253,6 +220,7 @@ namespace ClinicSync.Views
                     "ClinicSync",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
+
                 return;
             }
 
