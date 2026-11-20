@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.Win32;
 
 namespace ClinicSyncDesktop.Views
 {
@@ -154,5 +155,59 @@ namespace ClinicSyncDesktop.Views
         {
             CambiarFiltro("Todos");
         }
+
+        private void ExportarPdf_Click(
+    object sender,
+    RoutedEventArgs e)
+        {
+            try
+            {
+                // OBTENER LOS MOVIMIENTOS MOSTRADOS EN LA TABLA
+                var movimientos = DgResumen.Items
+                    .Cast<MovimientoResumen>()
+                    .ToList();
+
+                // CONFIGURAR VENTANA PARA GUARDAR
+                SaveFileDialog guardarArchivo = new()
+                {
+                    Title = "Guardar reporte financiero",
+                    Filter = "Archivo PDF (*.pdf)|*.pdf",
+                    DefaultExt = ".pdf",
+                    AddExtension = true,
+                    FileName = "Reporte_Financiero_" +
+                               DateTime.Now.ToString("yyyyMMdd_HHmm")
+                };
+
+                bool? resultado = guardarArchivo.ShowDialog();
+
+                if (resultado != true)
+                    return;
+
+                // GENERAR EL DOCUMENTO
+                ReporteFinancieroPdfService generador = new();
+
+                generador.GenerarReporte(
+                    guardarArchivo.FileName,
+                    movimientos,
+                    filtroActual);
+
+                PanelAvisos.Visibility = Visibility.Visible;
+
+                PanelAvisos.Children.Add(
+                    new AvisoNotificacion(
+                        "El reporte financiero se generó correctamente.",
+                        true));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "No se pudo generar el reporte financiero.\n\n" +
+                    ex.Message,
+                    "ClinicSync - Finanzas",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
     }
 }

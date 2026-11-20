@@ -59,6 +59,7 @@
 	<PackageReference Include="Emgu.CV" Version="5.0.0.6584" />
 	<PackageReference Include="Emgu.CV.Bitmap" Version="5.0.0.6584" />
 	<PackageReference Include="Emgu.CV.runtime.windows" Version="5.0.0.6584" />
+	<PackageReference Include="PDFsharp-WPF" Version="6.2.4" />
   </ItemGroup>
 
   <ItemGroup>
