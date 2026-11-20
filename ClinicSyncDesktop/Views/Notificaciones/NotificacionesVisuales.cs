@@ -144,7 +144,7 @@ public static class NotificacionesVisuales
         {
             var btn = new Button
             {
-                Content = "×",
+                Content = "●",
                 ToolTip = "Archivar",
                 Foreground = Azul,
                 Background = Brushes.Transparent,

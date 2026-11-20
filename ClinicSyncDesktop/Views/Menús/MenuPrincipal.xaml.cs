@@ -56,7 +56,7 @@ namespace ClinicSync.Views
                 var todas = await servicioNotificaciones.ListarAsync();
 
                 var visibles = todas
-                    .Where(n => n.Vigente && !n.Archivada)
+                    .Where(n => n.Vigente && !n.Archivada && !n.Leida)
                     .OrderByDescending(n => n.FechaCreacion)
                     .Take(8)
                     .ToList();

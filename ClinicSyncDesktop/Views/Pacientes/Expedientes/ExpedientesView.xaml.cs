@@ -317,7 +317,7 @@ namespace ClinicSyncDesktop.Views
                 {
                     // ABRIR LA VISITA SELECCIONADA
                     EditarVisitaWindow ventana =
-                        new EditarVisitaWindow(visita.IdVisita);
+                        new EditarVisitaWindow(visita.IdVisita, idPaciente);
 
                     ventana.Owner = Window.GetWindow(this);
 
