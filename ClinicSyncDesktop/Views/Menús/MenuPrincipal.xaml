@@ -10,7 +10,6 @@
         Loaded="Ventana_Loaded">
 
     <Window.Resources>
-
         <LinearGradientBrush x:Key="Turquesa"
                              StartPoint="0,0"
                              EndPoint="0,1">
@@ -18,12 +17,10 @@
             <GradientStop Color="#138DAA" Offset="1"/>
         </LinearGradientBrush>
 
-        <!-- TARJETAS DE LOS MÓDULOS -->
         <Style x:Key="BotonModulo" TargetType="Button">
             <Setter Property="Width" Value="225"/>
             <Setter Property="Height" Value="110"/>
-            <Setter Property="Background"
-                    Value="{StaticResource Turquesa}"/>
+            <Setter Property="Background" Value="{StaticResource Turquesa}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
@@ -37,13 +34,11 @@
                                                   ShadowDepth="2"
                                                   Opacity="0.18"/>
                             </Border.Effect>
-                            <ContentPresenter
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver"
-                                     Value="True">
+                            <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="Fondo"
                                         Property="Opacity"
                                         Value="0.9"/>
@@ -78,9 +73,8 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="Transparent">
-                            <ContentPresenter
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -99,15 +93,13 @@
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}"
                                 CornerRadius="15">
-                            <ContentPresenter
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-
     </Window.Resources>
 
     <Grid>
@@ -119,7 +111,6 @@
         <!-- ENCABEZADO -->
         <Grid Grid.Row="0"
               Background="{StaticResource Turquesa}">
-
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="260"/>
                 <ColumnDefinition Width="*"/>
@@ -130,7 +121,6 @@
                         Orientation="Horizontal"
                         VerticalAlignment="Center"
                         Margin="35,0,0,0">
-
                 <Image Source="/Resources/Imagenes MenuPrincipal/ClinicSync-LOGO.png"
                        Width="75"
                        Height="75"
@@ -158,26 +148,19 @@
                         Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center">
-
-
                 <Button x:Name="btnCampana"
                         Style="{StaticResource BotonIcono}"
-                        Click="Campana_Click">  
-
+                        Click="Campana_Click">
                     <Grid Width="36" Height="36">
-
-                        <!-- FONDO E IMAGEN ORIGINAL DE LA CAMPANA -->
                         <Border Width="36"
-                            Height="36"
-                            CornerRadius="18"
-                            Background="White">
-
+                                Height="36"
+                                CornerRadius="18"
+                                Background="White">
                             <Image Source="/Resources/Imagenes MenuPrincipal/campana-azul.png"
                                    Width="23"
-                                   Height="23"/>    
+                                   Height="23"/>
                         </Border>
 
-                        <!-- PUNTO DE NOTIFICACIONES PENDIENTES -->
                         <Ellipse x:Name="PuntoPendientes"
                                  Width="9"
                                  Height="9"
@@ -188,10 +171,8 @@
                                  VerticalAlignment="Top"
                                  Margin="0,1,1,0"
                                  Visibility="Collapsed"/>
-
                     </Grid>
                 </Button>
-
 
                 <Button x:Name="btnUsuario"
                         Style="{StaticResource BotonIcono}"
@@ -205,107 +186,101 @@
                                Height="23"/>
                     </Border>
                 </Button>
-
             </StackPanel>
         </Grid>
 
         <!-- MÓDULOS -->
         <Grid Grid.Row="1">
+            <StackPanel HorizontalAlignment="Center"
+                VerticalAlignment="Center">
 
-            <Grid Width="850"
-                  Height="300"
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Center">
+                <!-- PRIMERA FILA -->
+                <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center">
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="135"/>
-                    <RowDefinition Height="165"/>
-                </Grid.RowDefinitions>
+                    <Button Style="{StaticResource BotonModulo}"
+                    Margin="29,0"
+                    Tag="Pacientes"
+                    Click="BotonModulo_Click">
+                        <StackPanel>
+                            <Image Style="{StaticResource ImagenModulo}"
+                           Source="/Resources/Imagenes MenuPrincipal/pacientes.png"/>
+                            <TextBlock Style="{StaticResource TextoModulo}"
+                               Text="Pacientes"/>
+                        </StackPanel>
+                    </Button>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+                    <Button Style="{StaticResource BotonModulo}"
+                    Margin="29,0"
+                    Tag="Tratamientos"
+                    Click="BotonModulo_Click">
+                        <StackPanel>
+                            <Image Style="{StaticResource ImagenModulo}"
+                           Source="/Resources/Imagenes MenuPrincipal/tratamientos.png"/>
+                            <TextBlock Style="{StaticResource TextoModulo}"
+                               Text="Tratamientos"/>
+                        </StackPanel>
+                    </Button>
 
-                <Button Grid.Row="0"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="2"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Style="{StaticResource BotonModulo}"
-                        Tag="Pacientes"
-                        Click="BotonModulo_Click">
-                    <StackPanel>
-                        <Image Style="{StaticResource ImagenModulo}"
-                               Source="/Resources/Imagenes MenuPrincipal/pacientes.png"/>
-                        <TextBlock Style="{StaticResource TextoModulo}"
-                                   Text="Pacientes"/>
-                    </StackPanel>
-                </Button>
+                    <Button Style="{StaticResource BotonModulo}"
+                    Margin="29,0"
+                    Tag="Inventario"
+                    Click="BotonModulo_Click">
+                        <StackPanel>
+                            <Image Style="{StaticResource ImagenModulo}"
+                           Source="/Resources/Imagenes MenuPrincipal/inventario.png"/>
+                            <TextBlock Style="{StaticResource TextoModulo}"
+                               Text="Inventario"/>
+                        </StackPanel>
+                    </Button>
 
-                <Button Grid.Row="0"
-                        Grid.Column="1"
-                        Grid.ColumnSpan="2"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Style="{StaticResource BotonModulo}"
-                        Tag="Tratamientos"
-                        Click="BotonModulo_Click">
-                    <StackPanel>
-                        <Image Style="{StaticResource ImagenModulo}"
-                               Source="/Resources/Imagenes MenuPrincipal/tratamientos.png"/>
-                        <TextBlock Style="{StaticResource TextoModulo}"
-                                   Text="Tratamientos"/>
-                    </StackPanel>
-                </Button>
+                </StackPanel>
 
-                <Button Grid.Row="1"
-                        Grid.Column="0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Bottom"
-                        Style="{StaticResource BotonModulo}"
-                        Tag="Inventario"
-                        Click="BotonModulo_Click">
-                    <StackPanel>
-                        <Image Style="{StaticResource ImagenModulo}"
-                               Source="/Resources/Imagenes MenuPrincipal/inventario.png"/>
-                        <TextBlock Style="{StaticResource TextoModulo}"
-                                   Text="Inventario"/>
-                    </StackPanel>
-                </Button>
+                <!-- SEGUNDA FILA -->
+                <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="0,70,0,0">
 
-                <Button Grid.Row="1"
-                        Grid.Column="1"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Bottom"
-                        Style="{StaticResource BotonModulo}"
-                        Tag="Finanzas"
-                        Click="BotonModulo_Click">
-                    <StackPanel>
-                        <Image Style="{StaticResource ImagenModulo}"
-                               Source="/Resources/Imagenes MenuPrincipal/finanzas.png"/>
-                        <TextBlock Style="{StaticResource TextoModulo}"
-                                   Text="Finanzas"/>
-                    </StackPanel>
-                </Button>
+                    <Button Style="{StaticResource BotonModulo}"
+                    Margin="29,0"
+                    Tag="Finanzas"
+                    Click="BotonModulo_Click">
+                        <StackPanel>
+                            <Image Style="{StaticResource ImagenModulo}"
+                           Source="/Resources/Imagenes MenuPrincipal/finanzas.png"/>
+                            <TextBlock Style="{StaticResource TextoModulo}"
+                               Text="Finanzas"/>
+                        </StackPanel>
+                    </Button>
 
-                <Button Grid.Row="1"
-                        Grid.Column="2"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Bottom"
-                        Style="{StaticResource BotonModulo}"
-                        Tag="Agenda"
-                        Click="BotonModulo_Click">
-                    <StackPanel>
-                        <Image Style="{StaticResource ImagenModulo}"
-                               Source="/Resources/Imagenes MenuPrincipal/agenda.png"/>
-                        <TextBlock Style="{StaticResource TextoModulo}"
-                                   Text="Agenda"/>
-                    </StackPanel>
-                </Button>
+                    <Button Style="{StaticResource BotonModulo}"
+                    Margin="29,0"
+                    Tag="Agenda"
+                    Click="BotonModulo_Click">
+                        <StackPanel>
+                            <Image Style="{StaticResource ImagenModulo}"
+                           Source="/Resources/Imagenes MenuPrincipal/agenda.png"/>
+                            <TextBlock Style="{StaticResource TextoModulo}"
+                               Text="Agenda"/>
+                        </StackPanel>
+                    </Button>
 
-            </Grid>
+                    <Button x:Name="BtnSeguridad"
+                    Style="{StaticResource BotonModulo}"
+                    Margin="29,0"
+                    Visibility="Collapsed"
+                    Tag="Seguridad"
+                    Click="BotonModulo_Click">
+                        <StackPanel>
+                            <Image Style="{StaticResource ImagenModulo}"
+                           Source="/Resources/Imagenes MenuPrincipal/seguridad.png"/>
+                            <TextBlock Style="{StaticResource TextoModulo}"
+                               Text="Seguridad"/>
+                        </StackPanel>
+                    </Button>
+
+                </StackPanel>
+            </StackPanel>
         </Grid>
 
         <!-- NOTIFICACIONES -->
@@ -321,7 +296,6 @@
                     Height="315"
                     Background="White"
                     CornerRadius="15">
-
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="15"
                                       ShadowDepth="5"
@@ -360,37 +334,31 @@
                             Cursor="Hand"
                             Click="MarcarLeidas_Click"/>
 
-
                     <ScrollViewer Grid.Row="2"
-                      Background="White"
-                      VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Disabled">
-
+                                  Background="White"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
                         <StackPanel Margin="8,6,8,8">
-
-                            <!-- TÍTULO DE NOTIFICACIONES ACTUALES -->
                             <TextBlock x:Name="TituloAhora"
-                               Text="Ahora"
-                               FontSize="13"
-                               FontWeight="Bold"
-                               Foreground="#17475A"
-                               Margin="5,4,0,6"
-                               Visibility="Collapsed"/>
+                                       Text="Ahora"
+                                       FontSize="13"
+                                       FontWeight="Bold"
+                                       Foreground="#17475A"
+                                       Margin="5,4,0,6"
+                                       Visibility="Collapsed"/>
 
                             <StackPanel x:Name="ListaAhora"/>
 
-                            <!-- TÍTULO DE NOTIFICACIONES ANTERIORES -->
                             <TextBlock x:Name="TituloAnteriores"
-                               Text="Más temprano"
-                               FontSize="13"
-                               FontWeight="Bold"
-                               Foreground="#17475A"
-                               Margin="5,12,0,6"
-                               Visibility="Collapsed"/>
+                                       Text="Más temprano"
+                                       FontSize="13"
+                                       FontWeight="Bold"
+                                       Foreground="#17475A"
+                                       Margin="5,12,0,6"
+                                       Visibility="Collapsed"/>
 
                             <StackPanel x:Name="ListaAnteriores"/>
 
-                            <!-- MENSAJE CUANDO NO EXISTEN NOTIFICACIONES -->
                             <TextBlock x:Name="MensajeSinNotificaciones"
                                        Text="No hay notificaciones."
                                        Foreground="#6B777C"
@@ -401,7 +369,6 @@
                                        Visibility="Collapsed"/>
                         </StackPanel>
                     </ScrollViewer>
-
 
                     <Border Grid.Row="3"
                             Background="{StaticResource Turquesa}"
@@ -430,7 +397,6 @@
             <Border Width="285"
                     Background="White"
                     CornerRadius="15">
-
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="15"
                                       ShadowDepth="5"
@@ -497,6 +463,5 @@
                 </Grid>
             </Border>
         </Popup>
-
     </Grid>
 </Window>

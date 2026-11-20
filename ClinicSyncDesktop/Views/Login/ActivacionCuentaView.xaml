@@ -81,7 +81,7 @@
                 Padding="25"
                 CornerRadius="15"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Center">
+                VerticalAlignment="Center" Height="335">
 
             <StackPanel>
 
@@ -104,9 +104,11 @@
                     <TextBlock Text="Ingrese el código de 6 dígitos recibido en su correo:"
                                Foreground="White"
                                TextWrapping="Wrap"
-                               Margin="0,15,0,5"/>
+                               FontWeight="SemiBold"
+                               FontSize="14"
+                               Margin="0,15,0,7" Width="338" Height="24"/>
 
-                    <Grid Margin="0,5,0,0">
+                    <Grid Margin="0,7,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
@@ -115,20 +117,33 @@
                         <TextBox x:Name="TxtToken"
                                  Grid.Column="0"
                                  Style="{StaticResource EstiloTextBox}"
+                                 Background="White"
                                  MaxLength="6"
                                  HorizontalContentAlignment="Center"
                                  VerticalContentAlignment="Center"
                                  FontSize="18"
                                  FontWeight="Bold"
                                  PreviewTextInput="TxtToken_PreviewTextInput"
-                                 TextChanged="TxtToken_TextChanged"/>
+                                 TextChanged="TxtToken_TextChanged" Margin="41,0,120,0">
+                            <TextBox.Template>
+                                <ControlTemplate TargetType="TextBox">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="10">
+                                        <ScrollViewer x:Name="PART_ContentHost"
+                                                      Margin="{TemplateBinding Padding}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </TextBox.Template>
+                        </TextBox>
 
                         <Button x:Name="BtnPegar"
-                                Grid.Column="1"
                                 Content="Pegar"
                                 Width="70"
                                 Height="35"
-                                Margin="8,0,0,0"
+                                Margin="242,0,38,0"
                                 Background="#0789AB"
                                 Style="{StaticResource BotonRedondeado}"
                                 ToolTip="Pegar código desde el portapapeles"
@@ -146,7 +161,7 @@
                             Background="#087FA4"
                             Foreground="White"
                             Style="{StaticResource BotonRedondeado}"
-                            Click="BtnValidarToken_Click"/>
+                            Click="BtnValidarToken_Click" Width="272"/>
 
                 </StackPanel>
 
@@ -212,7 +227,7 @@
                         Margin="0,15,0,0"
                         Background="#0789AB"
                         Style="{StaticResource BotonRedondeado}"
-                        Click="BtnRegresar_Click"/>
+                        Click="BtnRegresar_Click" Width="270"/>
 
             </StackPanel>
 

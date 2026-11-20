@@ -16,6 +16,7 @@
     <None Remove="Resources\Imagenes MenuPrincipal\finanzas.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\inventario.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\pacientes.png" />
+    <None Remove="Resources\Imagenes MenuPrincipal\seguridad.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\tratamientos.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\usuario-azul.png" />
     <None Remove="Resources\Imagenes MenuPrincipal\usuario-blanco.png" />
@@ -81,6 +82,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Imagenes MenuPrincipal\pacientes.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Imagenes MenuPrincipal\seguridad.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Imagenes MenuPrincipal\tratamientos.png">

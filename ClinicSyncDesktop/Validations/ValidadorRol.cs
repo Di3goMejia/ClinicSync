@@ -16,4 +16,12 @@ public class ValidadorRol: IValidador<EntradaRol, ResultadoValidacion>
 
         return resultado;
     }
+
+    public static bool EsAdministrador(string? rol)
+    {
+        return string.Equals(
+            rol?.Trim(),
+            "ADMINISTRADOR",
+            System.StringComparison.OrdinalIgnoreCase);
+    }
 }
