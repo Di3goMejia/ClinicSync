@@ -36,7 +36,7 @@ namespace ClinicSyncDesktop.Views
         private TextBlock? mensajeArchivo;
 
         // CONSTRUCTOR
-        public EditarVisitaWindow(int idVisita, int idPaciente = 0)
+        public EditarVisitaWindow(int idVisita, int idPaciente)
         {
             InitializeComponent();
 
@@ -190,7 +190,7 @@ namespace ClinicSyncDesktop.Views
             if (idPaciente <= 0)
             {
                 MostrarError(
-                    "El paciente está desactivado. La edición permanecerá bloqueada.");
+                    "No se pudo identificar al paciente de esta visita.");
 
                 return;
             }
@@ -201,7 +201,7 @@ namespace ClinicSyncDesktop.Views
 
             PacienteEstadoApi? paciente =
                 pacientes.FirstOrDefault(p =>
-                    p.IdPaciente == idPaciente);    
+                    p.IdPaciente == idPaciente);
 
             if (paciente == null)
             {
@@ -210,7 +210,6 @@ namespace ClinicSyncDesktop.Views
 
                 return;
             }
-
             pacienteActivo = paciente.Activo;
             estadoVerificado = true;
         }

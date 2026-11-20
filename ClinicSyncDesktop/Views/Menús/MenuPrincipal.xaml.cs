@@ -63,7 +63,7 @@ namespace ClinicSync.Views
 
                 // SOLO NOTIFICACIONES VISIBLES
                 var visibles = todas
-                    .Where(n => n.Vigente && !n.Archivada)
+                    .Where(n => n.Vigente && !n.Archivada && !n.Leida)
                     .OrderByDescending(n => n.FechaCreacion)
                     .Take(8)
                     .ToList();
