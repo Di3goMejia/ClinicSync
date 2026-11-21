@@ -1,6 +1,7 @@
 ﻿using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
 using ClinicSyncDesktop.Validations;
+using ClinicSyncDesktop.Views;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;
@@ -38,6 +39,16 @@ public partial class AgregarUsuarioWindow : Window
             [nameof(EntradaUsuario.NombreUsuario)] = TxtNombreUsuario,
             [nameof(EntradaUsuario.Correo)] = TxtCorreo
         };
+
+        TxtIdentidad.TextChanged += (_, _) => LimpiarError();
+        TxtNombres.TextChanged += (_, _) => LimpiarError();
+        TxtApellidos.TextChanged += (_, _) => LimpiarError();
+        TxtTelefono.TextChanged += (_, _) => LimpiarError();
+        DpFechaNacimiento.SelectedDateChanged += (_, _) => LimpiarError();
+        CmbGenero.SelectionChanged += (_, _) => LimpiarError();
+        CmbRol.SelectionChanged += (_, _) => LimpiarError();
+        TxtNombreUsuario.TextChanged += (_, _) => LimpiarError();
+        TxtCorreo.TextChanged += (_, _) => LimpiarError();
     }
 
     public AgregarUsuarioWindow(UsuariosApiService usuariosService, RolesApiService rolesService) : this()
@@ -167,7 +178,25 @@ public partial class AgregarUsuarioWindow : Window
         BtnQuitarImagen.Visibility = Visibility.Collapsed;
     }
 
-    private void Cancelar_Click(object sender, RoutedEventArgs e) => Close();
+    private void Cancelar_Click(object sender, RoutedEventArgs e)
+    {
+        bool hayDatos = !string.IsNullOrWhiteSpace(TxtIdentidad.Text) ||
+            !string.IsNullOrWhiteSpace(TxtNombres.Text) ||
+            !string.IsNullOrWhiteSpace(TxtApellidos.Text) ||
+            !string.IsNullOrWhiteSpace(TxtTelefono.Text) ||
+            DpFechaNacimiento.SelectedDate.HasValue ||
+            !string.IsNullOrWhiteSpace(TxtNombreUsuario.Text) ||
+            !string.IsNullOrWhiteSpace(TxtCorreo.Text);
+
+        if (hayDatos)
+        {
+            var descarte = new ConfirmarDescarteWindow("¿Seguro que desea descartar este registro?") { Owner = this };
+            if (descarte.ShowDialog() != true)
+                return;
+        }
+
+        Close();
+    }
 
     private void Encabezado_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {

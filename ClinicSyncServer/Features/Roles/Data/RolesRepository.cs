@@ -65,7 +65,7 @@ public sealed class RolesRepository(SqlConnectionFactory factory)
         {
             await db.ExecuteAsync(new CommandDefinition(
                 "api.usp_Roles_Modificar",
-                new { IdRol = id, request.Nombre, request.Descripcion },
+                new { IdRol = id, request.Nombre, request.Descripcion, request.Codigo },
                 commandType: CommandType.StoredProcedure,
                 cancellationToken: ct));
         }

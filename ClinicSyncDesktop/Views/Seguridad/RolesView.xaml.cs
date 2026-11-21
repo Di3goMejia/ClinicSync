@@ -1,5 +1,6 @@
 using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
+using ClinicSyncDesktop.Views;
 using ClinicSyncDesktop.Views.Seguridad;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -51,6 +52,14 @@ public partial class RolesView : UserControl
         }
     }
 
+    private void MostrarAviso(string mensaje, bool exitoso)
+    {
+        PanelAvisos.Visibility = Visibility.Visible;
+        PanelAvisos.Children.Clear();
+        var aviso = new AvisoNotificacion(mensaje, exitoso);
+        PanelAvisos.Children.Add(aviso);
+    }
+
     private bool FiltrarRol(object obj)
     {
         if (obj is not Rol rol)
@@ -78,13 +87,15 @@ public partial class RolesView : UserControl
             return;
         try
         {
-            await _rolesService.CrearAsync(
-                ventana.Nombre,
-                ventana.Descripcion,
-                ventana.Permisos);
+            await _rolesService.CrearAsync(ventana.Nombre, ventana.Descripcion, ventana.Permisos);
             await CargarRolesAsync();
+            MostrarAviso("Rol registrado exitosamente.", exitoso: true);
         }
-        catch (Exception ex) { Debug.WriteLine(ex); }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+            MostrarAviso(string.IsNullOrWhiteSpace(ex.Message) ? "No fue posible registrar el rol." : ex.Message, exitoso: false);
+        }
     }
 
     private async void BtnEditar_Click(object sender, RoutedEventArgs e)
@@ -96,17 +107,17 @@ public partial class RolesView : UserControl
             return;
         try
         {
-            await _rolesService.ModificarAsync(
-                rol.IdRol,
-                ventana.Nombre,
-                ventana.Descripcion,
-                ventana.Permisos);
-
+            await _rolesService.ModificarAsync(rol.IdRol, ventana.Nombre, ventana.Descripcion, ventana.Permisos);
             if (rol.Activo != ventana.Activo)
                 await _rolesService.CambiarEstadoAsync(rol.IdRol, ventana.Activo);
             await CargarRolesAsync();
+            MostrarAviso("Rol actualizado correctamente.", exitoso: true);
         }
-        catch (Exception ex) { Debug.WriteLine(ex); }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+            MostrarAviso(string.IsNullOrWhiteSpace(ex.Message) ? "No fue posible actualizar el rol." : ex.Message, exitoso: false);
+        }
     }
 
     private async void BtnCambiarEstado_Click(object sender, RoutedEventArgs e)
@@ -117,8 +128,13 @@ public partial class RolesView : UserControl
         {
             await _rolesService.CambiarEstadoAsync(rol.IdRol, !rol.Activo);
             await CargarRolesAsync();
+            MostrarAviso(rol.Activo ? "Rol desactivado." : "Rol activado.", exitoso: true);
         }
-        catch (Exception ex) { Debug.WriteLine(ex); }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+            MostrarAviso(string.IsNullOrWhiteSpace(ex.Message) ? "No fue posible cambiar el estado del rol." : ex.Message, exitoso: false);
+        }
     }
 
     private async void BtnOpciones_Click(object sender, RoutedEventArgs e)
@@ -136,7 +152,12 @@ public partial class RolesView : UserControl
             if (rol.Activo != ventana.Activo)
                 await _rolesService.CambiarEstadoAsync(rol.IdRol, ventana.Activo);
             await CargarRolesAsync();
+            MostrarAviso("Rol actualizado correctamente.", exitoso: true);
         }
-        catch (Exception ex) { Debug.WriteLine(ex); }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+            MostrarAviso(string.IsNullOrWhiteSpace(ex.Message) ? "No fue posible actualizar el rol." : ex.Message, exitoso: false);
+        }
     }
 }

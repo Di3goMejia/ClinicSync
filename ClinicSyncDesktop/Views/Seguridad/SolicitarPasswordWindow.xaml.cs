@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 
 namespace ClinicSyncDesktop.Views.Seguridad;
 
@@ -9,19 +10,22 @@ public partial class SolicitarPasswordWindow : Window
     {
         InitializeComponent();
         TxtMensaje.Text = mensaje;
+        TxtPassword.PasswordChanged += (_, _) => TxtError.Visibility = Visibility.Collapsed;
     }
     private void Confirmar_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(Password)) { 
-            MessageBox.Show("La contraseña es obligatoria.", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning); 
-            return; 
+        if (string.IsNullOrWhiteSpace(Password))
+        {
+            TxtError.Text = "La contraseña es obligatoria.";
+            TxtError.Visibility = Visibility.Visible;
+            return;
         }
-        
         DialogResult = true;
     }
-
-    private void Cancelar_Click(object sender, RoutedEventArgs e)
+    private void Cancelar_Click(object sender, RoutedEventArgs e) => DialogResult = false;
+    private void Encabezado_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        DialogResult = false;
+        if (e.LeftButton == MouseButtonState.Pressed)
+            DragMove();
     }
 }

@@ -8,19 +8,20 @@ namespace ClinicSyncServer.Features.Permisos.Data
 {
     public class PermisosRepository(SqlConnectionFactory factory)
     {
-        public async Task<PermisosUsuario?> ObtenerPorUsuarioAsync(int id)
+        public async Task<PermisosUsuario?> ObtenerPorUsuarioAsync(int id, CancellationToken ct = default)
         {
             await using SqlConnection db = factory.Crear();
-            await db.OpenAsync();
+            await db.OpenAsync(ct);
 
-            var filas = (await db.QueryAsync<PermisoFila>(
-                "api.usp_Permisos_ObtenerPorUsuario",
-                new { IdUsuario = id },
-                commandType: CommandType.StoredProcedure)
-            ).ToList();
+            var filas = await db.QueryAsync<PermisoFila>(
+                new CommandDefinition(
+                    "api.usp_Permisos_ObtenerPorUsuario",
+                    new { IdUsuario = id },
+                    commandType: CommandType.StoredProcedure,
+                    cancellationToken: ct)
+            );
 
-            if (filas.Count == 0) 
-                return null;
+            if (!filas.Any()) return null;
 
             var permisos = filas
                 .Where(f => f.PermisoCodigo is not null)
@@ -28,7 +29,21 @@ namespace ClinicSyncServer.Features.Permisos.Data
                 .Distinct()
                 .ToList();
 
-            return new PermisosUsuario(filas[0].RolCodigo, permisos!);
+            return new PermisosUsuario(filas.First().RolCodigo, permisos!);
+        }
+
+        public async Task<IEnumerable<PermisoCatalogo>> ListarAsync(CancellationToken ct = default)
+        {
+            await using SqlConnection db = factory.Crear();
+            await db.OpenAsync(ct);
+
+            return await db.QueryAsync<PermisoCatalogo>(
+                new CommandDefinition(
+                    "api.usp_Permisos_Listar",
+                    null,
+                    commandType: CommandType.StoredProcedure,
+                    cancellationToken: ct)
+            );
         }
     }
 }

@@ -15,12 +15,14 @@
             <GradientStop Color="#32A5AB" Offset="0"/>
             <GradientStop Color="#138DAA" Offset="1"/>
         </LinearGradientBrush>
+        
         <Style x:Key="Etiqueta" TargetType="TextBlock">
             <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Margin" Value="0,0,0,5"/>
         </Style>
+        
         <Style x:Key="Campo" TargetType="TextBox">
             <Setter Property="Height" Value="30"/>
             <Setter Property="Background" Value="#D9DDD8"/>
@@ -39,6 +41,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
         <Style x:Key="ComboRedondo" TargetType="ComboBox">
             <Setter Property="Height" Value="30"/>
             <Setter Property="Background" Value="#D9DDD8"/>
@@ -51,13 +54,19 @@
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
                             <Border Background="{TemplateBinding Background}" CornerRadius="15"/>
+                            
                             <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
                                               ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                               ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
                                               Margin="{TemplateBinding Padding}"
                                               VerticalAlignment="Center"
                                               IsHitTestVisible="False"/>
-                            <ToggleButton Background="Transparent" BorderThickness="0" Opacity="0" IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                            
+                            <ToggleButton Background="Transparent" 
+                                          BorderThickness="0" 
+                                          Opacity="0" 
+                                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                            
                             <Popup x:Name="PART_Popup" Placement="Bottom" IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" AllowsTransparency="True" StaysOpen="False">
                                 <Border Background="White" BorderBrush="#D9DDD8" BorderThickness="1" CornerRadius="8" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
                                     <ScrollViewer MaxHeight="160">
@@ -70,6 +79,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
         <Style x:Key="BotonPie" TargetType="Button">
             <Setter Property="Background" Value="#92D4DE"/>
             <Setter Property="Foreground" Value="#17475A"/>
@@ -88,6 +98,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
         <Style x:Key="BotonPlano" TargetType="Button">
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -107,14 +118,40 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="45"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="0" Background="{StaticResource Turquesa}" MouseLeftButtonDown="Encabezado_MouseLeftButtonDown" Grid.ColumnSpan="2">
-                <Grid Margin="15,0,10,0">
-                    <TextBlock Text="Agregar nuevo usuario" Foreground="White" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
-                    <Button Width="27" Height="27" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Click="Cancelar_Click">
-                        <TextBlock Text="×" Foreground="White" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-4,0,0"/>
+            
+            <Border Grid.Row="0" Background="{StaticResource Turquesa}" CornerRadius="11,11,0,0" MouseLeftButtonDown="Encabezado_MouseLeftButtonDown" Grid.ColumnSpan="2">
+                <Grid Margin="15,0,0,0">
+                    <TextBlock Text="Agregar nuevo usuario" 
+                               Foreground="White" 
+                               FontSize="16" 
+                               FontWeight="Bold" 
+                               VerticalAlignment="Center" />
+
+                    <Button Grid.Column="1"
+                            Content="✕"
+                            Width="19"
+                            Height="20"
+                            Margin="0,0,10,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Background="#E8424B"
+                            Foreground="White"
+                            BorderThickness="0"
+                            FontSize="12"
+                            FontWeight="Bold"
+                            Cursor="Hand"
+                            Click="Cancelar_Click">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
                     </Button>
                 </Grid>
             </Border>
+
             <Grid Grid.Row="1" Margin="35,13,35,0" Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -151,11 +188,11 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Fecha de nacimiento *" Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Fecha de nacimiento"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
                             <DatePicker x:Name="DpFechaNacimiento" Height="30" Background="#D9DDD8" Foreground="#17475A" BorderThickness="0" SelectedDateFormat="Short"/>
                         </StackPanel>
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Sexo *" Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Sexo"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
                             <ComboBox x:Name="CmbGenero" Style="{StaticResource ComboRedondo}">
                                 <ComboBoxItem Content="Femenino" Tag="F"/>
                                 <ComboBoxItem Content="Masculino" Tag="M"/>
@@ -169,11 +206,11 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Teléfono *" Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Teléfono"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
                             <TextBox x:Name="TxtTelefono" Style="{StaticResource Campo}" MaxLength="20"/>
                         </StackPanel>
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Rol *" Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Rol"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
                             <ComboBox x:Name="CmbRol" Style="{StaticResource ComboRedondo}" SelectedValuePath="IdRol">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
@@ -219,9 +256,9 @@
                 </StackPanel>
 
                 <StackPanel x:Name="PanelCredenciales" Visibility="Collapsed">
-                    <TextBlock Text="Nombre de usuario *" Style="{StaticResource Etiqueta}"/>
+                    <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Nombre de usuario"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
                     <TextBox x:Name="TxtNombreUsuario" Style="{StaticResource Campo}" MaxLength="64"/>
-                    <TextBlock Text="Correo electrónico *" Style="{StaticResource Etiqueta}" Margin="0,16,0,5"/>
+                    <TextBlock Style="{StaticResource Etiqueta}" Margin="0,16,0,5"><Run Text="Correo electrónico"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
                     <TextBox x:Name="TxtCorreo" Style="{StaticResource Campo}" MaxLength="320"/>
                     <Border Background="#E8F4F4" CornerRadius="10" Padding="12" Margin="0,22,0,0">
                         <TextBlock Text="Si presiona Agregar, el usuario recibirá una notificación por correo para activar su cuenta y completar el proceso de creación." Foreground="#17475A" FontSize="12" TextWrapping="Wrap"/>
@@ -230,7 +267,7 @@
                 </StackPanel>
             </Grid>
 
-            <Border Grid.Row="3" Background="{StaticResource Turquesa}" Grid.ColumnSpan="2">
+            <Border Grid.Row="3" Background="{StaticResource Turquesa}" Grid.ColumnSpan="2" CornerRadius="0,0,11,11">
                 <Grid Margin="20,4">
                     <Button x:Name="BtnRegresar" Content="Regresar" Style="{StaticResource BotonPie}" HorizontalAlignment="Left" Visibility="Collapsed" Click="Regresar_Click"/>
                     <Button x:Name="BtnSiguiente" Content="Siguiente" Style="{StaticResource BotonPie}" HorizontalAlignment="Right" Click="Siguiente_Click"/>
