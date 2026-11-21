@@ -343,13 +343,7 @@
                                             SelectedDateChanged="DpFecha_SelectedDateChanged"/>
                             </Border>
 
-                            <TextBlock Text="Hora (HH:mm):"
-                                       Style="{StaticResource Etiqueta}"
-                                       Margin="0,8,0,4"/>
-                            <TextBox x:Name="TxtHora"
-                                     Style="{StaticResource TextBoxRedondo}"
-                                     Text="00:00"
-                                     MaxLength="5"/>
+                           
 
                             <TextBlock x:Name="ErrorFecha"
                                        Style="{StaticResource Error}"/>

@@ -32,7 +32,7 @@ namespace ClinicSyncDesktop.Views
             InitializeComponent();
 
             DpFecha.SelectedDate = DateTime.Today;
-            TxtHora.Text = DateTime.Now.ToString("HH:mm");
+           
             inicializado = true;
 
             Loaded += AgregarIngresoWindow_Loaded;
@@ -331,23 +331,14 @@ namespace ClinicSyncDesktop.Views
 
 
         // VALIDACIONES EN ROJO
-        private bool TryObtenerFechaHora(out DateTime fecha)
+        private bool TryObtenerFecha(out DateTime fecha)
         {
             fecha = default;
 
             if (DpFecha.SelectedDate is not DateTime fechaSeleccionada)
                 return false;
 
-            if (!TimeSpan.TryParseExact(
-                    TxtHora.Text.Trim(),
-                    @"hh\:mm",
-                    CultureInfo.InvariantCulture,
-                    out TimeSpan hora))
-            {
-                return false;
-            }
-
-            fecha = fechaSeleccionada.Date.Add(hora);
+            fecha = fechaSeleccionada.Date;
             return true;
         }
 
@@ -363,8 +354,8 @@ namespace ClinicSyncDesktop.Views
 
             var medioSeleccionado = CmbMedioPago.SelectedItem as ComboBoxItem;
             var resultadoValidacion = new ValidadorIngreso().Validar(new EntradaIngreso(
-                pacienteSeleccionado, DpFecha.SelectedDate, TxtHora.Text,
-                TxtDescuento.Text, medioSeleccionado?.Content?.ToString(), ObtenerSubtotal()));
+             pacienteSeleccionado, DpFecha.SelectedDate, "00:00",
+             TxtDescuento.Text, medioSeleccionado?.Content?.ToString(), ObtenerSubtotal()));
             if (!resultadoValidacion.EsValido)
             {
                 var error = resultadoValidacion.Errores.FirstOrDefault();
@@ -419,12 +410,12 @@ namespace ClinicSyncDesktop.Views
                     (ComboBoxItem)CmbMedioPago.SelectedItem;
 
                 LeerDescuento(out decimal descuento);
-                TryObtenerFechaHora(out DateTime fechaHora);
+                TryObtenerFecha(out DateTime fecha);
 
                 var request = new RegistrarIngresoRequest
                 {
                     IdPaciente = pacienteSeleccionado!.IdPaciente,
-                    Fecha = fechaHora,
+                    Fecha = fecha,
                     Descuento = descuento,
                     MedioPago = medio.Content?.ToString() ?? "",
 
