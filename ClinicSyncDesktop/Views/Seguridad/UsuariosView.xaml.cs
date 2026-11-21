@@ -68,6 +68,7 @@ namespace ClinicSyncDesktop.Views
         // Mostrar notificaciones con el mismo diseño que Pacientes.
         private void MostrarAviso(string mensaje, bool exitoso)
         {
+            PanelAvisos.Visibility = Visibility.Visible;
             PanelAvisos.Children.Clear();
             var aviso = new AvisoNotificacion(mensaje, exitoso);
             PanelAvisos.Children.Add(aviso);
@@ -163,10 +164,6 @@ namespace ClinicSyncDesktop.Views
                 await CargarUsuariosAsync();
                 MostrarAviso("Usuario registrado exitosamente.", exitoso: true);
             }
-            else if (ventana.ErrorAlRegistrar)
-            {
-                MostrarAviso(ventana.MensajeError, exitoso: false);
-            }
         }
 
         public event EventHandler? VolverAlMenuSolicitado;
@@ -218,10 +215,8 @@ namespace ClinicSyncDesktop.Views
                 if (ventana.ShowDialog() == true)
                 {
                     await CargarUsuariosAsync();
-                    MostrarAviso("Usuario actualizado exitosamente.", exitoso: true);
+                    MostrarAviso("Usuario actualizado correctamente.", exitoso: true);
                 }
-                else if (ventana.ErrorAlGuardar)
-                    MostrarAviso(ventana.MensajeError, exitoso: false);
             }
             catch (Exception ex)
             {

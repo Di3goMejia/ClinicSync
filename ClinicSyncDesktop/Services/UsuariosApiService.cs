@@ -1,4 +1,5 @@
 ﻿using ClinicSyncDesktop.Data;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -91,19 +92,7 @@ namespace ClinicSyncDesktop.Services
 
             if (!respuesta.IsSuccessStatusCode)
             {
-                var mensaje = "No fue posible crear el usuario.";
-                var contenido = await respuesta.Content.ReadAsStringAsync(ct);
-
-                try
-                {
-                    using var documento = JsonDocument.Parse(contenido);
-                    if (documento.RootElement.TryGetProperty("detail", out var detalle))
-                        mensaje = detalle.GetString() ?? mensaje;
-                }
-                catch (JsonException)
-                {
-                }
-
+                var mensaje = await ExtraerMensajeErrorAsync(respuesta, "No fue posible crear el usuario.", ct);
                 throw new HttpRequestException(mensaje, null, respuesta.StatusCode);
             }
 
@@ -123,22 +112,31 @@ namespace ClinicSyncDesktop.Services
         public async Task ModificarAsync(int idUsuario, object solicitud, CancellationToken ct = default)
         {
             using var respuesta = await ClienteApi.PutAutenticadoAsync($"api/usuarios/{idUsuario}", solicitud, ct);
-            if (!respuesta.IsSuccessStatusCode)
-                throw new HttpRequestException("No fue posible actualizar el usuario.");
+            if (!respuesta.IsSuccessStatusCode) 
+            {
+                var mensaje = await ExtraerMensajeErrorAsync(respuesta, "No fue posible actualizar el usuario.", ct);
+                throw new HttpRequestException(mensaje, null, respuesta.StatusCode);
+            }
         }
 
         public async Task ModificarRolAsync(int idUsuario, int idRol, CancellationToken ct = default)
         {
             using var respuesta = await ClienteApi.PatchAutenticadoAsync($"api/usuarios/{idUsuario}/rol", new { idRol }, ct);
             if (!respuesta.IsSuccessStatusCode)
-                throw new HttpRequestException("No fue posible actualizar el rol del usuario.");
+            {
+                var mensaje = await ExtraerMensajeErrorAsync(respuesta, "No fue posible actualizar el rol del usuario.", ct);
+                throw new HttpRequestException(mensaje, null, respuesta.StatusCode);
+            }
         }
 
         public async Task ReenviarActivacionAsync(int idUsuario, CancellationToken ct = default)
         {
             using var respuesta = await ClienteApi.PostAutenticadoAsync($"api/usuarios/{idUsuario}/reenviar-activacion", new { }, ct);
             if (!respuesta.IsSuccessStatusCode)
-                throw new HttpRequestException("No fue posible reenviar la activación.");
+            {
+                var mensaje = await ExtraerMensajeErrorAsync(respuesta, "No fue posible reenviar la activación.", ct);
+                throw new HttpRequestException(mensaje, null, respuesta.StatusCode);
+            }
         }
 
         public async Task DesactivarAsync(int idUsuario, string password, CancellationToken ct = default)
@@ -161,9 +159,34 @@ namespace ClinicSyncDesktop.Services
             using var respuesta = await ClienteApi.PostAutenticadoAsync(ruta, new { password }, ct);
             if (!respuesta.IsSuccessStatusCode)
             {
-                var detalle = await respuesta.Content.ReadAsStringAsync(ct);
-                throw new HttpRequestException(string.IsNullOrWhiteSpace(detalle) ? mensaje : detalle);
+                var error = await ExtraerMensajeErrorAsync(respuesta, mensaje, ct);
+                throw new HttpRequestException(error, null, respuesta.StatusCode);
             }
+        }
+
+        private static async Task<string> ExtraerMensajeErrorAsync(HttpResponseMessage respuesta, string mensajePorDefecto, CancellationToken ct)
+        {
+            var contenido = await respuesta.Content.ReadAsStringAsync(ct);
+            if (string.IsNullOrWhiteSpace(contenido))
+                return mensajePorDefecto;
+
+            try
+            {
+                using var documento = JsonDocument.Parse(contenido);
+                if (documento.RootElement.TryGetProperty("detail", out var detalle) && detalle.ValueKind == JsonValueKind.String)
+                    return detalle.GetString() ?? mensajePorDefecto;
+                if (documento.RootElement.TryGetProperty("message", out var msg) && msg.ValueKind == JsonValueKind.String)
+                    return msg.GetString() ?? mensajePorDefecto;
+                if (documento.RootElement.TryGetProperty("title", out var title) && title.ValueKind == JsonValueKind.String)
+                    return title.GetString() ?? mensajePorDefecto;
+            }
+            catch (JsonException)
+            {
+                if (!contenido.TrimStart().StartsWith("{") && !contenido.TrimStart().StartsWith("["))
+                    return contenido;
+            }
+
+            return mensajePorDefecto;
         }
     }
 

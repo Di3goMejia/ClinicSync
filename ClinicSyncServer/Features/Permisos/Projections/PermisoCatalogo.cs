@@ -1,3 +1,9 @@
 namespace ClinicSyncServer.Features.Permisos.Projections;
 
-public sealed record PermisoCatalogo(string Codigo, string Modulo, string Nombre);
+public sealed record PermisoCatalogo(
+    int IdPermiso, 
+    string Modulo, 
+    string Nombre, 
+    string Codigo, 
+    string Descripcion
+);

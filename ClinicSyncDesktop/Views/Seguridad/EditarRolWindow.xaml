@@ -4,13 +4,32 @@
             <GradientStop Color="#32A5AB"/>
             <GradientStop Color="#138DAA" Offset="1"/>
         </LinearGradientBrush>
+
+        <Style x:Key="Etiqueta" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+        
         <Style x:Key="Campo" TargetType="TextBox">
             <Setter Property="Height" Value="30"/>
             <Setter Property="Background" Value="#D9DDD8"/>
             <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="15">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
+        
         <Style x:Key="Boton" TargetType="Button">
             <Setter Property="Background" Value="#92D4DE"/>
             <Setter Property="Foreground" Value="#17475A"/>
@@ -18,8 +37,86 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="14,6"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="17" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ComboRedondo" TargetType="ComboBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border Background="{TemplateBinding Background}" CornerRadius="15"/>
+                            <ToggleButton Background="Transparent" BorderThickness="0" Focusable="False"
+                                          HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
+                                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                      Grid.Column="0" Margin="12,0,25,0"
+                                                      VerticalAlignment="Center" HorizontalAlignment="Left"
+                                                      IsHitTestVisible="False"/>
+                                    <TextBlock Text="▼" Grid.Column="1" Foreground="#168FA7" FontSize="10"
+                                               VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                </Grid>
+                            </ToggleButton>
+                            <Popup x:Name="PART_Popup" Placement="Bottom"
+                                   IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                   AllowsTransparency="True" StaysOpen="False">
+                                <Border Background="White" BorderBrush="#D9DDD8" BorderThickness="1" CornerRadius="8"
+                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
+                                    <ScrollViewer MaxHeight="160"><ItemsPresenter/></ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ExpanderGrupo" TargetType="Expander">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Expander">
+                        <Grid>
+                            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                            <ToggleButton x:Name="HeaderSite" Background="Transparent" BorderThickness="0" Padding="0"
+                                          Focusable="False" HorizontalContentAlignment="Stretch"
+                                          IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                          Content="{TemplateBinding Header}"/>
+                            <ContentPresenter x:Name="ExpandSite" Grid.Row="1" Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="False">
+                                <Setter TargetName="ExpandSite" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
+    
     <Border Margin="7" Background="White" CornerRadius="15" ClipToBounds="True">
         <Grid>
             <Grid.RowDefinitions>
@@ -28,47 +125,186 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="0" Background="{StaticResource Turquesa}" MouseLeftButtonDown="Encabezado_MouseLeftButtonDown">
+    
+            <!-- ENCABEZADO -->
+            <Border Grid.Row="0" Background="{StaticResource Turquesa}" CornerRadius="11,11,0,0" MouseLeftButtonDown="Encabezado_MouseLeftButtonDown">
                 <Grid>
-                    <TextBlock Text="Editar rol" Foreground="White" FontSize="16" FontWeight="Bold" Margin="16,0" VerticalAlignment="Center"/>
-                    <Button Content="×" HorizontalAlignment="Right" Width="30" Background="Transparent" Foreground="White" BorderThickness="0" FontSize="22" Click="Cancelar_Click"/>
+                    <TextBlock Text="Editar rol" 
+                               Foreground="White" 
+                               FontSize="16" 
+                               FontWeight="Bold" 
+                               Margin="16,0" 
+                               VerticalAlignment="Center" />
+                    <Button Grid.Column="1"
+                            Content="✕"
+                            Width="19"
+                            Height="20"
+                            Margin="0,0,10,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Background="#E8424B"
+                            Foreground="White"
+                            BorderThickness="0"
+                            FontSize="12"
+                            FontWeight="Bold"
+                            Cursor="Hand"
+                            Click="Cancelar_Click">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
                 </Grid>
             </Border>
+            
+            <!-- BOTONES PARA PANELES -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Button x:Name="BtnInfo" Content="Información del rol" Style="{StaticResource Boton}" Click="Info_Click"/>
-                <Button x:Name="BtnPermisos" Content="Permisos" Style="{StaticResource Boton}" Margin="8,0,0,0" Click="Permisos_Click"/>
+                <Button x:Name="BtnInfo" 
+                        Content="Información del rol" 
+                        Style="{StaticResource Boton}" 
+                        Click="Info_Click" />
+                <Button x:Name="BtnPermisos" 
+                        Content="Permisos" 
+                        Style="{StaticResource Boton}" 
+                        Margin="8,0,0,0" 
+                        Click="Permisos_Click" />
             </StackPanel>
+            
+            <!-- PANELES -->
             <Grid Grid.Row="2" Margin="30,10">
                 <StackPanel x:Name="PanelInfo">
-                    <TextBlock Text="Nombre *" Foreground="#17475A" FontWeight="SemiBold"/>
-                    <TextBox x:Name="TxtNombre" Style="{StaticResource Campo}" Margin="0,4,0,14"/>
+                    <TextBlock Foreground="#17475A" FontWeight="SemiBold">
+                        <Run Text="Nombre"/>
+                        <Run Text=" *" Foreground="#CF4059"/>
+                    </TextBlock>
+                    <TextBox x:Name="TxtNombre" Style="{StaticResource Campo}" Margin="0,4,0,12"/>
+                    
                     <TextBlock Text="Descripción" Foreground="#17475A" FontWeight="SemiBold"/>
-                    <TextBox x:Name="TxtDescripcion" Style="{StaticResource Campo}" Height="70" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,4,0,14"/>
-                    <StackPanel x:Name="PanelRolBase">
+                    <TextBox x:Name="TxtDescripcion" Style="{StaticResource Campo}" Height="62" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,4,0,12"/>
+                    
+                    <StackPanel x:Name="PanelRolBase" Visibility="Collapsed">
                         <TextBlock Text="Rol base" Foreground="#17475A" FontWeight="SemiBold"/>
-                        <ComboBox x:Name="CmbRolBase" DisplayMemberPath="Nombre" Height="30" Margin="0,4,0,14"/>
+                        <ComboBox x:Name="CmbRolBase" Style="{StaticResource ComboRedondo}" DisplayMemberPath="Nombre" Margin="0,4,0,12"/>
                     </StackPanel>
-                    <CheckBox x:Name="ChkActivo" Content="Rol activo" Foreground="#17475A" IsChecked="True"/>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <TextBlock Text="Rol activo" 
+                                   Style="{StaticResource Etiqueta}" 
+                                   VerticalAlignment="Center" 
+                                   Margin="0,0,10,0" />
+                        <ToggleButton x:Name="ChkActivo" 
+                                      Style="{StaticResource Interruptor}" 
+                                      IsChecked="True" 
+                                      VerticalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <Border Background="#E8F4F4" BorderBrush="#B8D9D9" BorderThickness="1" CornerRadius="10" Padding="12" Margin="0,4,0,0">
+                        <TextBlock Text="Los cambios realizados en este rol se aplicarán a los usuarios en su siguiente inicio de sesión." 
+                                   Foreground="#17475A" 
+                                   FontSize="12" 
+                                   TextWrapping="Wrap"/>
+                    </Border>
+                    
+                    <Border x:Name="PanelProtegido" Background="#FFF4E5" BorderBrush="#E6B566" BorderThickness="1" CornerRadius="10" Padding="12" Margin="0,10,0,0" Visibility="Collapsed">
+                        <TextBlock Text="Este rol está protegido. Sus permisos no se pueden modificar." 
+                                   Foreground="#8A4B08" 
+                                   FontSize="12" 
+                                   TextWrapping="Wrap"/>
+                    </Border>
                 </StackPanel>
-                <StackPanel x:Name="PanelPermisos" Visibility="Collapsed">
-                    <TextBlock x:Name="TxtMensajePermisos" Foreground="#17475A" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,10"/>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBox x:Name="TxtBuscarPermiso" Style="{StaticResource Campo}" Width="260" TextChanged="FiltroPermisos_TextChanged"/>
-                        <ComboBox x:Name="CmbModulo" Width="150" Height="30" Margin="8,0,0,0" SelectionChanged="FiltroPermisos_Changed"/>
+                
+                <Grid x:Name="PanelPermisos" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                
+                    <TextBlock Grid.Row="0" 
+                               x:Name="TxtMensajePermisos" 
+                               Style="{StaticResource Etiqueta}"
+                               TextWrapping="Wrap" 
+                               Margin="0,0,0,10" />
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Etiqueta}" 
+                                   VerticalAlignment="Center" 
+                                   Margin="0,0,10,0" 
+                                   Text="Buscar:" 
+                                   FontWeight="SemiBold" />
+                        <TextBox x:Name="TxtBuscarPermiso" 
+                                 Style="{StaticResource Campo}" 
+                                 Width="260" 
+                                 TextChanged="FiltroPermisos_TextChanged" />
+
+                        <TextBlock Style="{StaticResource Etiqueta}" 
+                                   VerticalAlignment="Center" 
+                                   Margin="30,0,10,0" 
+                                   Text="Módulo:" 
+                                   FontWeight="SemiBold" />
+                        <ComboBox x:Name="CmbModulo" 
+                                  Style="{StaticResource ComboRedondo}"
+                                  Width="150" 
+                                  Height="30" 
+                                  SelectionChanged="FiltroPermisos_Changed" />
                     </StackPanel>
-                    <ScrollViewer VerticalScrollBarVisibility="Visible" Margin="0,12,0,0">
+
+                    <ScrollViewer Grid.Row="2" x:Name="PanelListaPermisos" VerticalScrollBarVisibility="Auto" Padding="0,0,12,0" Margin="0,12,0,0">
                         <ItemsControl x:Name="ListaPermisos">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <CheckBox Content="{Binding Nombre}" Tag="{Binding Codigo}" IsChecked="{Binding Seleccionado}" Margin="4"/>
+                                    <Expander Style="{StaticResource ExpanderGrupo}" IsExpanded="{Binding EstaExpandido, Mode=TwoWay}" Margin="0,0,0,8">
+                                        <Expander.Header>
+                                            <Border Background="{StaticResource Turquesa}" CornerRadius="6" Padding="10,6">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    
+                                                    <TextBlock Text="▼" 
+                                                               Foreground="White" 
+                                                               FontSize="10" 
+                                                               VerticalAlignment="Center" 
+                                                               Margin="0,0,8,0" />
+                                                    <TextBlock Text="{Binding Nombre}" 
+                                                               Grid.Column="1" 
+                                                               Foreground="White" 
+                                                               FontWeight="SemiBold" 
+                                                               VerticalAlignment="Center" />
+                                                    <CheckBox IsThreeState="True" 
+                                                              IsChecked="{Binding TodosSeleccionados, Mode=OneWay}" Click="GrupoSeleccionado_Click" 
+                                                              Grid.Column="2" 
+                                                              HorizontalAlignment="Right" 
+                                                              Margin="8,0,0,0"/>
+                                                </Grid>
+                                            </Border>
+                                        </Expander.Header>
+                                        <ItemsControl ItemsSource="{Binding Permisos}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Padding="10,6" BorderBrush="#E1E6E3" BorderThickness="0,0,0,1">
+                                                        <Grid>
+                                                            <TextBlock Text="{Binding Nombre}" Foreground="#17475A" VerticalAlignment="Center"/>
+                                                            <CheckBox IsChecked="{Binding Seleccionado, Mode=TwoWay}" Click="PermisoSeleccionado_Click" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Expander>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
-                </StackPanel>
+                </Grid>
                 <TextBlock x:Name="TxtError" Foreground="#B3261E" TextWrapping="Wrap" VerticalAlignment="Bottom" Visibility="Collapsed"/>
             </Grid>
-            <Border Grid.Row="3" Background="{StaticResource Turquesa}">
+            <Border Grid.Row="3" CornerRadius="0,0,11,11" Background="{StaticResource Turquesa}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,18,0" VerticalAlignment="Center">
                     <Button Content="Guardar" Style="{StaticResource Boton}" Click="Guardar_Click"/>
                     <Button Content="Cancelar" Style="{StaticResource Boton}" Margin="8,0,0,0" Click="Cancelar_Click"/>

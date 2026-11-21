@@ -9,4 +9,8 @@ public sealed record ModificarRolRequest(
 
     [property: StringLength(500, ErrorMessage = "La descripción no puede superar los 500 caracteres.")]
     string? Descripcion,
-    IReadOnlyList<string>? Permisos = null);
+
+    IReadOnlyList<string>? Permisos = null)
+{
+    public string Codigo { get; init; } = string.Empty;
+}

@@ -26,6 +26,6 @@ namespace ClinicSyncServer.Features.Usuarios.Requests
         string Telefono,
 
         [property: EmailAddress(ErrorMessage = "El formato del correo de contacto es inválido.")]
-        string CorreoContacto
+        string? CorreoContacto
     );
 }

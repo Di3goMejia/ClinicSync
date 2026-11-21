@@ -8,6 +8,7 @@ using ClinicSyncDesktop.Models;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows.Media.Imaging;
+using System.Diagnostics;
 
 namespace ClinicSyncDesktop.Views.Seguridad;
 
@@ -29,6 +30,14 @@ public partial class EditarUsuarioWindow : Window
         _roles = roles;
         CargarDatos();
 
+        TxtIdentidad.TextChanged += (_, _) => LimpiarError();
+        TxtNombres.TextChanged += (_, _) => LimpiarError();
+        TxtApellidos.TextChanged += (_, _) => LimpiarError();
+        TxtTelefono.TextChanged += (_, _) => LimpiarError();
+        DpFechaNacimiento.SelectedDateChanged += (_, _) => LimpiarError();
+        CmbGenero.SelectionChanged += (_, _) => LimpiarError();
+        CmbRol.SelectionChanged += (_, _) => LimpiarError();
+
         Loaded += async (_, _) =>
         {
             CmbRol.ItemsSource = await _roles.ListarAsync(activo: true);
@@ -45,6 +54,8 @@ public partial class EditarUsuarioWindow : Window
                     imagen.StreamSource = stream;
                     imagen.EndInit();
                     ((Image)FindName("ImgPerfil")).Source = imagen;
+                    TxtImagen.Text = _original.ImagenPerfil;
+                    BtnQuitarImagen.Visibility = Visibility.Visible;
                 }
                 catch { }
             }
@@ -80,9 +91,15 @@ public partial class EditarUsuarioWindow : Window
         PanelCuenta.Visibility = Visibility.Visible;
     }
 
+    private void LimpiarError()
+    {
+        TxtError.Text = string.Empty;
+        TxtError.Visibility = Visibility.Collapsed;
+    }
+
     private bool Validar()
     {
-        TxtError.Visibility = Visibility.Collapsed;
+        LimpiarError();
         var resultado = new ValidadorUsuario().ValidarDatosPersonales(new EntradaUsuario(
             TxtIdentidad.Text.Trim(), TxtNombres.Text.Trim(), TxtApellidos.Text.Trim(),
             TxtTelefono.Text.Trim(), DpFechaNacimiento.SelectedDate,
@@ -97,13 +114,14 @@ public partial class EditarUsuarioWindow : Window
                 [nameof(EntradaUsuario.FechaNacimiento)] = DpFechaNacimiento,
                 [nameof(EntradaUsuario.Genero)] = CmbGenero,
                 [nameof(EntradaUsuario.Rol)] = CmbRol
-            }, mensaje => Error(mensaje, TxtIdentidad), () => { }))
+            }, mensaje => Error(mensaje, TxtIdentidad), LimpiarError))
             return false;
         return true;
     }
 
     private bool Error(string mensaje, UIElement campo)
     {
+        TxtError.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0xB3, 0x26, 0x1E));
         TxtError.Text = mensaje;
         TxtError.Visibility = Visibility.Visible;
         campo.Focus();
@@ -141,6 +159,7 @@ public partial class EditarUsuarioWindow : Window
         {
             ErrorAlGuardar = true;
             MensajeError = ex.Message;
+            TxtError.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0xB3, 0x26, 0x1E));
             TxtError.Text = MensajeError;
             TxtError.Visibility = Visibility.Visible;
         }
@@ -156,6 +175,7 @@ public partial class EditarUsuarioWindow : Window
         if (dialogo.ShowDialog() != true) return;
         if (new FileInfo(dialogo.FileName).Length > 5 * 1024 * 1024)
         {
+            TxtError.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0xB3, 0x26, 0x1E));
             TxtError.Text = "La imagen no puede superar los 5 MB.";
             TxtError.Visibility = Visibility.Visible;
             return;
@@ -170,8 +190,22 @@ public partial class EditarUsuarioWindow : Window
             imagen.StreamSource = stream;
             imagen.EndInit();
             ((Image)FindName("ImgPerfil")).Source = imagen;
+            TxtImagen.Text = dialogo.FileName;
+            BtnQuitarImagen.Visibility = Visibility.Visible;
         }
-        catch (Exception ex) { TxtError.Text = ex.Message; TxtError.Visibility = Visibility.Visible; }
+        catch (Exception ex)
+        {
+            TxtError.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0xB3, 0x26, 0x1E));
+            TxtError.Text = ex.Message;
+            TxtError.Visibility = Visibility.Visible;
+        }
+    }
+
+    private void QuitarImagen_Click(object sender, RoutedEventArgs e)
+    {
+        TxtImagen.Text = string.Empty;
+        ((Image)FindName("ImgPerfil")).Source = null;
+        BtnQuitarImagen.Visibility = Visibility.Collapsed;
     }
 
     private async void Reenviar_Click(object sender, RoutedEventArgs e)
@@ -179,9 +213,14 @@ public partial class EditarUsuarioWindow : Window
         try
         {
             await _usuarios.ReenviarActivacionAsync(_original.IdUsuario);
-            MessageBox.Show("La solicitud de activación fue reenviada.", "Cuenta", MessageBoxButton.OK, MessageBoxImage.Information);
+            MostrarConfirmacion("La solicitud de activación fue reenviada.");
         }
-        catch (Exception ex) { TxtError.Text = ex.Message; TxtError.Visibility = Visibility.Visible; }
+        catch (Exception ex)
+        {
+            TxtError.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0xB3, 0x26, 0x1E));
+            TxtError.Text = ex.Message;
+            TxtError.Visibility = Visibility.Visible;
+        }
     }
 
     private async void CambiarEstado_Click(object sender, RoutedEventArgs e)
@@ -209,12 +248,13 @@ public partial class EditarUsuarioWindow : Window
                 BtnCambiarEstado.Content = "Reactivar usuario";
             }
 
-            MessageBox.Show(inactivo ? "El usuario fue reactivado." : "El usuario fue desactivado.", "Cuenta", MessageBoxButton.OK, MessageBoxImage.Information);
+            MostrarConfirmacion(inactivo ? "El usuario fue reactivado." : "El usuario fue desactivado.");
         }
-        catch (Exception ex) 
-        { 
-            TxtError.Text = ex.Message; 
-            TxtError.Visibility = Visibility.Visible; 
+        catch (Exception ex)
+        {
+            TxtError.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0xB3, 0x26, 0x1E));
+            TxtError.Text = ex.Message;
+            TxtError.Visibility = Visibility.Visible;
         }
     }
 
@@ -226,12 +266,13 @@ public partial class EditarUsuarioWindow : Window
         try 
         { 
             await _usuarios.RestablecerPasswordAsync(_original.IdUsuario, password); 
-            MessageBox.Show("La solicitud fue enviada al usuario.", "Cuenta", MessageBoxButton.OK, MessageBoxImage.Information); 
+            MostrarConfirmacion("La solicitud fue enviada al usuario.");
         }
-        catch (Exception ex) 
-        { 
-            TxtError.Text = ex.Message; 
-            TxtError.Visibility = Visibility.Visible; 
+        catch (Exception ex)
+        {
+            TxtError.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0xB3, 0x26, 0x1E));
+            TxtError.Text = ex.Message;
+            TxtError.Visibility = Visibility.Visible;
         }
     }
 
@@ -262,5 +303,12 @@ public partial class EditarUsuarioWindow : Window
     private void Encabezado_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) 
     { 
         if (e.LeftButton == MouseButtonState.Pressed) DragMove(); 
+    }
+
+    private void MostrarConfirmacion(string mensaje)
+    {
+        TxtError.Text = mensaje;
+        TxtError.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0x14, 0x8D, 0xAA));
+        TxtError.Visibility = Visibility.Visible;
     }
 }

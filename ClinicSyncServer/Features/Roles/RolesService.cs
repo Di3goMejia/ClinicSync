@@ -4,6 +4,7 @@ using ClinicSyncServer.Features.Roles.Requests;
 using ClinicSyncServer.Features.Roles.Responses;
 using System.Globalization;
 using System.Text;
+
 using PermisosCatalogo = ClinicSyncServer.Common.Seguridad.Permisos;
 
 namespace ClinicSyncServer.Features.Roles;
@@ -36,7 +37,8 @@ public sealed partial class RolesService(RolesRepository repo) : IRolesService
         await repo.ModificarAsync(id, request with
         {
             Nombre = request.Nombre.Trim(),
-            Descripcion = request.Descripcion?.Trim()
+            Descripcion = request.Descripcion?.Trim(),
+            Codigo = GenerarCodigo(request.Nombre.Trim()),
         }, ct);
         if (request.Permisos is not null)
         {
@@ -49,8 +51,11 @@ public sealed partial class RolesService(RolesRepository repo) : IRolesService
     {
         var permitidos = PermisosCatalogo.Todos.ToHashSet(StringComparer.OrdinalIgnoreCase);
         var desconocidos = codigos.Where(c => !permitidos.Contains(c)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        
         if (desconocidos.Count > 0)
-            throw new InvalidOperationException($"Los permisos no son válidos: {string.Join(", ", desconocidos)}.");
+            throw new InvalidOperationException(
+                $"Los permisos no son válidos: {string.Join(", ", desconocidos)}.");
+
         return Task.CompletedTask;
     }
 

@@ -216,8 +216,7 @@ namespace ClinicSyncServer.Features.Auth
         {
             token = token.Trim();
 
-            // Compatibilidad retroactiva con tokens anteriores de 32 bytes en Base64 (44 caracteres)
-            if (token.Length == 44 && token.EndsWith("="))
+            if (token.Length == 44 && token.EndsWith('='))
             {
                 try
                 {
