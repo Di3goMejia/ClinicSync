@@ -264,7 +264,8 @@
                     <TextBox x:Name="txtNombre"
                              Grid.Row="1"
                              Style="{StaticResource Campo}"
-                             MaxLength="50"/>
+                             MaxLength="50"
+                             Height="21.5"/>
                 </Grid>
 
                 <!-- CÓDIGO Y PRECIO -->
@@ -291,7 +292,8 @@
                              Grid.Row="1"
                              Grid.Column="0"
                              Style="{StaticResource Campo}"
-                             MaxLength="30"/>
+                             MaxLength="30"
+                             Height="21.5"/>
 
                     <TextBlock Grid.Row="0"
                                Grid.Column="2"
@@ -344,7 +346,7 @@
                     <TextBlock Grid.Row="0"
                                Grid.Column="0"
                                Style="{StaticResource Etiqueta}"
-                               Text="Stock actual:"/>
+                               ><Run Text="Stock actual:"/><Run Language="es-hn" Text=" "/><Run Foreground="#FFE83C53" Text="*"/></TextBlock>
 
                     <!-- STOCK Y UNIDAD -->
                     <Grid Grid.Row="1"
@@ -396,7 +398,8 @@
                     <TextBox x:Name="txtStockMinimo"
                              Grid.Row="1"
                              Grid.Column="2"
-                             Style="{StaticResource Campo}"/>
+                             Style="{StaticResource Campo}"
+                             Height="21.5"/>
                 </Grid>
 
                 <!-- DESCRIPCIÓN -->
@@ -406,9 +409,8 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0"
-                               Text="Descripción:"
-                               Style="{StaticResource Etiqueta}"/>
+                    <TextBlock
+                               Style="{StaticResource Etiqueta}" Height="24" Margin="0,9,0,0" Grid.RowSpan="2" VerticalAlignment="Top"><Run Text="Descripción"/><Run Language="es-hn" Text=" (opcional)"/><Run Text=":"/></TextBlock>
 
                     <TextBox x:Name="txtDescripcion"
                              Grid.Row="1"
@@ -419,85 +421,45 @@
                              VerticalContentAlignment="Top"
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
-                             MaxLength="200"/>
+                             MaxLength="200" Margin="0,10,0,0"/>
                 </Grid>
 
                 <!-- MOTIVO DEL AJUSTE DE STOCK -->
-                <Grid Grid.Row="5">
+                <Grid Grid.Row="5" Margin="0,8,0,21" Grid.RowSpan="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="23"/>
                         <RowDefinition Height="23"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0"
+                    <TextBlock
                                Style="{StaticResource Etiqueta}"
-                               Text="Motivo del ajuste de stock:"/>
+                               ><Run Text="Motivo del ajuste de stock:"/><Run Language="es-hn" Text=" "/><Run Foreground="#FFE83C53" Text="*"/></TextBlock>
 
                     <TextBox x:Name="txtMotivoAjuste"
                              Grid.Row="1"
                              Style="{StaticResource Campo}"
                              Height="23"
                              MaxLength="200"
-                             ToolTip="Obligatorio si modificas el stock actual"/>
+                             ToolTip="Obligatorio si modificas el stock actual" Margin="0,2,0,-2"/>
                 </Grid>
 
                 <!-- ESTADO DEL MATERIAL -->
-                <Grid Grid.Row="6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="6"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
 
-                    <TextBlock Grid.Column="0"
-                               Text="Habilitado:"
-                               Style="{StaticResource Etiqueta}"/>
+                    <TextBlock Text="Habilitado:"
+                               Style="{StaticResource Etiqueta}"
+                               VerticalAlignment="Center"
+                               Margin="0,0,8,0"/>
 
-                    <ToggleButton x:Name="chkActivo"
-                                  Grid.Column="1"
-                                  Width="40"
-                                  Height="22"
-                                  IsChecked="True"
-                                  Cursor="Hand"
-                                  Background="#D9DDD8"
-                                  BorderThickness="0"
-                                  FocusVisualStyle="{x:Null}">
-
-                        <ToggleButton.Template>
-                            <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                <Border x:Name="FondoInterruptor"
-                                        Width="40"
-                                        Height="22"
-                                        Background="#D9DDD8"
-                                        CornerRadius="11">
-
-                                    <Ellipse x:Name="Circulo"
-                                             Width="16"
-                                             Height="16"
-                                             Fill="White"
-                                             HorizontalAlignment="Left"
-                                             Margin="3,0,0,0"/>
-                                </Border>
-
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsChecked"
-                                             Value="True">
-                                        <Setter TargetName="FondoInterruptor"
-                                                Property="Background"
-                                                Value="#32A5AB"/>
-
-                                        <Setter TargetName="Circulo"
-                                                Property="HorizontalAlignment"
-                                                Value="Right"/>
-
-                                        <Setter TargetName="Circulo"
-                                                Property="Margin"
-                                                Value="0,0,3,0"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </ToggleButton.Template>
-                    </ToggleButton>
-                </Grid>
+                    <CheckBox x:Name="chkActivo"
+                              Style="{StaticResource Interruptor}"
+                              Width="30"
+                              Height="16"
+                              VerticalAlignment="Center"
+                              AutomationProperties.Name="Material habilitado"/>
+                </StackPanel>
 
                 <!-- MENSAJE DE VALIDACIÓN -->
                 <TextBlock x:Name="txtAvisoValidacion"
@@ -517,9 +479,9 @@
                     ClipToBounds="True">
 
                 <Button x:Name="btnGuardar"
-                        Content="Guardar cambios"
-                        Width="130"
-                        Height="25"
+                        Content="Guardar"
+                        Width="104"
+                        Height="24"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Background="#91D3DE"

@@ -1,23 +1,21 @@
-
 using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
+using Microsoft.Win32;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
-using Microsoft.Win32;
 
 namespace ClinicSyncDesktop.Views
 {
     public partial class ResumenFinanzasView : UserControl
     {
         private readonly ResumenFinanzasApiService servicio;
-
-        // FILTRO INICIAL
         private string filtroActual = "Todos";
-
         private bool cargando;
         private bool recargarPendiente;
 
@@ -31,7 +29,6 @@ namespace ClinicSyncDesktop.Views
             InitializeComponent();
 
             this.servicio = servicio;
-
             ActualizarBotones();
         }
 
@@ -57,21 +54,19 @@ namespace ClinicSyncDesktop.Views
                 do
                 {
                     recargarPendiente = false;
-
                     string filtroSolicitado = filtroActual;
 
                     TxtError.Visibility = Visibility.Collapsed;
 
                     try
                     {
-                        var movimientos =
-                            await servicio.ObtenerResumenAsync(
-                                filtroSolicitado);
+                        var movimientos = await servicio.ObtenerResumenAsync(
+                            filtroSolicitado);
 
                         if (filtroSolicitado == filtroActual)
                         {
                             DgResumen.ItemsSource = movimientos
-                                .OrderByDescending(m => m.Fecha)
+                                .OrderByDescending(movimiento => movimiento.Fecha)
                                 .ToList();
                         }
                     }
@@ -80,14 +75,10 @@ namespace ClinicSyncDesktop.Views
                         if (filtroSolicitado == filtroActual)
                         {
                             TxtError.Text =
-                                "No se pudo cargar el resumen financiero: "
-                                + ex.Message;
+                                "No se pudo cargar el resumen financiero: " + ex.Message;
 
-                            TxtError.Visibility =
-                                Visibility.Visible;
-
-                            DgResumen.ItemsSource =
-                                Array.Empty<MovimientoResumen>();
+                            TxtError.Visibility = Visibility.Visible;
+                            DgResumen.ItemsSource = Array.Empty<MovimientoResumen>();
                         }
                     }
                 }
@@ -102,72 +93,49 @@ namespace ClinicSyncDesktop.Views
         private async void CambiarFiltro(string filtro)
         {
             filtroActual = filtro;
-
             ActualizarBotones();
-
             await CargarDatosAsync();
         }
 
         private void ActualizarBotones()
         {
-            var seleccionado = new SolidColorBrush(
-                Color.FromRgb(124, 194, 207));
-
+            var seleccionado = new SolidColorBrush(Color.FromRgb(124, 194, 207));
             var normal = Brushes.WhiteSmoke;
 
-            BtnHoy.Background =
-                filtroActual == "Hoy" ? seleccionado : normal;
-
-            BtnSemana.Background =
-                filtroActual == "Semana" ? seleccionado : normal;
-
-            BtnMes.Background =
-                filtroActual == "Mes" ? seleccionado : normal;
-
-            BtnTodos.Background =
-                filtroActual == "Todos" ? seleccionado : normal;
+            BtnHoy.Background = filtroActual == "Hoy" ? seleccionado : normal;
+            BtnSemana.Background = filtroActual == "Semana" ? seleccionado : normal;
+            BtnMes.Background = filtroActual == "Mes" ? seleccionado : normal;
+            BtnTodos.Background = filtroActual == "Todos" ? seleccionado : normal;
         }
 
-        private void Hoy_Click(
-            object sender,
-            RoutedEventArgs e)
+        private void Hoy_Click(object sender, RoutedEventArgs e)
         {
             CambiarFiltro("Hoy");
         }
 
-        private void Semana_Click(
-            object sender,
-            RoutedEventArgs e)
+        private void Semana_Click(object sender, RoutedEventArgs e)
         {
             CambiarFiltro("Semana");
         }
 
-        private void Mes_Click(
-            object sender,
-            RoutedEventArgs e)
+        private void Mes_Click(object sender, RoutedEventArgs e)
         {
             CambiarFiltro("Mes");
         }
 
-        private void Todos_Click(
-            object sender,
-            RoutedEventArgs e)
+        private void Todos_Click(object sender, RoutedEventArgs e)
         {
             CambiarFiltro("Todos");
         }
 
-        private void ExportarPdf_Click(
-    object sender,
-    RoutedEventArgs e)
+        private void ExportarPdf_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // OBTENER LOS MOVIMIENTOS MOSTRADOS EN LA TABLA
                 var movimientos = DgResumen.Items
                     .Cast<MovimientoResumen>()
                     .ToList();
 
-                // CONFIGURAR VENTANA PARA GUARDAR
                 SaveFileDialog guardarArchivo = new()
                 {
                     Title = "Guardar reporte financiero",
@@ -178,12 +146,9 @@ namespace ClinicSyncDesktop.Views
                                DateTime.Now.ToString("yyyyMMdd_HHmm")
                 };
 
-                bool? resultado = guardarArchivo.ShowDialog();
-
-                if (resultado != true)
+                if (guardarArchivo.ShowDialog() != true)
                     return;
 
-                // GENERAR EL DOCUMENTO
                 ReporteFinancieroPdfService generador = new();
 
                 generador.GenerarReporte(
@@ -192,7 +157,6 @@ namespace ClinicSyncDesktop.Views
                     filtroActual);
 
                 PanelAvisos.Visibility = Visibility.Visible;
-
                 PanelAvisos.Children.Add(
                     new AvisoNotificacion(
                         "El reporte financiero se generó correctamente.",
@@ -201,13 +165,38 @@ namespace ClinicSyncDesktop.Views
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "No se pudo generar el reporte financiero.\n\n" +
-                    ex.Message,
+                    "No se pudo generar el reporte financiero.\n\n" + ex.Message,
                     "ClinicSync - Finanzas",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
         }
+    }
 
+    public sealed class TextoInicialMayusculaConverter : IValueConverter
+    {
+        public object Convert(
+            object value,
+            Type targetType,
+            object parameter,
+            CultureInfo culture)
+        {
+            if (value is not string texto || string.IsNullOrWhiteSpace(texto))
+                return string.Empty;
+
+            string textoNormalizado = texto.Trim().ToLower(culture);
+
+            return char.ToUpper(textoNormalizado[0], culture)
+                + textoNormalizado.Substring(1);
+        }
+
+        public object ConvertBack(
+            object value,
+            Type targetType,
+            object parameter,
+            CultureInfo culture)
+        {
+            return Binding.DoNothing;
+        }
     }
 }

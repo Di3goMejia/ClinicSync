@@ -10,7 +10,6 @@
 
     <UserControl.Resources>
 
-        <!-- DEGRADADO TURQUESA -->
         <LinearGradientBrush x:Key="Turquesa"
                              StartPoint="0,0"
                              EndPoint="1,0">
@@ -25,7 +24,6 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="8,0"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
@@ -48,7 +46,6 @@
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Cursor" Value="Hand"/>
-
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type CheckBox}">
@@ -56,7 +53,6 @@
                             <Border x:Name="Pista"
                                     Background="#EFF1EE"
                                     CornerRadius="9"/>
-
                             <Ellipse x:Name="Circulo"
                                      Width="13"
                                      Height="13"
@@ -70,11 +66,9 @@
                                 <Setter TargetName="Pista"
                                         Property="Background"
                                         Value="#25AD9A"/>
-
                                 <Setter TargetName="Circulo"
                                         Property="HorizontalAlignment"
                                         Value="Right"/>
-
                                 <Setter TargetName="Circulo"
                                         Property="Margin"
                                         Value="0,0,2,0"/>
@@ -90,12 +84,11 @@
             <Setter Property="Background" Value="#D9DDD8"/>
             <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Height" Value="42"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="2,0"/>
         </Style>
 
         <!-- FILAS -->
@@ -122,17 +115,14 @@
             </Style.Triggers>
         </Style>
 
-        <!-- TEXTO CENTRADO -->
         <Style x:Key="TextoCentrado" TargetType="{x:Type TextBlock}">
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="TextAlignment" Value="Center"/>
             <Setter Property="Foreground" Value="#17475A"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Margin" Value="3,0"/>
+            <Setter Property="FontSize" Value="15"/>
         </Style>
 
-        <!-- BOTONES DE ICONOS -->
         <Style x:Key="BotonIcono" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -140,10 +130,8 @@
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Padding" Value="0"/>
-            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         </Style>
 
-        <!-- BOTÓN AGREGAR -->
         <Style x:Key="BotonAgregar" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
@@ -151,12 +139,12 @@
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <Border Background="{TemplateBinding Background}"
-                                BorderThickness="0">
+                                BorderThickness="0"
+                                SnapsToDevicePixels="True">
                             <ContentPresenter
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
@@ -169,13 +157,11 @@
 
     </UserControl.Resources>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <Grid Margin="18,20,18,18">
 
         <Border Background="#D9DDD8"
                 CornerRadius="12"
                 ClipToBounds="True">
-
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="35"/>
@@ -186,7 +172,6 @@
                 <Border Grid.Row="0"
                         Background="{StaticResource Turquesa}"
                         CornerRadius="12,12,0,0">
-
                     <Grid Margin="10,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -194,31 +179,26 @@
                             <ColumnDefinition Width="190"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- AGREGAR NUEVO -->
                         <Button Grid.Column="0"
                                 Style="{StaticResource BotonAgregar}"
                                 HorizontalAlignment="Left"
                                 Click="btnAgregar_Click">
-
                             <StackPanel Orientation="Horizontal"
                                         VerticalAlignment="Center">
-
                                 <Image Source="/Resources/ImagenesTabla/IconoMas.png"
                                        Width="20"
                                        Height="20"
                                        Margin="5,0,10,0"/>
-
                                 <TextBlock Text="AGREGAR NUEVO"
-                                           FontSize="13"
+                                           FontSize="14"
                                            VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <!-- BUSCADOR -->
                         <TextBlock Grid.Column="1"
                                    Text="Buscar:"
                                    Foreground="White"
-                                   FontSize="13"
+                                   FontSize="15"
                                    Margin="0,0,8,0"
                                    VerticalAlignment="Center"/>
 
@@ -251,15 +231,25 @@
                           HeadersVisibility="Column"
                           IsReadOnly="True"
                           GridLinesVisibility="None"
-                          FontSize="13"
+                          FontSize="15"
                           SelectionUnit="FullRow"
                           SelectionMode="Single"
                           HorizontalScrollBarVisibility="Auto"
                           VerticalScrollBarVisibility="Auto">
 
+                    <DataGrid.OpacityMask>
+                        <VisualBrush Stretch="Fill">
+                            <VisualBrush.Visual>
+                                <Border Width="100"
+                                        Height="100"
+                                        Background="Black"
+                                        CornerRadius="0,0,12,12"/>
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </DataGrid.OpacityMask>
+
                     <DataGrid.Columns>
 
-                        <!-- NÚMERO -->
                         <DataGridTextColumn Header="#"
                                             Binding="{Binding IdMaterial}"
                                             Width="0.45*"
@@ -268,42 +258,34 @@
                         <!-- IMAGEN Y LUPA -->
                         <DataGridTemplateColumn Header="Imagen"
                                                 Width="0.9*"
+                                                MinWidth="74"
                                                 CanUserSort="False">
-
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-
                                     <StackPanel Orientation="Horizontal"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center">
-
-                                        <!-- IMAGEN O ICONO DE RESPALDO -->
                                         <Grid Width="25"
                                               Height="25"
                                               Margin="0,0,5,0">
 
-                                            <!-- ICONO DE RESPALDO -->
                                             <Image Source="/Resources/ImagenesInventario/IconoSinImagen.png"
                                                    Stretch="Uniform"
                                                    ToolTip="Sin imagen disponible"/>
 
-                                            <!-- IMAGEN REAL DEL MATERIAL -->
                                             <Image Loaded="ImagenMaterial_Loaded"
                                                    Stretch="Uniform"
                                                    ToolTip="{Binding Nombre}">
-
                                                 <Image.Style>
                                                     <Style TargetType="{x:Type Image}">
                                                         <Setter Property="Visibility"
                                                                 Value="Visible"/>
-
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding Imagen}"
                                                                          Value="{x:Null}">
                                                                 <Setter Property="Visibility"
                                                                         Value="Collapsed"/>
                                                             </DataTrigger>
-
                                                             <DataTrigger Binding="{Binding Imagen}"
                                                                          Value="">
                                                                 <Setter Property="Visibility"
@@ -315,28 +297,21 @@
                                             </Image>
                                         </Grid>
 
-                                        <!-- LUPA: SOLO SI EXISTE IMAGEN -->
                                         <Button Width="22"
                                                 Height="25"
                                                 ToolTip="Ampliar imagen"
                                                 Click="VerImagen_Click">
-
-                                            <!-- IMPORTANTE:
-                                                 Style se define una sola vez. -->
                                             <Button.Style>
                                                 <Style TargetType="{x:Type Button}"
                                                        BasedOn="{StaticResource BotonIcono}">
-
                                                     <Setter Property="Visibility"
                                                             Value="Visible"/>
-
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding Imagen}"
                                                                      Value="{x:Null}">
                                                             <Setter Property="Visibility"
                                                                     Value="Collapsed"/>
                                                         </DataTrigger>
-
                                                         <DataTrigger Binding="{Binding Imagen}"
                                                                      Value="">
                                                             <Setter Property="Visibility"
@@ -351,35 +326,31 @@
                                                    Height="18"
                                                    Stretch="Uniform"/>
                                         </Button>
-
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <!-- NOMBRE -->
                         <DataGridTextColumn Header="Nombre del material"
                                             Binding="{Binding Nombre}"
                                             Width="2.2*"
+                                            MinWidth="150"
                                             ElementStyle="{StaticResource TextoCentrado}"/>
 
-                        <!-- STOCK -->
                         <DataGridTextColumn Header="Stock"
                                             Binding="{Binding StockActual, StringFormat={}{0:0.##}}"
                                             Width="0.8*"
                                             ElementStyle="{StaticResource TextoCentrado}"/>
 
-                        <!-- PRECIO -->
                         <DataGridTextColumn Header="Precio de compra"
                                             Binding="{Binding PrecioCompra, StringFormat={}{0:'L '0.00}}"
                                             Width="1.35*"
+                                            MinWidth="133"
                                             ElementStyle="{StaticResource TextoCentrado}"/>
 
-                        <!-- ESTADO -->
                         <DataGridTemplateColumn Header="Estado"
                                                 Width="0.9*"
                                                 SortMemberPath="Activo">
-
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Grid>
@@ -391,21 +362,18 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <!-- EDITAR -->
                         <DataGridTemplateColumn Header=""
-                                                Width="0.6*"
+                                                Width="60"
                                                 CanUserSort="False">
-
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Grid>
                                         <Button Style="{StaticResource BotonIcono}"
                                                 ToolTip="Editar material"
                                                 Click="Editar_Click">
-
                                             <Image Source="/Resources/ImagenesTabla/IconoEngranaje.png"
-                                                   Width="23"
-                                                   Height="23"/>
+                                                   Width="25"
+                                                   Height="25"/>
                                         </Button>
                                     </Grid>
                                 </DataTemplate>
@@ -417,7 +385,6 @@
             </Grid>
         </Border>
 
-        <!-- AVISOS -->
         <StackPanel x:Name="PanelAvisos"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"

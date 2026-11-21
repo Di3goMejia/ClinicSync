@@ -146,7 +146,9 @@ namespace ClinicSyncDesktop.Views
                 idEmpleadoActual = perfil.IdEmpleado;
 
                 // MOSTRAR USUARIO QUE INICIÓ SESIÓN
-                txtDoctor.Text = perfil.NombreUsuario;  
+                bool tieneNombreRegistrado = !string.IsNullOrWhiteSpace(perfil.Nombres) || !string.IsNullOrWhiteSpace(perfil.Apellidos);
+
+                txtDoctor.Text = tieneNombreRegistrado ? perfil.NombreCorto : "";
 
                 // BLOQUEAR CAMPO
                 txtDoctor.IsReadOnly = true;
