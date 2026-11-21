@@ -36,6 +36,8 @@
     <None Remove="Resources\ImagenesPacientes\cerrar-ventana.png" />
     <None Remove="Resources\ImagenesPacientes\expediente-medico.png" />
     <None Remove="Resources\ImagenesPacientes\flecha-hacia-abajo-combobox.png" />
+    <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\editando_visita.png" />
+    <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\editar_visita.png" />
     <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\seleccion-marcada.png" />
     <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\seleccion-sin-marcar.png" />
     <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\subir-archivo.png" />
@@ -143,6 +145,12 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\ImagenesPacientes\flecha-hacia-abajo-combobox.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesPacientes\ImagenesExpediente\editando_visita.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesPacientes\ImagenesExpediente\editar_visita.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\ImagenesPacientes\ImagenesExpediente\seleccion-marcada.png">

@@ -306,41 +306,33 @@ namespace ClinicSyncDesktop.Views
         }
 
         // EDITAR VISITA EXISTENTE
-        private async void EditarVisita_Click(
-            object sender,
-            RoutedEventArgs e)
+        private async void VisualizarVisita_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button boton &&
-                boton.DataContext is VisitaApi visita)
+            if (sender is not Button boton || boton.DataContext is not VisitaApi visita)
+                return;
+
+            try
             {
-                try
+                var ventana = new VisualizarVisitaWindow(
+                    visita.IdVisita,
+                    idPaciente,
+                    pacienteActivo)
                 {
-                    // ABRIR LA VISITA SELECCIONADA
-                    EditarVisitaWindow ventana =
-                        new EditarVisitaWindow(visita.IdVisita, idPaciente);
+                    Owner = Window.GetWindow(this)
+                };
 
-                    ventana.Owner = Window.GetWindow(this);
+                ventana.ShowDialog();
 
-                    bool? resultado = ventana.ShowDialog();
-
-                    // SI SE GUARDARON LOS CAMBIOS
-                    if (resultado == true)
-                    {
-                        // ACTUALIZAR LISTA DE VISITAS
-                        await CargarExpedienteAsync();
-
-                        // MOSTRAR AVISO
-                        MostrarAviso(
-                            "Visita actualizada exitosamente.",
-                            true);
-                    }
-                }
-                catch (Exception)
+                if (ventana.VisitaActualizada)
                 {
-                    MostrarAviso(
-                        "Error al editar la visita.",
-                        false);
+                    await CargarExpedienteAsync();
+                    MostrarAviso("Visita actualizada exitosamente.", true);
                 }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                MostrarAviso("Error al visualizar la visita.", false);
             }
         }
 

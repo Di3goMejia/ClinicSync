@@ -155,7 +155,7 @@
                                    Grid.Row="0"
                                    Text="Cargando paciente..."
                                    Foreground="#17475A"
-                                   FontSize="13"
+                                   FontSize="14"
                                    TextWrapping="Wrap"
                                    Margin="0,4,0,12"/>
 
@@ -293,7 +293,7 @@
                                        VerticalAlignment="Center"/>
 
                             <Button Grid.Column="1"
-                                    Background="#F5F7F4"
+                                    Background="#D9DDD8"
                                     BorderThickness="0"
                                     Foreground="#138DAA"
                                     Cursor="Hand"
@@ -428,9 +428,9 @@
                                             <Button Background="Transparent"
                                                     BorderThickness="0"
                                                     Cursor="Hand"
-                                                    ToolTip="Editar visita"
-                                                    Click="EditarVisita_Click">
-
+                                                    ToolTip="Visualizar visita"
+                                                    AutomationProperties.Name="Visualizar visita"
+                                                    Click="VisualizarVisita_Click">
                                                 <Image Source="/Resources/ImagenesTabla/IconoEngranaje.png"
                                                        Width="23"
                                                        Height="23"/>
