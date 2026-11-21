@@ -10,5 +10,7 @@ namespace ClinicSyncServer.Features.Expedientes.Responses
         public decimal PrecioUnitario { get; set; }
         public decimal Descuento { get; set; }
         public string? Notas { get; set; }
+        public string NombreTratamiento { get; set; } = "";
+        public bool TratamientoActivo { get; set; }
     }
 }
