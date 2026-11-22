@@ -232,9 +232,9 @@
                             <Border Width="36"
                                     Height="36"
                                     CornerRadius="18"
-                                    Background="White">
+                                    Background="#138DAA">
 
-                                <Image Source="/Resources/Imagenes MenuPrincipal/campana-azul.png"
+                                <Image Source="/Resources/Imagenes MenuPrincipal/campana-blanca.png"
                                        Width="23"
                                        Height="23"/>    
                             </Border>
