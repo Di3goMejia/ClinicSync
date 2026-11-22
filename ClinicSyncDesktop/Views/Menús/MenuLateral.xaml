@@ -22,7 +22,7 @@
         <!-- BOTONES CENTRADOS COMO EN EL PROTOTIPO -->
         <Style x:Key="BotonMenu" TargetType="Button">
             <Setter Property="Height" Value="35"/>
-            <Setter Property="Margin" Value="9,3"/>
+            <Setter Property="Margin" Value="9,10"/>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="HorizontalContentAlignment"
                     Value="Center"/>
@@ -117,21 +117,21 @@
               Background="{StaticResource FondoMenu}">
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="179"/>
+                <RowDefinition Height="208"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
             <!-- LOGO ORIGINAL -->
-            <StackPanel
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Height="146"
-                Width="80">
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Width="80" 
+                        Margin="0,28,0,0" Height="174">
 
                 <Image Source="/Resources/Imagenes MenuPrincipal/ClinicSync-LOGO.png"
                        Width="80"
                        Height="80"
-                       Stretch="Uniform"/>
+                       Stretch="Uniform"
+                       Margin="0,20,0,0"/>
 
                 <TextBlock Text="CLINIC&#10;SYNC"
                            Foreground="White"
@@ -145,7 +145,8 @@
             <!-- OPCIONES -->
             <ScrollViewer Grid.Row="1"
                           VerticalScrollBarVisibility="Auto"
-                          HorizontalScrollBarVisibility="Disabled">
+                          HorizontalScrollBarVisibility="Disabled"
+                          >
 
                 <StackPanel Margin="0,10,0,15">
 
@@ -224,7 +225,7 @@
 
                     <Button x:Name="btnCampana"
                             Style="{StaticResource BotonIcono}"
-                            Click="Campana_Click">  
+                            Click="Campana_Click">
 
                         <Grid Width="36" Height="36">
 
@@ -236,7 +237,7 @@
 
                                 <Image Source="/Resources/Imagenes MenuPrincipal/campana-blanca.png"
                                        Width="23"
-                                       Height="23"/>    
+                                       Height="23"/>
                             </Border>
 
                             <!-- PUNTO DE NOTIFICACIONES PENDIENTES -->
@@ -249,7 +250,7 @@
                                      HorizontalAlignment="Right"
                                      VerticalAlignment="Top"
                                      Margin="0,1,1,0"
-                                     Visibility="Collapsed"/>   
+                                     Visibility="Collapsed"/>
 
                         </Grid>
                     </Button>
@@ -375,7 +376,7 @@
                                TextAlignment="Center"
                                TextWrapping="Wrap"
                                Margin="8,22,8,0"
-                               Visibility="Collapsed"/> 
+                               Visibility="Collapsed"/>
 
                         </StackPanel>
                     </ScrollViewer>

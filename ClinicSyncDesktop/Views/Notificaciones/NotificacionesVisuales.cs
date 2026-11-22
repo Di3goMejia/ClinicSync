@@ -1,9 +1,9 @@
-﻿
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using ClinicSyncDesktop.Models;
 
 namespace ClinicSyncDesktop.Views.Notificaciones;
@@ -53,14 +53,10 @@ public static class NotificacionesVisuales
                 Width = GridLength.Auto
             });
 
-        // ICONO
-        grid.Children.Add(new TextBlock
-        {
-            Text = n.Tipo == "CITA" ? "▣" : "▤",
-            FontSize = 23,
-            Foreground = Azul,
-            VerticalAlignment = VerticalAlignment.Center
-        });
+        string iconoTipo = n.Tipo == "CITA" ? "cita-proxima.png" : "stock-bajo.png";
+        var icono = CrearIcono(iconoTipo, 24);
+        icono.HorizontalAlignment = HorizontalAlignment.Left;
+        grid.Children.Add(icono);
 
         // CONTENIDO
         var info = new StackPanel();
@@ -144,14 +140,15 @@ public static class NotificacionesVisuales
         {
             var btn = new Button
             {
-                Content = "●",
+                Content = CrearIcono("archivar-notificacion.png", 16),
                 ToolTip = "Archivar",
-                Foreground = Azul,
+                Width = 26,
+                Height = 24,
+                Padding = new Thickness(0),
                 Background = Brushes.Transparent,
                 BorderThickness = new Thickness(0),
                 Cursor =
-                    System.Windows.Input.Cursors.Hand,
-                FontSize = 17
+                    System.Windows.Input.Cursors.Hand
             };
 
             btn.Click += async (_, _) =>
@@ -174,5 +171,26 @@ public static class NotificacionesVisuales
         tarjeta.Child = grid;
         return tarjeta;
     }
-}
 
+    private static Image CrearIcono(string archivo, int tamano)
+    {
+        var ruta = new Uri(
+            $"pack://application:,,,/Resources/ImagenesNotificaciones/{archivo}",
+            UriKind.Absolute);
+
+        var imagen = new BitmapImage();
+        imagen.BeginInit();
+        imagen.UriSource = ruta;
+        imagen.DecodePixelWidth = tamano * 2;
+        imagen.EndInit();
+
+        return new Image
+        {
+            Source = imagen,
+            Width = tamano,
+            Height = tamano,
+            Stretch = Stretch.Uniform,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+    }
+}
