@@ -45,6 +45,7 @@
     <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\seleccion-sin-marcar.png" />
     <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\subir-archivo.png" />
     <None Remove="Resources\ImagenesPacientes\ImagenesExpediente\volver-pacientes.png" />
+    <None Remove="Resources\ImagenesPerfil\clinicsync_acercade.png" />
     <None Remove="Resources\ImagenesPerfil\editar-perfil.png" />
     <None Remove="Resources\ImagenesPerfil\perfil.png" />
     <None Remove="Resources\ImagenesPerfil\subir-imagen-perfil.png" />
@@ -176,6 +177,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\ImagenesPacientes\ImagenesExpediente\volver-pacientes.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesPerfil\clinicsync_acercade.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\ImagenesPerfil\editar-perfil.png">

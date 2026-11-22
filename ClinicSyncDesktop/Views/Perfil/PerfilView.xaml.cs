@@ -452,5 +452,10 @@ namespace ClinicSyncDesktop.Views
 
             EditarSolicitado?.Invoke(perfilActual);
         }
+
+        private void TxtNombres_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }
