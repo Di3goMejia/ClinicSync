@@ -193,6 +193,9 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Stock" Width="85"
+                                                    Binding="{Binding StockActual, Mode=OneWay, StringFormat=N2, TargetNullValue=—}"
+                                                    ElementStyle="{StaticResource TextoTabla}"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>

@@ -270,17 +270,12 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
-            var popup = new SeleccionIngresoWindow(
-                catalogoMateriales,
-                materialesElegidos)
-            {
-                Owner = this
-            };
+            var seleccion = SeleccionarMaterialesWindow.ElegirParaIngreso(
+                this, catalogoMateriales, materialesElegidos);
 
-            if (popup.ShowDialog() == true)
+            if (seleccion != null)
             {
-                materialesElegidos =
-                    popup.MaterialesElegidos.ToList();
+                materialesElegidos = seleccion;
 
                 TxtMateriales.Text =
                     materialesElegidos.Count == 0
@@ -469,7 +464,7 @@ namespace ClinicSyncDesktop.Views
                 var request = new RegistrarIngresoRequest
                 {
                     IdPaciente = pacienteSeleccionado!.IdPaciente,
-                    Fecha = fecha.Date.Add(DateTime.Now.TimeOfDay),
+                    Fecha = fecha,
                     Descuento = descuento,
                     MedioPago = medio.Content?.ToString() ?? "",
 

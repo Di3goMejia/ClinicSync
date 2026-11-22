@@ -251,14 +251,14 @@ namespace ClinicSyncDesktop.Views
                         StockActual = m.Cantidad
                     }));
 
-                var selector = new SeleccionIngresoWindow(disponibles, materialesElegidos)
-                {
-                    Owner = this
-                };
+                var seleccion = SeleccionarMaterialesWindow.ElegirParaIngreso(
+                    this, disponibles, materialesElegidos,
+                    catalogo.ToDictionary(m => m.IdMaterial, m => m.StockActual));
 
-                if (selector.ShowDialog() == true)
+
+                if (seleccion != null)
                 {
-                    materialesElegidos = selector.MaterialesElegidos.ToList();
+                    materialesElegidos = seleccion;
                     MostrarMateriales();
                 }
             }
