@@ -23,5 +23,6 @@
         public string MedioPago { get; set; } = "";
         public decimal Monto { get; set; }
         public bool? Activo { get; set; }
+        public List<MaterialEgresoRequest>? Materiales { get; set; }
     }
 }

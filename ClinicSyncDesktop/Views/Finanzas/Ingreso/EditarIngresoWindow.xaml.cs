@@ -1,6 +1,4 @@
-﻿
-using ClinicSyncDesktop.Data;
-using ClinicSyncDesktop.Models;
+﻿using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
 using ClinicSyncDesktop.Validations;
 using System;
@@ -15,262 +13,138 @@ namespace ClinicSyncDesktop.Views
 {
     public partial class EditarIngresoWindow : Window
     {
+        private const string FormatoFecha = "yyyy'/'MM'/'dd";
+
         private readonly int idIngreso;
         private readonly IngresosApiService servicio = new();
 
-        private List<PacienteIngreso> pacientes = new();
-        private List<TratamientoIngreso> catalogoTratamientos = new();
-        private List<TratamientoIngreso> tratamientosElegidos = new();
-
-        private int idPacienteSeleccionado;
-        private bool guardando;
-        private bool cargando;
-        private bool ingresoDeVisita;
-        private TimeSpan horaOriginal = TimeSpan.Zero;
-        private int idPacienteOriginal;
         private List<TratamientoIngreso> tratamientosOriginales = new();
+        private List<TratamientoIngreso> tratamientosElegidos = new();
+        private List<MaterialConsumido> materialesOriginales = new();
+        private List<MaterialConsumido> materialesElegidos = new();
+
+        private int idPacienteOriginal;
+        private int idPacienteSeleccionado;
+        private DateTime fechaOriginal;
+        private DateTime? fechaSeleccionada;
+        private bool ingresoDeVisita;
+        private bool ingresoEstabaActivo;
+        private bool datosCargados;
+        private bool sincronizandoFecha;
+        private bool guardando;
+        private bool abriendoSelector;
 
         public EditarIngresoWindow(int idIngreso)
         {
-            InitializeComponent();
-
             this.idIngreso = idIngreso;
-
+            InitializeComponent();
             Loaded += EditarIngresoWindow_Loaded;
         }
 
-        private async void EditarIngresoWindow_Loaded(
-            object sender, RoutedEventArgs e)
+        private async void EditarIngresoWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            await CargarDatosAsync();
-        }
-
-        public async Task<EditarIngresoDetalle> ObtenerIngresoPorIdAsync(
-            int idIngreso)
-        {
-            if (idIngreso <= 0)
-                throw new ArgumentException(
-                    "El identificador del ingreso no es válido.");
-
-            var ingreso = await ClienteApi.ObtenerAutenticadoAsync<
-                EditarIngresoDetalle>(
-                    $"api/finanzas/ingresos/{idIngreso}");
-
-            if (ingreso == null)
-                throw new InvalidOperationException(
-                    "No se encontró el ingreso solicitado.");
-
-            return ingreso;
-        }
-
-
-        private async Task CargarDatosAsync()
-        {
-            cargando = true;
-            BtnGuardarCambios.IsEnabled = false;
-
-            ErrorGeneral.Text = "";
-
-            ErrorPaciente.Text = "";
-            ErrorTratamientos.Text = "";
+            Loaded -= EditarIngresoWindow_Loaded;
 
             try
             {
-                // 1. Cargar primero los catálogos.
-                var listaPacientes =
-                    await servicio.ObtenerPacientesAsync();
+                var ingreso = await ObtenerIngresoPorIdAsync(idIngreso);
 
-                pacientes = listaPacientes?.ToList()
-                            ?? new List<PacienteIngreso>();
-
-                // 2. Obtener el ingreso seleccionado.
-                var ingreso =
-                    await servicio.ObtenerIngresoPorIdAsync(idIngreso);
-
-                idPacienteSeleccionado = ingreso.IdPaciente;
-                ingresoDeVisita = ingreso.Tratamientos.Any(
-                    t => t.IdTratamientoVisita > 0);
+                fechaOriginal = ingreso.Fecha.Date;
                 idPacienteOriginal = ingreso.IdPaciente;
-                horaOriginal = ingreso.Fecha.TimeOfDay;
+                idPacienteSeleccionado = ingreso.IdPaciente;
+                ingresoEstabaActivo = ingreso.Activo;
+                ingresoDeVisita = ingreso.Tratamientos.Any(t => t.IdTratamientoVisita > 0);
 
-                // 3. Mostrar los datos del ingreso.
-                var paciente = pacientes.FirstOrDefault(
-                    p => p.IdPaciente == ingreso.IdPaciente);
+                tratamientosOriginales = ingreso.Tratamientos.ToList();
+                tratamientosElegidos = ingreso.Tratamientos.ToList();
+                materialesOriginales = ingreso.Materiales.ToList();
+                materialesElegidos = ingreso.Materiales.ToList();
 
-                TxtPaciente.Text = paciente != null
-                    ? paciente.NombreCompleto
-                    : ingreso.Paciente;
-
-                DpFecha.SelectedDate = ingreso.Fecha.Date;
-
-                TxtDescuento.Text =
-                    ingreso.Descuento.ToString("0.00");
-
+                TxtPaciente.Text = ingreso.Paciente;
+                EstablecerFecha(fechaOriginal);
+                TxtDescuento.Text = ingreso.Descuento.ToString("0.00");
                 TglActivo.IsChecked = ingreso.Activo;
 
-                // 4. Seleccionar el medio de pago.
-                foreach (ComboBoxItem item in CmbMedioPago.Items)
-                {
-                    if (item.Content?.ToString() == ingreso.MedioPago)
-                    {
-                        CmbMedioPago.SelectedItem = item;
-                        break;
-                    }
-                }
+                CmbMedioPago.SelectedItem = CmbMedioPago.Items
+                    .OfType<ComboBoxItem>()
+                    .FirstOrDefault(item =>
+                        string.Equals(
+                            item.Content?.ToString(),
+                            ingreso.MedioPago,
+                            StringComparison.OrdinalIgnoreCase));
 
-                // 5. Recuperar tratamientos asociados.
+                MostrarTratamientos();
+                MostrarMateriales();
+                ActualizarTotales(ingreso.Subtotal, ingreso.Descuento);
 
-                // Recuperar directamente los tratamientos del ingreso.
-                tratamientosElegidos = ingreso.Tratamientos.ToList();
-                tratamientosOriginales = ingreso.Tratamientos.ToList();
-
-                // Mostrar los tratamientos aunque ya estén cobrados.
-                TxtTratamientos.Text =
-                    tratamientosElegidos.Count == 0
-                        ? "Seleccione tratamientos"
-                        : string.Join(", ",
-                            tratamientosElegidos.Select(t => t.Nombre));
-
-                // Consultar tratamientos disponibles para la fecha
-                // del ingreso, no para DateTime.Today.
-                var disponibles =
-                    await servicio.ObtenerTratamientosAsync(
-                        idPacienteSeleccionado,
-                        ingreso.Fecha.Date);
-
-                // Conservar los disponibles y los ya asociados.
-                catalogoTratamientos = disponibles
-                    .Concat(tratamientosElegidos)
-                    .GroupBy(t => t.IdTratamientoVisita > 0
-                        ? "V" + t.IdTratamientoVisita
-                        : "C" + t.IdTratamiento)
-                    .Select(g => g.First())
-                    .ToList();
-
-                ErrorTratamientos.Text = "";
-
+                datosCargados = true;
                 BtnGuardarCambios.IsEnabled = true;
-
             }
             catch (Exception ex)
             {
-                ErrorGeneral.Text =
-                    "Error al cargar la información: " + ex.Message;
-
-                BtnGuardarCambios.IsEnabled = false;
-            }
-            finally
-            {
-                cargando = false;
+                ErrorGeneral.Text = "Error al cargar la información: " + ex.Message;
             }
         }
 
-
-        // SELECCIONAR PACIENTE
-
-        private async void SeleccionarPaciente_Click(
-            object sender, RoutedEventArgs e)
+        public Task<EditarIngresoDetalle> ObtenerIngresoPorIdAsync(int idIngreso)
         {
+            return servicio.ObtenerIngresoPorIdAsync(idIngreso);
+        }
+
+        private async void SeleccionarPaciente_Click(object sender, RoutedEventArgs e)
+        {
+            if (!datosCargados || guardando || abriendoSelector)
+                return;
+
             ErrorPaciente.Text = "";
+            abriendoSelector = true;
 
             try
             {
-                // Consultar nuevamente los pacientes.
-                var resultado = await servicio.ObtenerPacientesAsync();
-
-                pacientes = resultado?.ToList()
-                            ?? new List<PacienteIngreso>();
-
-                var disponibles = pacientes
-                    .Where(p => p.Activo ||
-                                p.IdPaciente == idPacienteSeleccionado)
+                var disponibles = (await servicio.ObtenerPacientesAsync())
+                    .Where(p => p.Activo || p.IdPaciente == idPacienteSeleccionado)
                     .OrderBy(p => p.NombreCompleto)
                     .ToList();
 
                 if (disponibles.Count == 0)
                 {
-                    ErrorPaciente.Text =
-                        "No existen pacientes disponibles.";
+                    ErrorPaciente.Text = "No existen pacientes disponibles.";
                     return;
                 }
 
-                var ventana = new Window
-                {
-                    Title = "Seleccionar paciente",
-                    Width = 390,
-                    Height = 370,
-                    Owner = this,
-                    WindowStartupLocation =
-                        WindowStartupLocation.CenterOwner,
-                    ResizeMode = ResizeMode.NoResize,
-                    Background = System.Windows.Media.Brushes.White
-                };
-
-                var panel = new DockPanel
-                {
-                    Margin = new Thickness(15)
-                };
-
-                var lista = new ListBox
-                {
-                    DisplayMemberPath = "NombreCompleto",
-                    ItemsSource = disponibles,
-                    FontSize = 14
-                };
-
-                lista.SelectedItem = disponibles.FirstOrDefault(
+                var actual = disponibles.FirstOrDefault(
                     p => p.IdPaciente == idPacienteSeleccionado);
 
-                var botonAceptar = new Button
+                var selector = new SeleccionIngresoWindow(disponibles, actual)
                 {
-                    Content = "Seleccionar",
-                    Height = 36,
-                    Margin = new Thickness(0, 10, 0, 0),
-                    Background = new System.Windows.Media.SolidColorBrush(
-                        System.Windows.Media.Color.FromRgb(
-                            145, 210, 221))
+                    Owner = this
                 };
 
-                botonAceptar.Click += (_, _) =>
+                if (selector.ShowDialog() == true && selector.PacienteElegido is { } paciente)
                 {
-                    if (lista.SelectedItem is PacienteIngreso seleccionado)
-                    {
-                        idPacienteSeleccionado = seleccionado.IdPaciente;
+                    bool cambioPaciente = idPacienteSeleccionado != paciente.IdPaciente;
+                    idPacienteSeleccionado = paciente.IdPaciente;
+                    TxtPaciente.Text = paciente.NombreCompleto;
 
-                        TxtPaciente.Text =
-                            seleccionado.NombreCompleto;
-
-                        ventana.DialogResult = true;
-                    }
-                    else
-                    {
-                        ErrorPaciente.Text = "Seleccione un paciente.";
-                    }
-                };
-
-                DockPanel.SetDock(botonAceptar, Dock.Bottom);
-
-                panel.Children.Add(botonAceptar);
-                panel.Children.Add(lista);
-
-                ventana.Content = panel;
-                ventana.ShowDialog();
+                    if (cambioPaciente && ingresoDeVisita)
+                        LimpiarTratamientosSeleccionados();
+                }
             }
             catch (Exception ex)
             {
-                ErrorPaciente.Text =
-                    "No se pudieron cargar los pacientes: " +
-                    ex.Message;
+                ErrorPaciente.Text = "No se pudieron cargar los pacientes: " + ex.Message;
+            }
+            finally
+            {
+                abriendoSelector = false;
             }
         }
 
-
-        // SELECCIONAR TRATAMIENTOS
-
-
-        private async void SeleccionarTratamientos_Click(
-            object sender, RoutedEventArgs e)
+        private async void SeleccionarTratamientos_Click(object sender, RoutedEventArgs e)
         {
+            if (!datosCargados || guardando || abriendoSelector)
+                return;
+
             ErrorTratamientos.Text = "";
 
             if (idPacienteSeleccionado <= 0)
@@ -279,152 +153,289 @@ namespace ClinicSyncDesktop.Views
                 return;
             }
 
-            if (DpFecha.SelectedDate == null)
-            {
-                ErrorFecha.Text = "Seleccione una fecha.";
+            if (!ValidarFechaEscrita(out DateTime fecha))
                 return;
-            }
+
+            int idPaciente = idPacienteSeleccionado;
+            abriendoSelector = true;
 
             try
             {
-                DateTime fecha = DpFecha.SelectedDate.Value.Date;
+                var disponibles = ingresoDeVisita
+                    ? await servicio.ObtenerTratamientosAsync(idPaciente, fecha)
+                    : await servicio.ObtenerTratamientosCatalogoAsync();
 
-                // Consultar solamente tratamientos pendientes
-                // del paciente para la fecha seleccionada.
-                var disponibles =
-                    await servicio.ObtenerTratamientosAsync(
-                        idPacienteSeleccionado, fecha);
-
-                // Conservar tratamientos ya asociados al ingreso
-                // únicamente si el paciente y la fecha son los mismos.
-                var propios = new List<TratamientoIngreso>();
-                if (idPacienteSeleccionado == idPacienteOriginal)
+                if (ingresoDeVisita &&
+                    (!TryLeerFecha(out DateTime fechaActual) || fechaActual != fecha))
                 {
-                    propios = tratamientosOriginales.ToList();
-                }
-
-                catalogoTratamientos = disponibles
-                    .Concat(propios)
-                    .GroupBy(t => t.IdTratamientoVisita > 0
-                        ? "V" + t.IdTratamientoVisita
-                        : "C" + t.IdTratamiento)
-                    .Select(g => g.First())
-                    .ToList();
-
-                if (catalogoTratamientos.Count == 0)
-                {
-                    ErrorTratamientos.Text =
-                        "No existen tratamientos registrados " +
-                        "para el paciente en la fecha seleccionada.";
                     return;
                 }
 
-                var popup = new SeleccionIngresoWindow(
-                    catalogoTratamientos,
-                    tratamientosElegidos)
+                bool mostrarOriginales = !ingresoDeVisita ||
+                    (idPaciente == idPacienteOriginal && fecha == fechaOriginal);
+
+                IEnumerable<TratamientoIngreso> originales = mostrarOriginales
+                    ? tratamientosOriginales
+                    : Enumerable.Empty<TratamientoIngreso>();
+
+                var catalogo = tratamientosElegidos
+                    .Concat(originales)
+                    .Concat(disponibles)
+                    .GroupBy(t => ingresoDeVisita ? t.IdTratamientoVisita : t.IdTratamiento)
+                    .Select(grupo => grupo.First())
+                    .ToList();
+
+                if (catalogo.Count == 0)
+                {
+                    ErrorTratamientos.Text = "No hay tratamientos disponibles para la selección actual.";
+                    return;
+                }
+
+                var selector = new SeleccionIngresoWindow(catalogo, tratamientosElegidos)
                 {
                     Owner = this
                 };
 
-                if (popup.ShowDialog() == true)
+                if (selector.ShowDialog() == true)
                 {
-                    tratamientosElegidos =
-                        popup.TratamientosElegidos.ToList();
-
-                    TxtTratamientos.Text =
-                        string.Join(", ",
-                            tratamientosElegidos.Select(t => t.Nombre));
-
-                    ErrorTratamientos.Text = "";
-
-                    Recalcular_Click(TxtDescuento, null!);
+                    tratamientosElegidos = selector.TratamientosElegidos.ToList();
+                    MostrarTratamientos();
+                    RecalcularDescuento();
                 }
             }
             catch (Exception ex)
             {
-                ErrorTratamientos.Text =
-                    "No se pudieron cargar los tratamientos: " +
-                    ex.Message;
+                ErrorTratamientos.Text = "No se pudieron cargar los tratamientos: " + ex.Message;
+            }
+            finally
+            {
+                abriendoSelector = false;
             }
         }
 
-
-
-        // VALIDAR DESCUENTO AL MODIFICAR
-        private void Recalcular_Click(
-            object sender, TextChangedEventArgs e)
+        private async void SeleccionarMateriales_Click(object sender, RoutedEventArgs e)
         {
-            if (cargando || !IsLoaded)
+            if (!datosCargados || guardando || abriendoSelector)
                 return;
 
-            ErrorDescuento.Text = "";
+            ErrorMaterial.Text = "";
+            abriendoSelector = true;
 
-            if (!LeerDescuento(out decimal descuento))
+            try
             {
-                ErrorDescuento.Text =
-                    "Ingrese un descuento numérico válido.";
+                var catalogo = await servicio.ObtenerMaterialesAsync();
+                var originales = materialesOriginales.ToDictionary(m => m.IdMaterial);
+
+                var disponibles = catalogo
+                    .Where(m => m.Activo)
+                    .Select(m => new MaterialIngreso
+                    {
+                        IdMaterial = m.IdMaterial,
+                        Nombre = m.Nombre,
+                        Activo = true,
+                        StockActual = m.StockActual +
+                            (ingresoEstabaActivo &&
+                             originales.TryGetValue(m.IdMaterial, out var anterior)
+                                ? anterior.Cantidad
+                                : 0m)
+                    })
+                    .ToList();
+
+                disponibles.AddRange(materialesOriginales
+                    .Where(m => disponibles.All(d => d.IdMaterial != m.IdMaterial))
+                    .Select(m => new MaterialIngreso
+                    {
+                        IdMaterial = m.IdMaterial,
+                        Nombre = m.Nombre,
+                        Activo = true,
+                        StockActual = m.Cantidad
+                    }));
+
+                var seleccion = SeleccionarMaterialesWindow.ElegirParaIngreso(
+                    this, disponibles, materialesElegidos,
+                    catalogo.ToDictionary(m => m.IdMaterial, m => m.StockActual));
+
+
+                if (seleccion != null)
+                {
+                    materialesElegidos = seleccion;
+                    MostrarMateriales();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMaterial.Text = "No se pudieron cargar los materiales: " + ex.Message;
+            }
+            finally
+            {
+                abriendoSelector = false;
+            }
+        }
+
+        private void MostrarTratamientos()
+        {
+            TxtTratamientos.Text = tratamientosElegidos.Count == 0
+                ? "Seleccione tratamientos"
+                : string.Join(", ", tratamientosElegidos.Select(t => t.Nombre));
+
+            TxtTratamientos.ToolTip = TxtTratamientos.Text;
+        }
+
+        private void MostrarMateriales()
+        {
+            TxtMateriales.Text = materialesElegidos.Count == 0
+                ? "Seleccionar materiales"
+                : string.Join(", ",
+                    materialesElegidos.Select(m => $"{m.Nombre} ({m.Cantidad:0.##})"));
+
+            TxtMateriales.ToolTip = TxtMateriales.Text;
+        }
+
+        private void CalendarioIngreso_Click(object sender, RoutedEventArgs e)
+        {
+            if (datosCargados && !guardando)
+                DpFecha.IsDropDownOpen = true;
+        }
+
+        private void DpFecha_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (datosCargados && !sincronizandoFecha &&
+                DpFecha.SelectedDate is DateTime fecha)
+            {
+                EstablecerFecha(fecha);
+            }
+        }
+
+        private void TxtFechaIngreso_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!datosCargados || sincronizandoFecha)
                 return;
-            }
 
-            decimal subtotal =
-                tratamientosElegidos.Sum(t => t.Importe);
+            ErrorFecha.Text = "";
 
-            if (descuento < 0 || descuento > subtotal)
+            if (TryLeerFecha(out DateTime fecha) && fecha <= DateTime.Today)
+                EstablecerFecha(fecha);
+        }
+
+        private void TxtFechaIngreso_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (datosCargados && TxtFechaIngreso.Text.Trim().Length > 0)
+                ValidarFechaEscrita(out _);
+        }
+
+        private bool TryLeerFecha(out DateTime fecha)
+        {
+            return DateTime.TryParseExact(
+                TxtFechaIngreso.Text.Trim(),
+                FormatoFecha,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out fecha);
+        }
+
+        private bool ValidarFechaEscrita(out DateTime fecha)
+        {
+            if (!TryLeerFecha(out fecha))
             {
-                ErrorDescuento.Text =
-                    "El descuento debe estar entre 0 y el subtotal.";
+                ErrorFecha.Text = "Ingrese una fecha válida en formato YYYY/MM/DD.";
+                return false;
             }
-        }
 
-        private bool LeerDescuento(out decimal descuento)
-        {
-            return decimal.TryParse(
-                TxtDescuento.Text,
-                NumberStyles.Number,
-                CultureInfo.CurrentCulture,
-                out descuento)
-                ||
-                decimal.TryParse(
-                    TxtDescuento.Text,
-                    NumberStyles.Number,
-                    CultureInfo.InvariantCulture,
-                    out descuento);
-        }
+            if (fecha > DateTime.Today)
+            {
+                ErrorFecha.Text = "La fecha del ingreso no puede ser futura.";
+                return false;
+            }
 
-        // VALIDACIONES EN TEXTO ROJO
-        private bool TryObtenerFechaHora(out DateTime fecha)
-        {
-            fecha = default;
-            if (DpFecha.SelectedDate is not DateTime fechaSeleccionada)
-                return false;
-            TimeSpan hora = horaOriginal == TimeSpan.Zero
-                ? DateTime.Now.TimeOfDay
-                : horaOriginal;
-            fecha = fechaSeleccionada.Date.Add(hora);
-            if (fecha > DateTime.Now)
-                return false;
+            EstablecerFecha(fecha);
             return true;
+        }
+
+        private void EstablecerFecha(DateTime fecha)
+        {
+            fecha = fecha.Date;
+            bool cambioFecha = fechaSeleccionada != fecha;
+            fechaSeleccionada = fecha;
+
+            sincronizandoFecha = true;
+            try
+            {
+                if (DpFecha.SelectedDate != fecha)
+                    DpFecha.SelectedDate = fecha;
+
+                string texto = fecha.ToString(FormatoFecha, CultureInfo.InvariantCulture);
+                if (TxtFechaIngreso.Text != texto)
+                    TxtFechaIngreso.Text = texto;
+            }
+            finally
+            {
+                sincronizandoFecha = false;
+            }
+
+            ErrorFecha.Text = "";
+
+            if (datosCargados && cambioFecha && ingresoDeVisita)
+                LimpiarTratamientosSeleccionados();
         }
 
         private void LimpiarTratamientosSeleccionados()
         {
             tratamientosElegidos.Clear();
-            catalogoTratamientos.Clear();
-
-            TxtTratamientos.Text = "Seleccione tratamientos";
+            MostrarTratamientos();
+            ActualizarTotales(0m, 0m);
             ErrorTratamientos.Text = "";
             ErrorDescuento.Text = "";
         }
 
-        private void DpFecha_SelectedDateChanged(
-    object sender, SelectionChangedEventArgs e)
+        private void Recalcular_Click(object sender, TextChangedEventArgs e)
         {
-            if (cargando)
-                return;
-            ErrorFecha.Text = "";
+            if (datosCargados)
+                RecalcularDescuento();
         }
 
-        private bool ValidarFormulario()
+        private void RecalcularDescuento()
+        {
+            ErrorDescuento.Text = "";
+            decimal subtotal = tratamientosElegidos.Sum(t => t.Importe);
+
+            if (!LeerDescuento(out decimal descuento))
+            {
+                ErrorDescuento.Text = "Ingrese un descuento numérico válido.";
+                ActualizarTotales(subtotal, 0m);
+                return;
+            }
+
+            if (descuento < 0 || descuento > subtotal)
+            {
+                ErrorDescuento.Text = "El descuento debe estar entre 0 y el subtotal.";
+                ActualizarTotales(subtotal, 0m);
+                return;
+            }
+
+            ActualizarTotales(subtotal, descuento);
+        }
+
+        private bool LeerDescuento(out decimal descuento)
+        {
+            return decimal.TryParse(
+                       TxtDescuento.Text,
+                       NumberStyles.Number,
+                       CultureInfo.CurrentCulture,
+                       out descuento)
+                || decimal.TryParse(
+                       TxtDescuento.Text,
+                       NumberStyles.Number,
+                       CultureInfo.InvariantCulture,
+                       out descuento);
+        }
+
+        private void ActualizarTotales(decimal subtotal, decimal descuento)
+        {
+            TxtSubtotal.Text = $"L {subtotal:N2}";
+            TxtTotal.Text = $"L {subtotal - descuento:N2}";
+        }
+
+        private bool ValidarFormulario(out DateTime fecha)
         {
             ErrorPaciente.Text = "";
             ErrorTratamientos.Text = "";
@@ -433,88 +444,78 @@ namespace ClinicSyncDesktop.Views
             ErrorMedioPago.Text = "";
             ErrorGeneral.Text = "";
 
-            var medioSeleccionado = CmbMedioPago.SelectedItem as ComboBoxItem;
-            var resultadoValidacion = new ValidadorIngreso().Validar(
-                new EntradaIngreso(
-                    idPacienteSeleccionado > 0 ? new object() : null,
-                    DpFecha.SelectedDate,
-                    "",
-                    TxtDescuento.Text,
-                    medioSeleccionado?.Content?.ToString(),
-                    tratamientosElegidos.Sum(t => t.Importe),
-                    SoloFecha: true
-                )
-            );
-            if (!resultadoValidacion.EsValido)
-            {
-                var error = resultadoValidacion.Errores.FirstOrDefault();
-                if (error?.Campo == nameof(EntradaIngreso.Paciente)) ErrorPaciente.Text = error.Mensaje;
-                else if (error?.Campo is nameof(EntradaIngreso.Fecha) or nameof(EntradaIngreso.TextoHora)) ErrorFecha.Text = error.Mensaje;
-                else if (error?.Campo == nameof(EntradaIngreso.TextoDescuento)) ErrorDescuento.Text = error.Mensaje;
-                else if (error?.Campo == nameof(EntradaIngreso.MedioPago)) ErrorMedioPago.Text = error.Mensaje;
-            }
+            if (!ValidarFechaEscrita(out fecha))
+                return false;
 
-            bool valido = resultadoValidacion.EsValido;
+            var medio = CmbMedioPago.SelectedItem as ComboBoxItem;
+
+            // El validador compartido recibe un valor fijo porque el formulario usa solo la fecha.
+            var resultado = new ValidadorIngreso().Validar(new EntradaIngreso(
+                idPacienteSeleccionado > 0 ? new object() : null,
+                fecha,
+                "00:00",
+                TxtDescuento.Text,
+                medio?.Content?.ToString(),
+                tratamientosElegidos.Sum(t => t.Importe)));
+
+            var error = resultado.Errores.FirstOrDefault();
+
+            if (error?.Campo == nameof(EntradaIngreso.Paciente))
+                ErrorPaciente.Text = error.Mensaje;
+            else if (error?.Campo == nameof(EntradaIngreso.Fecha))
+                ErrorFecha.Text = error.Mensaje;
+            else if (error?.Campo == nameof(EntradaIngreso.TextoDescuento))
+                ErrorDescuento.Text = error.Mensaje;
+            else if (error?.Campo == nameof(EntradaIngreso.MedioPago))
+                ErrorMedioPago.Text = error.Mensaje;
+            else if (error != null)
+                ErrorGeneral.Text = error.Mensaje;
 
             if (tratamientosElegidos.Count == 0)
             {
-                ErrorTratamientos.Text =
-                    "Seleccione al menos un tratamiento.";
-                valido = false;
+                ErrorTratamientos.Text = "Seleccione al menos un tratamiento.";
+                return false;
             }
 
-            return valido;
+            return resultado.EsValido;
         }
 
-        // GUARDAR CAMBIOS
-        private async void GuardarCambios_Click(
-            object sender, RoutedEventArgs e)
+        private async void GuardarCambios_Click(object sender, RoutedEventArgs e)
         {
-            if (guardando || !ValidarFormulario())
+            if (guardando || abriendoSelector || !datosCargados ||
+                !ValidarFormulario(out DateTime fecha))
+            {
                 return;
+            }
+
+            var medio = (ComboBoxItem)CmbMedioPago.SelectedItem;
+            LeerDescuento(out decimal descuento);
+
+            var request = new EditarIngresoRequest
+            {
+                IdPaciente = idPacienteSeleccionado,
+                Fecha = fecha.Date,
+                Descuento = descuento,
+                MedioPago = medio.Content?.ToString() ?? "",
+                Activo = TglActivo.IsChecked == true,
+                Materiales = materialesElegidos.ToList(),
+                IdsTratamientos = tratamientosElegidos
+                    .Select(t => ingresoDeVisita ? t.IdTratamientoVisita : t.IdTratamiento)
+                    .Distinct()
+                    .ToList()
+            };
 
             guardando = true;
             BtnGuardarCambios.IsEnabled = false;
 
             try
             {
-                var medio =
-                    (ComboBoxItem)CmbMedioPago.SelectedItem;
-
-                LeerDescuento(out decimal descuento);
-                if (!TryObtenerFechaHora(out DateTime fechaHora))
-                {
-                    ErrorFecha.Text = "Seleccione una fecha válida que no sea futura.";
-                    return;
-                }
-
-                var request = new EditarIngresoRequest
-                {
-                    IdPaciente = idPacienteSeleccionado,
-                    Fecha = fechaHora,
-                    Descuento = descuento,
-                    MedioPago = medio.Content?.ToString() ?? "",
-                    Activo = TglActivo.IsChecked == true,
-
-
-                    IdsTratamientos = tratamientosElegidos
-                    .Select(t => ingresoDeVisita
-                        ? t.IdTratamientoVisita
-                        : t.IdTratamiento)
-                    .Distinct()
-                    .ToList()
-
-                };
-
-                await servicio.ActualizarIngresoAsync(
-                    idIngreso, request);
-
+                await servicio.ActualizarIngresoAsync(idIngreso, request);
                 DialogResult = true;
             }
             catch (Exception ex)
             {
-                ErrorGeneral.Text =
-                    "No se pudieron guardar los cambios: " + ex.Message;
+                ErrorGeneral.Text = "No se pudieron guardar los cambios: " + ex.Message;
             }
             finally
             {
@@ -523,23 +524,15 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
-        // CERRAR SIN GUARDAR
-        private void Cerrar_Click(
-            object sender, RoutedEventArgs e)
+        private void Cerrar_Click(object sender, RoutedEventArgs e)
         {
-            if (guardando)
+            if (guardando || abriendoSelector)
                 return;
 
-            var confirmar = new ConfirmarDescarteWindow
-            {
-                Owner = this
-            };
+            var confirmar = new ConfirmarDescarteWindow { Owner = this };
 
             if (confirmar.ShowDialog() == true)
-            {
                 DialogResult = false;
-            }
         }
     }
 }
-

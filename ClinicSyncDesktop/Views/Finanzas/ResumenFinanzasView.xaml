@@ -194,7 +194,8 @@
                 <!-- TABLA DE RESUMEN -->
                 <DataGrid x:Name="DgResumen"
                           Grid.Row="2"
-                          Background="Transparent"
+                          Background="{StaticResource ColorFondo}"
+                          ClipToBounds="True"
                           Foreground="{StaticResource ColorTexto}"
                           RowBackground="{StaticResource ColorFondo}"
                           AlternatingRowBackground="{StaticResource ColorFilaAlterna}"
@@ -216,17 +217,7 @@
                           HorizontalScrollBarVisibility="Auto"
                           VerticalScrollBarVisibility="Auto">
 
-                    <DataGrid.OpacityMask>
-                        <VisualBrush Stretch="Fill">
-                            <VisualBrush.Visual>
-                                <Border Width="100"
-                                        Height="100"
-                                        Background="Black"
-                                        CornerRadius="0,0,12,12"/>
-                            </VisualBrush.Visual>
-                        </VisualBrush>
-                    </DataGrid.OpacityMask>
-
+                    
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Tipo"
                                             Binding="{Binding Tipo, Converter={StaticResource TextoInicialMayuscula}}"

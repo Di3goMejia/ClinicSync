@@ -3,23 +3,32 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Editar egreso"
         Width="460"
-        Height="335"
+        Height="479"
         WindowStartupLocation="CenterOwner"
         WindowStyle="None"
         ResizeMode="NoResize"
         AllowsTransparency="True"
         Background="Transparent"
         ShowInTaskbar="False">
+
     <Window.Resources>
-        <LinearGradientBrush x:Key="Turquesa" StartPoint="0,0" EndPoint="1,0">
+
+        <!-- DEGRADADO TURQUESA -->
+        <LinearGradientBrush x:Key="Turquesa"
+                             StartPoint="0,0"
+                             EndPoint="1,0">
             <GradientStop Color="#32A5AB" Offset="0"/>
             <GradientStop Color="#138DAA" Offset="1"/>
         </LinearGradientBrush>
+
+        <!-- ETIQUETAS -->
         <Style x:Key="Etiqueta" TargetType="TextBlock">
             <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="13"/>
         </Style>
+
+        <!-- CAMPOS REDONDEADOS -->
         <Style x:Key="Campo" TargetType="TextBox">
             <Setter Property="Background" Value="#D9DDD8"/>
             <Setter Property="Foreground" Value="#17475A"/>
@@ -31,164 +40,495 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="13" ClipToBounds="True">
-                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="Center" Focusable="False"/>
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="13"
+                                ClipToBounds="True">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"
+                                          Focusable="False"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- CAMPO DE VARIAS LÍNEAS (CONCEPTO) -->
+        <Style x:Key="CampoMultilinea" TargetType="TextBox">
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="13"
+                                ClipToBounds="True">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          Focusable="False"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BOTÓN AGREGAR REDONDEADO -->
+        <Style x:Key="BotonRedondo" TargetType="Button">
+            <Setter Property="Background" Value="#92D4DE"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="15">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fondo"
+                                        Property="Background"
+                                        Value="#B6E7ED"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Fondo"
+                                        Property="Opacity"
+                                        Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- COMBOBOX REDONDEADO -->
         <Style x:Key="ComboRedondo" TargetType="ComboBox">
             <Setter Property="Height" Value="25"/>
             <Setter Property="Background" Value="#D9DDD8"/>
             <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Padding" Value="10,0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
-                            <Border Background="{TemplateBinding Background}" CornerRadius="13"/>
-                            <ToggleButton Background="Transparent"
-                                          BorderThickness="0"
-                                          Focusable="False"
-                                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
-                                <Grid>
-                                    <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
-                                                      Margin="10,0,25,0"
-                                                      VerticalAlignment="Center"
-                                                      IsHitTestVisible="False"/>
-                                    <TextBlock Text="▼"
-                                               Foreground="#138DAA"
-                                               FontSize="10"
-                                               HorizontalAlignment="Right"
-                                               VerticalAlignment="Center"
-                                               Margin="0,0,10,0"/>
-                                </Grid>
-                            </ToggleButton>
+                            <Border Background="#D9DDD8"
+                                    CornerRadius="13"/>
+
+                            <ContentPresenter
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                Margin="10,0,25,0"
+                                VerticalAlignment="Center"
+                                IsHitTestVisible="False"/>
+
+                            <!-- FLECHA QUE GIRA -->
+                            <Image x:Name="IconoFlecha"
+                                   Source="/Resources/ImagenesPacientes/flecha-hacia-abajo-combobox.png"
+                                   Width="15"
+                                   Height="15"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,5,0"
+                                   IsHitTestVisible="False"
+                                   RenderTransformOrigin="0.5,0.5">
+                                <Image.RenderTransform>
+                                    <RotateTransform Angle="0"/>
+                                </Image.RenderTransform>
+                            </Image>
+
+                            <ToggleButton
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Opacity="0"
+                                Focusable="False"
+                                IsChecked="{Binding IsDropDownOpen,
+                                    RelativeSource={RelativeSource TemplatedParent},
+                                    Mode=TwoWay}"/>
+
                             <Popup x:Name="PART_Popup"
-                                   IsOpen="{TemplateBinding IsDropDownOpen}"
                                    Placement="Bottom"
-                                   PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                   IsOpen="{Binding IsDropDownOpen,
+                                       RelativeSource={RelativeSource TemplatedParent}}"
                                    AllowsTransparency="True"
-                                   Focusable="False">
-                                <Border Background="White" BorderBrush="#B5CECE" BorderThickness="1" CornerRadius="12">
-                                    <ScrollViewer MaxHeight="180"><ItemsPresenter/></ScrollViewer>
+                                   StaysOpen="False">
+                                <Border Background="White"
+                                        BorderBrush="#D9DDD8"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        MinWidth="{Binding ActualWidth,
+                                            RelativeSource={RelativeSource TemplatedParent}}">
+                                    <ScrollViewer MaxHeight="160">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
                                 </Border>
                             </Popup>
                         </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDropDownOpen" Value="True">
+                                <Setter TargetName="IconoFlecha"
+                                        Property="RenderTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="180"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- BOTÓN CALENDARIO -->
         <Style x:Key="BotonCalendario" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-        </Style>
-        <Style x:Key="Boton" TargetType="Button">
-            <Setter Property="Height" Value="25"/>
-            <Setter Property="Width" Value="105"/>
-            <Setter Property="Background" Value="#92D4DE"/>
-            <Setter Property="Foreground" Value="#17475A"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="12"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="13">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Border Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="Interruptor" TargetType="CheckBox">
+            <Setter Property="Width" Value="39"/>
+            <Setter Property="Height" Value="21"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid>
+                            <Border x:Name="Fondo"
+                                    Background="#D9DDD8"
+                                    CornerRadius="11"/>
+
+                            <Ellipse x:Name="Circulo"
+                                     Width="16"
+                                     Height="16"
+                                     Fill="White"
+                                     HorizontalAlignment="Left"
+                                     Margin="3,0,0,0"/>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Fondo"
+                                        Property="Background"
+                                        Value="#23A995"/>
+                                <Setter TargetName="Circulo"
+                                        Property="HorizontalAlignment"
+                                        Value="Right"/>
+                                <Setter TargetName="Circulo"
+                                        Property="Margin"
+                                        Value="0,0,3,0"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Fondo"
+                                        Property="Opacity"
+                                        Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Window.Resources>
-    <Border Margin="9" CornerRadius="15" Background="White" ClipToBounds="True">
+
+    <!-- VENTANA REDONDEADA -->
+    <Border Margin="9"
+            CornerRadius="15"
+            Background="White"
+            ClipToBounds="True">
+
         <Border.Effect>
-            <DropShadowEffect BlurRadius="16" ShadowDepth="5" Opacity="0.28"/>
+            <DropShadowEffect BlurRadius="16"
+                              ShadowDepth="5"
+                              Opacity="0.28"/>
         </Border.Effect>
+
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="35"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="0" Background="{StaticResource Turquesa}" CornerRadius="15,15,0,0">
+
+            <!-- ENCABEZADO -->
+            <Border Grid.Row="0"
+                    Background="{StaticResource Turquesa}"
+                    CornerRadius="15,15,0,0"
+                    MouseLeftButtonDown="Encabezado_MouseLeftButtonDown">
+
                 <Grid Margin="12,0,9,0">
-                    <TextBlock Text="Editar egreso:" Foreground="White" FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center" Margin="10,0,-10,0"/>
-                    <Button Width="23" Height="23" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Cursor="Hand" Click="Cancelar_Click">
-                        <Image Source="/Resources/ImagenesPacientes/cerrar-ventana.png" Stretch="Uniform"/>
+                    <TextBlock Text="Editar egreso:"
+                               Foreground="White"
+                               FontWeight="SemiBold"
+                               FontSize="15"
+                               VerticalAlignment="Center"
+                               Margin="10,0,-10,0"/>
+
+                    <Button Width="23"
+                            Height="23"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Click="Cancelar_Click">
+                        <Image Source="/Resources/ImagenesPacientes/cerrar-ventana.png"
+                               Stretch="Uniform"/>
                     </Button>
                 </Grid>
             </Border>
-            <Grid Grid.Row="1" Margin="22,17,22,10">
+
+            <!-- FORMULARIO -->
+            <Grid Grid.Row="1"
+                  Margin="22,17,22,10">
+
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition Height="78"/>
+                    <RowDefinition Height="54"/>
+                    <RowDefinition Height="54"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="58"/>
-                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="25"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0">
-                    <TextBlock Text="Fecha y hora:" Style="{StaticResource Etiqueta}"/>
-                    <Grid Margin="0,5,0,0">
-                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                        <DatePicker x:Name="dpFecha" Grid.Column="0" Height="25" Background="#D9DDD8" BorderThickness="0"/>
-                        <TextBox x:Name="txtHora" Grid.Column="2" Style="{StaticResource Campo}" Margin="0" MaxLength="5" Text="00:00" ToolTip="HH:mm"/>
-                    </Grid>
-                </StackPanel>
-                <StackPanel Grid.Row="1">
-                    <TextBlock Text="Concepto:" Style="{StaticResource Etiqueta}"/>
-                    <TextBox x:Name="txtConcepto" Style="{StaticResource Campo}" Height="50" Padding="10,6" TextWrapping="Wrap" VerticalContentAlignment="Top"/>
-                </StackPanel>
-                <Grid Grid.Row="2">
+
+                <!-- FECHA Y HORA -->
+                <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="12"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+
+                    <!-- FECHA -->
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Medio de pago:" Style="{StaticResource Etiqueta}"/>
-                        <ComboBox x:Name="cmbMedio" Style="{StaticResource ComboRedondo}" Margin="0,5,0,0">
-                            <ComboBoxItem Content="EFECTIVO"/>
-                            <ComboBoxItem Content="TRANSFERENCIA"/>
-                        </ComboBox>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Fecha:"
+                                       Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Text=" *"
+                                       Foreground="#CF4059"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <Grid Height="25"
+                              Margin="0,5,0,0">
+
+                            <Border Background="#D9DDD8"
+                                    CornerRadius="13"/>
+
+                            <Grid Margin="9,0,5,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="20"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- FECHA EDITABLE -->
+                                <Grid Grid.Column="0">
+                                    <TextBox x:Name="txtFecha"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             Foreground="#17475A"
+                                             FontSize="12"
+                                             Padding="0"
+                                             MaxLength="10"
+                                             VerticalContentAlignment="Center"
+                                             TextChanged="txtFecha_TextChanged"
+                                             LostFocus="txtFecha_LostFocus"
+                                             ToolTip="AAAA/MM/DD"/>
+
+                                    <TextBlock x:Name="txtPlaceholderFecha"
+                                               Text="YYYY/MM/DD"
+                                               Foreground="#AEB0B1"
+                                               FontSize="12"
+                                               VerticalAlignment="Center"
+                                               IsHitTestVisible="False"/>
+                                </Grid>
+
+                                <!-- ICONO CALENDARIO -->
+                                <Button Grid.Column="1"
+                                        Style="{StaticResource BotonCalendario}"
+                                        Click="Calendario_Click">
+                                    <Image Source="/Resources/ImagenesPacientes/calendario.png"
+                                           Width="15"
+                                           Height="15"/>
+                                </Button>
+                            </Grid>
+
+                            <!-- DATEPICKER INTERNO -->
+                            <DatePicker x:Name="dpFecha"
+                                        Opacity="0"
+                                        IsHitTestVisible="False"
+                                        SelectedDateChanged="dpFecha_SelectedDateChanged"
+                                        Panel.ZIndex="-1"/>
+                        </Grid>
                     </StackPanel>
+
+                    <!-- HORA -->
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="Monto:" Style="{StaticResource Etiqueta}"/>
-                        <TextBox x:Name="txtMonto" Style="{StaticResource Campo}" Margin="0,5,0,0" ToolTip="0.00"/>
+                        <TextBlock
+                        Style="{StaticResource Etiqueta}"><Run Text="Hora:"/><Run Language="es-hn" Text=" "/><Run Foreground="#FFCF4059" FontWeight="Bold" Text="*"/></TextBlock>
+                        <TextBox x:Name="txtHora"
+                                 Style="{StaticResource Campo}"
+                                 Margin="0,5,0,0"
+                                 MaxLength="5"
+                                 Text="00:00"
+                                 ToolTip="HH:mm"/>
                     </StackPanel>
                 </Grid>
 
-                <StackPanel Grid.Row="3"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Center"> 
+                <!-- TIPO -->
+                <StackPanel Grid.Row="1">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Tipo:"
+                                   Style="{StaticResource Etiqueta}"/>
+                        <TextBlock Text=" *"
+                                   Foreground="#CF4059"
+                                   FontWeight="Bold"/>
+                    </StackPanel>
 
-                    <TextBlock Text="Activo:"
-                               Style="{StaticResource Etiqueta}"
-                               VerticalAlignment="Center"
-                               Margin="0,0,12,0"/>
-
-                    <CheckBox x:Name="chkActivo"
-                              IsChecked="True"
-                              VerticalAlignment="Center"
-                              Cursor="Hand"/>
+                    <TextBox x:Name="txtTipo"
+                             Style="{StaticResource Campo}"
+                             Margin="0,5,0,0"
+                             IsReadOnly="True"
+                             ToolTip="El tipo se define al registrar el egreso."/>
                 </StackPanel>
 
-                <TextBlock x:Name="txtError"
-                           Grid.Row="4"
-                           Foreground="#C93C55"
-                           TextWrapping="Wrap"
-                           Margin="0,5,0,0"/>   
+                <!-- CONCEPTO -->
+                <StackPanel Grid.Row="2" Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Concepto:"
+                                   Style="{StaticResource Etiqueta}"/>
+                        <TextBlock Text=" *"
+                                   Foreground="#CF4059"
+                                   FontWeight="Bold"/>
+                    </StackPanel>
+
+                    <Grid Margin="0,5,0,0"
+                          Height="72">
+
+                        <!-- SERVICIOS: TEXTO LIBRE -->
+                        <TextBox x:Name="txtConcepto"
+                                 Height="72"
+                                 MaxLength="255"
+                                 Style="{StaticResource CampoMultilinea}"/>
+
+
+                    </Grid>
+                    <StackPanel x:Name="panelMaterialesEdicion" Visibility="Collapsed" Margin="0,8,0,0">
+                        <TextBlock x:Name="txtMaterialesEdicion" Style="{StaticResource Etiqueta}"
+                                   TextWrapping="Wrap" MaxHeight="36"/>
+                        <Button Content="Editar materiales" Width="132" Height="26"
+                                HorizontalAlignment="Left" Margin="0,5,0,0"
+                                Style="{StaticResource BotonRedondo}" Click="EditarMateriales_Click"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- MEDIO DE PAGO Y MONTO -->
+                <Grid Grid.Row="3" Margin="0,5,0,20" Grid.RowSpan="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- MEDIO DE PAGO -->
+                    <StackPanel Grid.Column="0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Medio de pago:"
+                                       Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Text=" *"
+                                       Foreground="#CF4059"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <ComboBox x:Name="cmbMedio"
+                                  Margin="0,5,0,0"
+                                  Style="{StaticResource ComboRedondo}"
+                                  SelectedIndex="0">
+                            <ComboBoxItem Content="Seleccione una opción"
+                                          IsEnabled="False"/>
+                            <ComboBoxItem Content="Efectivo"
+                                          Tag="EFECTIVO"/>
+                            <ComboBoxItem Content="Transferencia"
+                                          Tag="TRANSFERENCIA"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- MONTO -->
+                    <StackPanel Grid.Column="2">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Monto:"
+                                       Style="{StaticResource Etiqueta}"/>
+                            <TextBlock Text=" *"
+                                       Foreground="#CF4059"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <Grid Margin="0,5,0,0">
+                            <TextBox x:Name="txtMonto"
+                                     Style="{StaticResource Campo}"
+                                     Padding="26,0,10,0"
+                                     MaxLength="10"
+                                     ToolTip="0.00"/>
+
+                            <TextBlock Text="L"
+                                       Foreground="#7A8A8F"
+                                       FontSize="12"
+                                       Margin="11,0,0,0"
+                                       VerticalAlignment="Center"
+                                       IsHitTestVisible="False"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,7,0,37" Grid.RowSpan="2">
+                    <TextBlock Text="Activo:" Style="{StaticResource Etiqueta}"
+                               VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <CheckBox x:Name="chkActivo" Style="{StaticResource Interruptor}" IsChecked="True"
+                              VerticalAlignment="Center" Cursor="Hand"/>
+                </StackPanel>
+                <TextBlock x:Name="txtError" Grid.Row="5" Foreground="#C93C55"
+                           TextWrapping="Wrap" Margin="0,10,0,0"/>
+
             </Grid>
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,22,5">
-                <Button Content="Cancelar" Style="{StaticResource Boton}" Background="#E1E7E3" Click="Cancelar_Click" Margin="0,0,10,0"/>
-                <Button x:Name="btnGuardar" Content="Guardar" Style="{StaticResource Boton}" Click="Guardar_Click"/>
-            </StackPanel>
+
+            <!-- BOTÓN GUARDAR -->
+            <Border Grid.Row="2"
+                    Background="{StaticResource Turquesa}"
+                    CornerRadius="0,0,15,15">
+
+                <Button x:Name="btnGuardar" IsEnabled="False"
+                        Content="Guardar"
+                        Width="95"
+                        Height="26"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource BotonRedondo}"
+                        Click="Guardar_Click"/>
+            </Border>
+
         </Grid>
     </Border>
 </Window>

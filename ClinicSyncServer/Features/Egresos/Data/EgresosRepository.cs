@@ -69,13 +69,17 @@ namespace ClinicSyncServer.Features.Egresos.Data
             await using var db = factory.Crear();
             await db.OpenAsync(ct);
 
-            return await db.QuerySingleOrDefaultAsync<EgresoListado>(
-                new CommandDefinition(
-                    "api.usp_Egresos_Obtener",
-                    new { IdEgreso = idEgreso },
-                    commandType: CommandType.StoredProcedure,
-                    cancellationToken: ct));
+            using var resultados = await db.QueryMultipleAsync(new CommandDefinition(
+                "api.usp_Egresos_Obtener",
+                new { IdEgreso = idEgreso },
+                commandType: CommandType.StoredProcedure,
+                cancellationToken: ct));
+            var egreso = await resultados.ReadSingleOrDefaultAsync<EgresoListado>();
+            if (egreso != null)
+                egreso.Materiales = (await resultados.ReadAsync<MaterialEgresoDetalle>()).ToList();
+            return egreso;
         }
+
         public async Task ActualizarAsync(
             int idEgreso,
             ActualizarEgresoRequest req,
@@ -97,7 +101,8 @@ namespace ClinicSyncServer.Features.Egresos.Data
                     IdUsuario = idUsuario,
 
                     // ENVIAR EL ESTADO ACTIVO AL PROCEDIMIENTO
-                    Activo = req.Activo
+                    Activo = req.Activo,
+                    Materiales = req.Materiales is null ? null : JsonSerializer.Serialize(req.Materiales)
                 },
                 commandType: CommandType.StoredProcedure,
                 cancellationToken: ct));

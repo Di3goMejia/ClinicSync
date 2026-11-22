@@ -324,25 +324,24 @@
                                  MaxLength="20"
                                  ToolTip="XXXX-XXXX-XXXXX"/>
 
-                        <TextBlock Style="{StaticResource Etiqueta}" Margin="0,10,0,5">
-                            <Run Text="Nombre completo"/><Run Text=" *" Foreground="#CF4059"/>
-                        </TextBlock>
+                        <TextBlock Style="{StaticResource Etiqueta}" Margin="0,10,0,5"><Run Text="Nombre"/><Run Text="s: "/><Run Foreground="#FFCF4059" Text="*"/><Run Text=" &#x9;&#x9;&#x9;        "/><Run Text="  "/><Run Text="Apellidos"/><Run Text=":"/><Run Foreground="#FFCF4059" Text=" *"/><Run Text=" "/></TextBlock>
 
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="103*"/>
+                                <ColumnDefinition Width="130*"/>
                                 <ColumnDefinition Width="10"/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="233*"/>
                             </Grid.ColumnDefinitions>
 
                             <TextBox x:Name="TxtNombres"
                                      Grid.Column="0"
                                      Style="{StaticResource Campo}"
                                      MaxLength="50"
-                                     ToolTip="Nombres"/>
+                                     ToolTip="Nombres" Grid.ColumnSpan="2" Margin="0,0,8,0"/>
 
                             <TextBox x:Name="TxtApellidos"
-                                     Grid.Column="2"
+                                     Grid.Column="3"
                                      Style="{StaticResource Campo}"
                                      MaxLength="50"
                                      ToolTip="Apellidos"/>
@@ -448,9 +447,30 @@
                                             Background="#E4F0F0"
                                             Style="{StaticResource BotonPlano}"
                                             Click="SeleccionarImagen_Click">
-                                        <TextBlock Text="Elegir imagen"
-                                                   Foreground="#168FAD"
-                                                   FontSize="11"/>
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        Padding="{TemplateBinding Padding}"
+                                                        CornerRadius="12.5">
+                                                    <ContentPresenter HorizontalAlignment="Center"
+                                                                      VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
+
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="/Resources/ImagenesPacientes/ImagenesExpediente/subir-archivo.png"
+                                                   Width="18"
+                                                   Height="18"
+                                                   Stretch="Uniform"
+                                                   Margin="0,0,7,0"
+                                                   VerticalAlignment="Center"/>
+
+                                            <TextBlock Text="Elegir imagen"
+                                                       Foreground="#168FA7"
+                                                       FontSize="11"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
                                     </Button>
 
                                     <TextBox x:Name="TxtImagen"
@@ -475,10 +495,14 @@
                                     </Button>
                                 </Grid>
 
-                                <TextBlock Text="ⓘ Tipos de archivo aceptados: JPG, PNG (máximo 5 MB)"
-                                           FontSize="10"
+                                <TextBlock FontSize="10"
                                            Foreground="#AEB0B1"
-                                           Margin="0,3,0,0"/>
+                                           Margin="0,3,0,0"
+                                           TextWrapping="Wrap">
+                                    <Run Text="ⓘ" Foreground="#E34462" FontSize="13"/>
+                                    <Run Text=" Tipos de archivo aceptados: JPG, PNG (máximo 5 MB)"/>
+                                </TextBlock>
+
                             </StackPanel>
                         </Grid>
                     </StackPanel>

@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using Microsoft.Data.SqlClient;
+using System.Security.Claims;
 using ClinicSyncServer.Features.Egresos.Requests;
 using ClinicSyncServer.Features.Egresos.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -85,8 +86,15 @@ namespace ClinicSyncServer.Features.Egresos
                         return Results.BadRequest(new { mensaje = "Revise los datos del formulario." });
                     }
 
-                    await svc.ActualizarAsync(idEgreso, req, idUsuario, ct);
-                    return Results.NoContent();
+                    try
+                    {
+                        await svc.ActualizarAsync(idEgreso, req, idUsuario, ct);
+                        return Results.NoContent();
+                    }
+                    catch (SqlException ex) when (ex.Number is >= 51700 and <= 51709)
+                    {
+                        return Results.BadRequest(new { mensaje = ex.Message });
+                    }
                 })
                 .RequireAuthorization(PermisosSeguridad.EgresosCrear);
         }

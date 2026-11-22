@@ -1,9 +1,11 @@
-
+using System.Linq;
 using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
 using ClinicSyncDesktop.Validations;
 using System;
 using System.Globalization;
+using System.Windows.Input;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,6 +21,9 @@ namespace ClinicSyncDesktop.Views
             CultureInfo.InvariantCulture;
 
         private bool _guardando;
+        private List<MaterialParaEgreso>? _materiales;
+        private bool _materialesModificados;
+        private string _tipoOriginal = "";
 
         public EditarEgresoWindow(
             int idEgreso,
@@ -45,7 +50,15 @@ namespace ClinicSyncDesktop.Views
                     await _servicio.ObtenerAsync(_idEgreso);
 
                 // FECHA
-                dpFecha.SelectedDate = egreso.Fecha;
+                dpFecha.SelectedDate = egreso.Fecha.Date;
+                txtFecha.Text = egreso.Fecha.ToString("yyyy/MM/dd", Cultura);
+                _tipoOriginal = egreso.Tipo.Trim().ToUpperInvariant();
+                txtTipo.Text = _tipoOriginal switch
+                {
+                    "MATERIALES" => "Materiales",
+                    "SERVICIOS" => "Servicios",
+                    _ => egreso.Tipo
+                };
 
                 // HORA
                 txtHora.Text =
@@ -64,7 +77,7 @@ namespace ClinicSyncDesktop.Views
                 foreach (ComboBoxItem item in cmbMedio.Items)
                 {
                     if (string.Equals(
-                        item.Content?.ToString(),
+                        item.Tag as string ?? item.Content?.ToString(),
                         egreso.MedioPago,
                         StringComparison.OrdinalIgnoreCase))
                     {
@@ -73,12 +86,15 @@ namespace ClinicSyncDesktop.Views
                     }
                 }
 
-                // CONSERVAR RESTRICCIÓN DE MATERIALES
-                txtConcepto.IsReadOnly =
-                    egreso.Tipo == "MATERIALES";
-
                 // ESTADO ACTUAL DEL EGRESO
                 chkActivo.IsChecked = egreso.Activo;
+
+                if (_tipoOriginal == "MATERIALES")
+                {
+                    _materiales = egreso.Materiales;
+                    MostrarMateriales();
+                    panelMaterialesEdicion.Visibility = Visibility.Visible;
+                }
 
                 btnGuardar.IsEnabled = true;
             }
@@ -90,6 +106,76 @@ namespace ClinicSyncDesktop.Views
 
                 btnGuardar.IsEnabled = false;
             }
+        }
+
+        private void MostrarMateriales()
+        {
+            txtMaterialesEdicion.Text = "Materiales: " + string.Join(", ",
+                _materiales!.Select(m => $"{m.Nombre} ({m.Cantidad:0.##})"));
+            txtMaterialesEdicion.ToolTip = txtMaterialesEdicion.Text;
+        }
+
+        private void EditarMateriales_Click(object sender, RoutedEventArgs e)
+        {
+            if (_guardando || _materiales == null)
+                return;
+
+            var selector = new SeleccionarMaterialesWindow(_materiales) { Owner = this };
+            if (selector.ShowDialog() != true)
+                return;
+
+            if (selector.Seleccionados.Count == 0)
+            {
+                txtError.Text = "Seleccioná al menos un material para este egreso.";
+                return;
+            }
+
+            _materiales = selector.Seleccionados;
+            _materialesModificados = true;
+            string concepto = "Compra: " + string.Join(", ", _materiales
+                .OrderBy(m => m.Nombre, StringComparer.CurrentCulture)
+                .ThenBy(m => m.IdMaterial)
+                .Select(m => $"{m.Nombre} ({m.Cantidad.ToString("0.##", Cultura)})"));
+            txtConcepto.Text = concepto.Length <= 255 ? concepto : concepto[..255];
+            txtError.Text = "";
+            MostrarMateriales();
+        }
+
+        private void Encabezado_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+                DragMove();
+        }
+
+        private void Calendario_Click(object sender, RoutedEventArgs e)
+        {
+            dpFecha.IsDropDownOpen = true;
+        }
+
+        private void txtFecha_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox campo && txtPlaceholderFecha != null)
+                txtPlaceholderFecha.Visibility = string.IsNullOrWhiteSpace(campo.Text)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+        }
+
+        private void txtFecha_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (LeerFecha(out DateTime fecha) && dpFecha.SelectedDate != fecha)
+                dpFecha.SelectedDate = fecha;
+        }
+
+        private void dpFecha_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (txtFecha != null && dpFecha.SelectedDate is DateTime fecha)
+                txtFecha.Text = fecha.ToString("yyyy/MM/dd", Cultura);
+        }
+
+        private bool LeerFecha(out DateTime fecha)
+        {
+            return DateTime.TryParseExact(txtFecha.Text.Trim(), "yyyy/MM/dd",
+                Cultura, DateTimeStyles.None, out fecha);
         }
 
         // OBTENER FECHA Y HORA
@@ -122,9 +208,16 @@ namespace ClinicSyncDesktop.Views
 
             txtError.Text = "";
 
+            if (!LeerFecha(out DateTime fechaEscrita))
+            {
+                txtError.Text = "Ingrese una fecha válida en formato AAAA/MM/DD.";
+                return;
+            }
+
+            dpFecha.SelectedDate = fechaEscrita;
             var medioSeleccionado = cmbMedio.SelectedItem as ComboBoxItem;
             var resultadoValidacion = new ValidadorEgreso().Validar(new EntradaEgreso(
-                "NORMAL", medioSeleccionado?.Tag as string ?? medioSeleccionado?.Content?.ToString(),
+                _tipoOriginal, medioSeleccionado?.Tag as string ?? medioSeleccionado?.Content?.ToString(),
                 txtConcepto.Text.Trim(), dpFecha.SelectedDate?.ToString("yyyy/MM/dd") ?? "", dpFecha.SelectedDate,
                 txtHora.Text.Trim(), txtMonto.Text.Trim()));
             if (!HelperValidacion.AplicarResultado(resultadoValidacion,
@@ -132,7 +225,7 @@ namespace ClinicSyncDesktop.Views
                 {
                     [nameof(EntradaEgreso.Medio)] = cmbMedio,
                     [nameof(EntradaEgreso.Concepto)] = txtConcepto,
-                    [nameof(EntradaEgreso.TextoFecha)] = dpFecha,
+                    [nameof(EntradaEgreso.TextoFecha)] = txtFecha,
                     [nameof(EntradaEgreso.TextoMonto)] = txtMonto
                 }, mensaje => txtError.Text = mensaje, () => txtError.Text = ""))
                 return;
@@ -188,9 +281,12 @@ namespace ClinicSyncDesktop.Views
                     _idEgreso,
                     fecha,
                     txtConcepto.Text.Trim(),
-                    medio.Content?.ToString() ?? "",
+                    medio.Tag as string ?? medio.Content?.ToString() ?? "",
                     monto,
-                    activo);
+                    activo,
+                    materiales: _materialesModificados
+                        ? _materiales!.Select(m => (m.IdMaterial, m.Cantidad))
+                        : null);
 
                 // CERRAR SOLO SI LA ACTUALIZACIÓN TERMINÓ SIN ERROR
                 DialogResult = true;
@@ -222,4 +318,3 @@ namespace ClinicSyncDesktop.Views
         }
     }
 }
-
