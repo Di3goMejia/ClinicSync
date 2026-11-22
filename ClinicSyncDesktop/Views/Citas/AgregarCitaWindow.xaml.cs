@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
 using ClinicSyncDesktop.Validations;
-using System.Windows.Controls.Primitives;
 
 namespace ClinicSyncDesktop.Views
 {
@@ -22,18 +23,18 @@ namespace ClinicSyncDesktop.Views
 
         private readonly AgendaApiService servicio = new();
 
-        private int indiceColor = 0;
-        private bool guardando = false;
+        private PacienteOpcion? pacienteSeleccionado;
         private Popup? popupCalendario;
+        private int indiceColor;
+        private bool guardando;
+        private bool cerrada;
 
-        // Id de la cita registrada (0 si no se registró).
         public int IdCitaCreada { get; private set; }
 
         public AgregarCitaWindow()
         {
             InitializeComponent();
 
-            // Horas cada 30 minutos: 00:00, 00:30, ... 23:30
             var horas = new List<string>();
 
             for (int h = 0; h < 24; h++)
@@ -48,26 +49,72 @@ namespace ClinicSyncDesktop.Views
             dpInicio.DisplayDateStart = DateTime.Today;
             dpFin.DisplayDateStart = DateTime.Today;
 
-            Loaded += AgregarCitaWindow_Loaded;
+            Closed += (_, _) => cerrada = true;
         }
 
-        // CARGAR PACIENTES ACTIVOS
-        private async void AgregarCitaWindow_Loaded(
-            object sender,
-            RoutedEventArgs e)
+        private async void SeleccionarPaciente_Click(object sender, RoutedEventArgs e)
         {
+            if (guardando || !btnSeleccionarPaciente.IsEnabled)
+                return;
+
+            btnSeleccionarPaciente.IsEnabled = false;
+            btnAgregar.IsEnabled = false;
+            LimpiarError();
+
             try
             {
-                cmbPaciente.ItemsSource =
-                    await servicio.ListarPacientesActivosAsync();
+                var pacientes = await servicio.ListarPacientesActivosAsync();
+
+                if (cerrada)
+                    return;
+
+                if (pacientes.Count == 0)
+                {
+                    MostrarError("No hay pacientes activos para seleccionar.");
+                    return;
+                }
+
+                var catalogo = pacientes.Select(p => new PacienteIngreso
+                {
+                    IdPaciente = p.IdPaciente,
+                    Nombres = p.Nombres,
+                    Apellidos = p.Apellidos,
+                    Activo = p.Activo
+                }).ToList();
+
+                var seleccionActual = catalogo.FirstOrDefault(
+                    p => p.IdPaciente == pacienteSeleccionado?.IdPaciente);
+
+                var selector = new SeleccionIngresoWindow(catalogo, seleccionActual)
+                {
+                    Owner = this
+                };
+
+                if (selector.ShowDialog() == true &&
+                    selector.PacienteElegido is PacienteIngreso elegido)
+                {
+                    var paciente = pacientes.First(
+                        p => p.IdPaciente == elegido.IdPaciente);
+
+                    pacienteSeleccionado = paciente;
+                    txtPacienteSeleccionado.Text = paciente.NombreCompleto;
+                }
             }
             catch (Exception ex)
             {
-                MostrarError("No se pudo cargar la lista de pacientes. " + ex.Message);
+                if (!cerrada)
+                    MostrarError("No se pudo abrir el selector de pacientes. " + ex.Message);
+            }
+            finally
+            {
+                if (!cerrada)
+                {
+                    btnSeleccionarPaciente.IsEnabled = true;
+                    btnAgregar.IsEnabled = true;
+                }
             }
         }
 
-        // CAMBIAR EL COLOR DE LA CITA
         private void Color_Click(object sender, RoutedEventArgs e)
         {
             indiceColor = (indiceColor + 1) % Paleta.Length;
@@ -76,27 +123,21 @@ namespace ClinicSyncDesktop.Views
                 (Color)ColorConverter.ConvertFromString(Paleta[indiceColor]));
         }
 
-        // MOSTRAR LA FECHA EN EL CAMPO REDONDEADO
         private static void MostrarFecha(TextBlock texto, DateTime? fecha)
         {
             if (fecha is null)
             {
                 texto.Text = "Seleccione una fecha";
-                texto.Foreground = new SolidColorBrush(
-                    Color.FromRgb(174, 176, 177));
+                texto.Foreground = new SolidColorBrush(Color.FromRgb(174, 176, 177));
             }
             else
             {
                 texto.Text = fecha.Value.ToString("dd/MM/yyyy");
-                texto.Foreground = new SolidColorBrush(
-                    Color.FromRgb(23, 71, 90));
+                texto.Foreground = new SolidColorBrush(Color.FromRgb(23, 71, 90));
             }
         }
 
-        // AL ELEGIR LA FECHA DE INICIO, LA FINAL SE LLENA SOLA
-        private void dpInicio_SelectedDateChanged(
-            object sender,
-            SelectionChangedEventArgs e)
+        private void dpInicio_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             MostrarFecha(txtFechaInicio, dpInicio.SelectedDate);
 
@@ -108,14 +149,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
-        private void dpFin_SelectedDateChanged(
-            object sender,
-            SelectionChangedEventArgs e)
+        private void dpFin_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             MostrarFecha(txtFechaFin, dpFin.SelectedDate);
         }
 
-        // ABRIR EL CALENDARIO DESPLEGABLE
         private void Fecha_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button boton)
@@ -129,8 +167,6 @@ namespace ClinicSyncDesktop.Views
 
             bool esFin = boton.Tag as string == "Fin";
             DatePicker destino = esFin ? dpFin : dpInicio;
-
-            // Solo hoy y fechas futuras (la final, desde la de inicio).
             DateTime minimo = DateTime.Today;
 
             if (esFin && dpInicio.SelectedDate.HasValue)
@@ -181,51 +217,28 @@ namespace ClinicSyncDesktop.Views
             popupCalendario.IsOpen = true;
         }
 
-        // TODO EL DÍA: LAS HORAS NO SE USAN
         private void TodoElDia_Click(object sender, RoutedEventArgs e)
         {
             bool todoElDia = chkTodoElDia.IsChecked == true;
-
-            var resultadoValidacion = new ValidadorCita().Validar(new EntradaCita(
-                cmbPaciente.SelectedItem, txtTitulo.Text.Trim(), dpInicio.SelectedDate,
-                dpFin.SelectedDate, todoElDia,
-                cmbHoraInicio.SelectedItem as string, cmbHoraFin.SelectedItem as string));
-            if (!HelperValidacion.AplicarResultado(resultadoValidacion,
-                new Dictionary<string, Control>
-                {
-                    [nameof(EntradaCita.Paciente)] = cmbPaciente,
-                    [nameof(EntradaCita.Titulo)] = txtTitulo,
-                    [nameof(EntradaCita.FechaInicio)] = dpInicio,
-                    [nameof(EntradaCita.FechaFin)] = dpFin,
-                    [nameof(EntradaCita.HoraInicio)] = cmbHoraInicio,
-                    [nameof(EntradaCita.HoraFin)] = cmbHoraFin
-                }, MostrarError, LimpiarError))
-                return;
-
             cmbHoraInicio.IsEnabled = !todoElDia;
             cmbHoraFin.IsEnabled = !todoElDia;
         }
 
-        // CERRAR Y CONFIRMAR DESCARTE
         private void Cerrar_Click(object sender, RoutedEventArgs e)
         {
             if (guardando)
                 return;
 
-            ConfirmarDescarteWindow advertencia =
-                new ConfirmarDescarteWindow(
-                    "¿Seguro que desea descartar esta cita?")
-                {
-                    Owner = this
-                };
+            var advertencia = new ConfirmarDescarteWindow(
+                "¿Seguro que desea descartar esta cita?")
+            {
+                Owner = this
+            };
 
-            bool descartar = advertencia.ShowDialog() == true;
-
-            if (descartar)
+            if (advertencia.ShowDialog() == true)
                 DialogResult = false;
         }
 
-        // AGREGAR CITA
         private async void Agregar_Click(object sender, RoutedEventArgs e)
         {
             if (guardando)
@@ -234,83 +247,79 @@ namespace ClinicSyncDesktop.Views
             LimpiarError();
 
             bool todoElDia = chkTodoElDia.IsChecked == true;
+            var paciente = pacienteSeleccionado;
+            string titulo = txtTitulo.Text.Trim();
 
-            // CAMPOS OBLIGATORIOS
-            if (cmbPaciente.SelectedItem is not PacienteOpcion paciente ||
-                string.IsNullOrWhiteSpace(txtTitulo.Text) ||
-                dpInicio.SelectedDate is null ||
-                dpFin.SelectedDate is null ||
-                (!todoElDia &&
-                 (cmbHoraInicio.SelectedItem is null ||
-                  cmbHoraFin.SelectedItem is null)))
+            var resultado = new ValidadorCita().Validar(new EntradaCita(
+                paciente,
+                titulo,
+                dpInicio.SelectedDate,
+                dpFin.SelectedDate,
+                todoElDia,
+                cmbHoraInicio.SelectedItem as string,
+                cmbHoraFin.SelectedItem as string));
+
+            var controles = new Dictionary<string, Control>
             {
-                MostrarError("Se deben llenar los campos obligatorios.");
+                [nameof(EntradaCita.Paciente)] = btnSeleccionarPaciente,
+                [nameof(EntradaCita.Titulo)] = txtTitulo,
+                [nameof(EntradaCita.FechaInicio)] = btnFechaInicio,
+                [nameof(EntradaCita.FechaFin)] = btnFechaFin,
+                [nameof(EntradaCita.HoraInicio)] = cmbHoraInicio,
+                [nameof(EntradaCita.HoraFin)] = cmbHoraFin
+            };
+
+            if (!HelperValidacion.AplicarResultado(
+                resultado, controles, MostrarError, LimpiarError) || paciente is null)
+            {
                 return;
             }
 
-            // ARMAR INICIO Y FIN
-            DateTime inicio = dpInicio.SelectedDate.Value.Date;
-            DateTime fin = dpFin.SelectedDate.Value.Date;
-
-            if (!todoElDia)
-            {
-                inicio += TimeSpan.Parse((string)cmbHoraInicio.SelectedItem!);
-                fin += TimeSpan.Parse((string)cmbHoraFin.SelectedItem!);
-            }
-
-            // EL FIN DEBE SER POSTERIOR AL INICIO
-            bool ordenInvalido = todoElDia ? fin < inicio : fin <= inicio;
-
-            if (ordenInvalido)
-            {
-                MostrarError("La fecha y hora final deben ser posteriores a las de inicio.");
-                return;
-            }
+            DateTime inicio = resultado.Inicio;
+            DateTime fin = resultado.Fin;
+            string direccion = txtDireccion.Text;
+            string notas = txtNotas.Text;
+            string color = Paleta[indiceColor];
 
             guardando = true;
 
             if (sender is Button botonGuardar)
                 botonGuardar.IsEnabled = false;
 
-
             try
             {
-                // CONSULTAR DISPONIBILIDAD ANTES DE GUARDAR
-                // (todo el día: el servidor cuenta hasta las 00:00 del día siguiente)
                 DateTime finConsulta = todoElDia ? fin.AddDays(1) : fin;
 
-                var disponibilidad =
-                    await servicio.VerificarDisponibilidadAsync(inicio, finConsulta);
+                var disponibilidad = await servicio.VerificarDisponibilidadAsync(
+                    inicio, finConsulta);
 
                 if (!disponibilidad.Disponible)
                 {
                     MostrarError(
-                    "El horario seleccionado no está disponible. " +
-                    "Por favor, selecciona otro horario.");
+                        "El horario seleccionado no está disponible. " +
+                        "Por favor, selecciona otro horario.");
                     return;
                 }
 
-                // REGISTRAR
                 IdCitaCreada = await servicio.RegistrarAsync(
                     paciente.IdPaciente,
-                    txtTitulo.Text.Trim(),
+                    titulo,
                     inicio,
                     fin,
-                    Paleta[indiceColor],
-                    txtDireccion.Text,
-                    txtNotas.Text,
+                    color,
+                    direccion,
+                    notas,
                     todoElDia);
 
                 DialogResult = true;
             }
-            catch (HttpRequestException ex)
-                when (ex.StatusCode == HttpStatusCode.Conflict)
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Conflict)
             {
                 MostrarError(ex.Message);
             }
             catch (Exception ex)
             {
-                MostrarError("La cita NO se agregó.\n" + ex.Message);
+                MostrarError("No se pudo agregar la cita.\n" + ex.Message);
             }
             finally
             {
@@ -321,19 +330,16 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
-        // MOSTRAR ERROR DE VALIDACIÓN
         private void MostrarError(string mensaje)
         {
             txtError.Text = mensaje;
             txtError.Visibility = Visibility.Visible;
         }
 
-        // LIMPIAR ERROR DE VALIDACIÓN
         private void LimpiarError()
         {
             txtError.Text = string.Empty;
             txtError.Visibility = Visibility.Collapsed;
         }
-
     }
 }
