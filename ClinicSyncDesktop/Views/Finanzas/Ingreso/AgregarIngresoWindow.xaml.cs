@@ -179,8 +179,8 @@ namespace ClinicSyncDesktop.Views
 
         private void TxtFechaIngreso_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (inicializado && !sincronizandoFecha)
-                TryObtenerFecha(out _);
+            if (!TryObtenerFecha(out _))
+                return;
         }
 
         private async void DpFecha_SelectedDateChanged(
