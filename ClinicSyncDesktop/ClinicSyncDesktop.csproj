@@ -45,6 +45,7 @@
     <None Remove="Resources\ImagenesPerfil\editar-perfil.png" />
     <None Remove="Resources\ImagenesPerfil\perfil.png" />
     <None Remove="Resources\ImagenesPerfil\subir-imagen-perfil.png" />
+    <None Remove="Resources\ImagenesTabla\boton-mas.png" />
     <None Remove="Resources\ImagenesTabla\IconoEngranaje.png" />
     <None Remove="Resources\ImagenesTabla\IconoMas.png" />
   </ItemGroup>
@@ -172,6 +173,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\ImagenesPerfil\subir-imagen-perfil.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesTabla\boton-mas.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\ImagenesTabla\IconoEngranaje.png">

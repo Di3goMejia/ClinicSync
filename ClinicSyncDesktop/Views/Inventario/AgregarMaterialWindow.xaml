@@ -109,7 +109,7 @@
                             Background="Transparent"
                             BorderThickness="0"
                             Cursor="Hand"
-                            Click="Cerrar_Click">
+                            Click="Cancelar_Click">
                         <Image Source="/Resources/ImagenesPacientes/cerrar-ventana.png"/>
                     </Button>
 
@@ -241,7 +241,7 @@
                     <TextBox x:Name="txtNombre"
                              Grid.Row="1"
                              Style="{StaticResource Campo}"
-                             MaxLength="50" Height="NaN" Margin="0,1,0,-2"/>
+                             MaxLength="50" Height="20" Margin="0,1,0,0" VerticalAlignment="Top"/>
                 </Grid>
 
                 <!-- CÓDIGO Y PRECIO -->
@@ -268,11 +268,11 @@
                              Grid.Row="1"
                              Grid.Column="0"
                              Style="{StaticResource Campo}"
-                             MaxLength="30"Height="23"n="0,2,0,-2"Height="23""20" VerticalAlignment="Top" VerticalAlignment="Top"/>
+                             MaxLength="30"/>
 
-                    <TextBlock
+                    <TextBlock Grid.Row="0"
                                Grid.Column="2"
-                               Style="{StaticResource Etiqueta}" Margin="7,0,14,0">
+                               Style="{StaticResource Etiqueta}">
                         <Run Text="Precio por unidad:"/>
                         <Run Text=" *" Foreground="#E83C53"/>
                     </TextBlock>
@@ -281,9 +281,9 @@
                           Grid.Column="2">
 
                         <Border Background="{StaticResource FondoCampo}"
-                                CornerRadius="10" Margin="6,0,0,0"/>
+                                CornerRadius="10"/>
 
-                        <Grid Margin="10,0,0,0">
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="24"/>
                                 <ColumnDefinition Width="*"/>
@@ -372,7 +372,7 @@
                              Grid.Row="1"
                              Grid.Column="2"
                              Style="{StaticResource Campo}"
-                             Text="0"Height="NaN"nt="Center"nment="Top"nt="Center"nt="Bottom"nt="Center"nt="Bottom"nt="Center"nment="Top"nt="Center",0,0" VerticalAlignment="Top"/>
+                             Text="0"/>
                 </Grid>
 
                 <!-- DESCRIPCIÓN -->
@@ -395,7 +395,7 @@
                              VerticalContentAlignment="Top"
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
-                             MaxLength="200" Margin="0,0,0,10"/>
+                             MaxLength="200"/>
                 </Grid>
 
                 <!-- MENSAJE ROJO DE VALIDACIÓN -->
