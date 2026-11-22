@@ -32,6 +32,9 @@
     <None Remove="Resources\ImagenesInventario\IconoLupa.png" />
     <None Remove="Resources\ImagenesInventario\IconoSinImagen.png" />
     <None Remove="Resources\ImagenesLogin\mostrar-contraseña.png" />
+    <None Remove="Resources\ImagenesNotificaciones\archivar-notificacion.png" />
+    <None Remove="Resources\ImagenesNotificaciones\cita-proxima.png" />
+    <None Remove="Resources\ImagenesNotificaciones\stock-bajo.png" />
     <None Remove="Resources\ImagenesPacientes\calendario.png" />
     <None Remove="Resources\ImagenesPacientes\cerrar-ventana.png" />
     <None Remove="Resources\ImagenesPacientes\expediente-medico.png" />
@@ -134,6 +137,15 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\ImagenesLogin\mostrar-contraseña.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesNotificaciones\archivar-notificacion.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesNotificaciones\cita-proxima.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ImagenesNotificaciones\stock-bajo.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\ImagenesPacientes\calendario.png">
