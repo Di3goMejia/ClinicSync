@@ -35,8 +35,17 @@ namespace ClinicSyncServer.Features.Finanzas
             public string MedioPago { get; set; } = "";
             public bool Activo { get; set; }
 
+            public List<MaterialDetalleDto> Materiales { get; set; } = new();
+
             public List<TratamientoIngresoDto> Tratamientos
             { get; set; } = new();
+        }
+
+        public sealed class MaterialDetalleDto
+        {
+            public int IdMaterial { get; set; }
+            public string Nombre { get; set; } = "";
+            public decimal Cantidad { get; set; }
         }
 
         public sealed class TratamientoIngresoDto
@@ -58,7 +67,8 @@ namespace ClinicSyncServer.Features.Finanzas
             decimal Descuento,
             string MedioPago,
             bool Activo,
-            List<int> IdsTratamientos
+            List<int> IdsTratamientos,
+            List<MaterialConsumoRequest>? Materiales = null
         );
 
         public sealed class ResumenDto
@@ -274,6 +284,20 @@ namespace ClinicSyncServer.Features.Finanzas
 
                 });
 
+            grupo.MapGet("/tratamientos-catalogo",
+                async (SqlConnectionFactory factory) =>
+                {
+                    await using var db = factory.Crear();
+                    var tratamientos = await db.QueryAsync<TratamientoIngresoDto>(
+                        """
+                        SELECT IdTratamiento, Nombre, Precio, 1 AS Cantidad
+                        FROM dbo.Tratamientos
+                        WHERE Activo = 1
+                        ORDER BY Nombre
+                        """);
+                    return Results.Ok(tratamientos);
+                });
+
             // OBTENER INGRESO PARA EDICIÓN
             grupo.MapGet("/ingresos/{idIngreso:int}",
                 async (int idIngreso, SqlConnectionFactory factory) =>
@@ -295,6 +319,9 @@ namespace ClinicSyncServer.Features.Finanzas
                     ingreso.Tratamientos =
                         (await resultado.ReadAsync<TratamientoIngresoDto>())
                         .ToList();
+
+                    ingreso.Materiales =
+                        (await resultado.ReadAsync<MaterialDetalleDto>()).ToList();
 
                     return Results.Ok(ingreso);
                 });
@@ -361,7 +388,10 @@ namespace ClinicSyncServer.Features.Finanzas
                                 request.Activo,
                                 IdUsuario = idUsuario,
                                 TratamientosJson = JsonSerializer.Serialize(
-                                    request.IdsTratamientos)
+                                    request.IdsTratamientos),
+                                MaterialesJson = request.Materiales is null
+                                    ? null
+                                    : JsonSerializer.Serialize(request.Materiales)
                             },
                             commandType: CommandType.StoredProcedure);
 
@@ -406,9 +436,10 @@ namespace ClinicSyncServer.Features.Finanzas
 
                 var filas = await db.QueryAsync<PeriodoResumen>(
                     "api.usp_Finanzas_ResumenPorPeriodo",
-                    new { 
-                        rango.Desde, 
-                        Hasta = rango.Hasta!.Value, 
+                    new
+                    {
+                        rango.Desde,
+                        Hasta = rango.Hasta!.Value,
                         Agrupacion = rango.Agrupacion.ToString().ToUpperInvariant()
                     },
                     commandType: CommandType.StoredProcedure

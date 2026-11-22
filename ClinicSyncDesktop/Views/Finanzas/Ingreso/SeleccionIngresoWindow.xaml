@@ -2,290 +2,262 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Seleccionar"
-        Width="480"
-        Height="385"
+        Width="510" Height="410"
         WindowStartupLocation="CenterOwner"
-        WindowStyle="None"
-        ResizeMode="NoResize"
-        AllowsTransparency="True"
-        Background="Transparent"
+        WindowStyle="None" ResizeMode="NoResize"
+        AllowsTransparency="True" Background="Transparent"
         ShowInTaskbar="False">
 
     <Window.Resources>
-        <LinearGradientBrush x:Key="Turquesa"
-                             StartPoint="0,0" EndPoint="1,0">
-            <GradientStop Color="#32A8B0" Offset="0"/>
-            <GradientStop Color="#168FA7" Offset="1"/>
+        <LinearGradientBrush x:Key="Turquesa" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#2B9CA1" Offset="0"/>
+            <GradientStop Color="#1385A6" Offset="1"/>
         </LinearGradientBrush>
 
-        <Style x:Key="BuscadorRedondo" TargetType="TextBox">
-            <Setter Property="Background" Value="#F4F8F7"/>
+        <Style x:Key="EncabezadoTabla" TargetType="DataGridColumnHeader">
+            <Setter Property="Height" Value="37"/>
+            <Setter Property="Background" Value="#D9DDD8"/>
             <Setter Property="Foreground" Value="#17475A"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Height" Value="32"/>
-            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="TextoTabla" TargetType="TextBlock">
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+
+        <Style x:Key="Tabla" TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="CanUserResizeRows" Value="False"/>
+            <Setter Property="CanUserReorderColumns" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="RowHeaderWidth" Value="0"/>
+            <Setter Property="RowHeight" Value="42"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="RowBackground" Value="#D9DDD8"/>
+            <Setter Property="AlternatingRowBackground" Value="#E8EBE7"/>
+            <Setter Property="AlternationCount" Value="2"/>
+            <Setter Property="ColumnHeaderStyle" Value="{StaticResource EncabezadoTabla}"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+        </Style>
+
+        <Style TargetType="DataGridCell">
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="16">
-                            <ScrollViewer x:Name="PART_ContentHost"
-                                          Margin="{TemplateBinding Padding}"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="BotonRedondo" TargetType="Button">
-            <Setter Property="Background" Value="#91D2DD"/>
-            <Setter Property="Foreground" Value="#17475A"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="Width" Value="85"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="16">
-                            <ContentPresenter
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="FilaLista" TargetType="ListBoxItem">
-            <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="HorizontalContentAlignment"
-                    Value="Stretch"/>
-            <Setter Property="Foreground" Value="#17475A"/>
             <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#C2DBDD"/>
-                </Trigger>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#B5DADF"/>
+                    <Setter Property="Foreground" Value="#17475A"/>
+                    <Setter Property="Background" Value="Transparent"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="CantidadRedonda" TargetType="TextBox">
-            <Setter Property="Background" Value="White"/>
+        <Style x:Key="Boton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="0"/>
             <Setter Property="Foreground" Value="#17475A"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Height" Value="28"/>
-            <Setter Property="Padding" Value="6,0"/>
-            <Setter Property="TextAlignment" Value="Center"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="12">
-                            <ScrollViewer x:Name="PART_ContentHost"
-                                          Margin="{TemplateBinding Padding}"/>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="15">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Marca" TargetType="CheckBox">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="27"/>
+            <Setter Property="Height" Value="27"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Border Background="Transparent">
+                            <Image x:Name="Icono" Width="22" Height="22"
+                                   Source="/Resources/ImagenesPacientes/ImagenesExpediente/seleccion-sin-marcar.png"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Icono" Property="Source"
+                                        Value="/Resources/ImagenesPacientes/ImagenesExpediente/seleccion-marcada.png"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
     </Window.Resources>
 
-    <Border Margin="10"
-            Background="#D9DEDA"
-            CornerRadius="19"
-            ClipToBounds="True">
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="16"
-                              ShadowDepth="3"
-                              Opacity="0.28"/>
-        </Border.Effect>
-
+    <Border Background="White" CornerRadius="15">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="43"/>
-                <RowDefinition Height="48"/>
+                <RowDefinition Height="38"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="47"/>
+                <RowDefinition Height="38"/>
             </Grid.RowDefinitions>
 
-            <!-- ENCABEZADO -->
-            <Border Grid.Row="0"
-                    Background="{StaticResource Turquesa}">
-                <Grid Margin="16,0,12,0">
-                    <TextBlock x:Name="TxtTitulo"
-                               Text="Seleccionar"
-                               Foreground="White"
-                               FontSize="17"
-                               FontWeight="Bold"
-                               VerticalAlignment="Center"/>
-
-                    <Button Content="✕"
-                            Width="29"
-                            Height="29"
-                            Background="#E52B50"
-                            Foreground="White"
-                            BorderThickness="0"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Cursor="Hand"
-                            Click="Cancelar_Click"/>
+            <Border Background="{StaticResource Turquesa}" CornerRadius="15,15,0,0">
+                <Grid Margin="14,0,10,0">
+                    <TextBlock x:Name="TxtTitulo" Foreground="White"
+                               FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <Button Width="23" Height="23" HorizontalAlignment="Right"
+                            VerticalAlignment="Center" Style="{StaticResource Boton}"
+                            ToolTip="Cerrar" Click="Cancelar_Click">
+                        <Image Source="/Resources/ImagenesPacientes/cerrar-ventana.png"
+                               Stretch="Uniform"/>
+                    </Button>
                 </Grid>
             </Border>
 
-            <!-- BUSCADOR -->
-            <Border Grid.Row="1"
-                    Background="{StaticResource Turquesa}">
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
-                    <TextBlock Text="Buscar:"
-                               Foreground="White"
-                               FontSize="15"
-                               Margin="0,0,12,0"
-                               VerticalAlignment="Center"/>
-                    <TextBox x:Name="TxtBuscar"
-                             Width="250"
-                             Style="{StaticResource BuscadorRedondo}"
-                             TextChanged="Buscar_TextChanged"/>
-                </StackPanel>
-            </Border>
+            <Grid Grid.Row="1" Margin="24,16,24,12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="38"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <!-- PACIENTES -->
-            <Border x:Name="ContenedorPacientes"
-                    Grid.Row="2"
-                    Margin="10,10,10,5"
-                    Background="#D9DEDA"
-                    CornerRadius="13"
-                    ClipToBounds="True"
-                    Visibility="Collapsed">
-                <ListBox x:Name="LstPacientes"
-                         Background="Transparent"
-                         BorderThickness="0"
-                         ItemContainerStyle="{StaticResource FilaLista}"
-                         SelectionMode="Single">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding NombreCompleto}"
-                                       FontSize="14"
-                                       Foreground="#17475A"
-                                       TextTrimming="CharacterEllipsis"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </Border>
+                <Border Background="{StaticResource Turquesa}" CornerRadius="14,14,0,0">
+                    <Grid Margin="18,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Buscar:" Foreground="White" FontSize="16"
+                                   VerticalAlignment="Center" Margin="0,0,12,0"/>
+                        <Border Grid.Column="1" MaxWidth="320" Height="28"
+                                Background="White" CornerRadius="12"
+                                VerticalAlignment="Center">
+                            <TextBox x:Name="TxtBuscar" Background="Transparent"
+                                     BorderThickness="0" Foreground="#17475A"
+                                     Padding="10,0" VerticalContentAlignment="Center"
+                                     TextChanged="Buscar_TextChanged"/>
+                        </Border>
+                    </Grid>
+                </Border>
 
-            <!-- TRATAMIENTOS -->
-            <Border x:Name="ContenedorTratamientos"
-                    Grid.Row="2"
-                    Margin="10,10,10,5"
-                    Background="#D9DEDA"
-                    CornerRadius="13"
-                    ClipToBounds="True"
-                    Visibility="Collapsed">
-                <ListBox x:Name="LstTratamientos"
-                         Background="Transparent"
-                         BorderThickness="0"
-                         ItemContainerStyle="{StaticResource FilaLista}"
-                         SelectionMode="Single">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="105"/>
-                                </Grid.ColumnDefinitions>
-                                <CheckBox Content="{Binding Nombre}"
-                                          IsChecked="{Binding Seleccionado, Mode=TwoWay}"
-                                          Foreground="#17475A"
-                                          FontSize="14"
-                                          VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1"
-                                           Text="{Binding Precio, StringFormat=L {0:N2}}"
-                                           Foreground="#17475A"
-                                           FontSize="13"
-                                           TextAlignment="Right"
-                                           VerticalAlignment="Center"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </Border>
+                <Border Grid.Row="1" Background="#D9DDD8"
+                        CornerRadius="0,0,14,14" Padding="0,0,0,10">
+                    <Grid>
+                        <Grid x:Name="ContenedorPacientes" Visibility="Collapsed">
+                            <DataGrid x:Name="LstPacientes" Style="{StaticResource Tabla}">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Width="55" CanUserSort="False">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Width="27" Height="27"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        Style="{StaticResource Boton}"
+                                                        ToolTip="Seleccionar paciente"
+                                                        Click="SeleccionarPaciente_Click">
+                                                    <Image Width="22" Height="22">
+                                                        <Image.Style>
+                                                            <Style TargetType="Image">
+                                                                <Setter Property="Source"
+                                                                        Value="/Resources/ImagenesPacientes/ImagenesExpediente/seleccion-sin-marcar.png"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=DataGridRow}}"
+                                                                                 Value="True">
+                                                                        <Setter Property="Source"
+                                                                                Value="/Resources/ImagenesPacientes/ImagenesExpediente/seleccion-marcada.png"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Image.Style>
+                                                    </Image>
+                                                </Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Nombre del paciente"
+                                                        Binding="{Binding NombreCompleto}" Width="*"
+                                                        ElementStyle="{StaticResource TextoTabla}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
 
-            <!-- MATERIALES -->
-            <Border x:Name="ContenedorMateriales"
-                    Grid.Row="2"
-                    Margin="10,10,10,5"
-                    Background="#D9DEDA"
-                    CornerRadius="13"
-                    ClipToBounds="True"
-                    Visibility="Collapsed">
-                <DataGrid x:Name="DgMateriales"
-                          AutoGenerateColumns="False"
-                          CanUserAddRows="False"
-                          CanUserDeleteRows="False"
-                          HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal"
-                          RowHeaderWidth="0"
-                          RowHeight="37"
-                          Background="#D9DEDA"
-                          BorderThickness="0">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Nombre del material"
-                                            Binding="{Binding Nombre}"
-                                            IsReadOnly="True"
-                                            Width="*"/>
-                        <DataGridTemplateColumn Header="Cantidad"
-                                                Width="95">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBox
-                                        Style="{StaticResource CantidadRedonda}"
-                                        Margin="4"
-                                        Text="{Binding CantidadTexto,
-                                            Mode=TwoWay,
-                                            UpdateSourceTrigger=PropertyChanged}"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Stock"
-                                            Binding="{Binding StockActual}"
-                                            IsReadOnly="True"
-                                            Width="70"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Border>
+                        <Grid x:Name="ContenedorTratamientos" Visibility="Collapsed">
+                            <DataGrid x:Name="LstTratamientos" Style="{StaticResource Tabla}">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Width="55" CanUserSort="False">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox Style="{StaticResource Marca}"
+                                                          ToolTip="Marcar tratamiento"
+                                                          IsChecked="{Binding Seleccionado, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Nombre del tratamiento"
+                                                        Binding="{Binding Nombre}" Width="*"
+                                                        ElementStyle="{StaticResource TextoTabla}"/>
+                                    <DataGridTextColumn Header="Importe" Width="95"
+                                                        Binding="{Binding Tratamiento.Importe, StringFormat='L {0:N2}'}"
+                                                        ElementStyle="{StaticResource TextoTabla}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
 
-            <!-- VALIDACIONES -->
-            <TextBlock x:Name="TxtError"
-                       Grid.Row="3"
-                       Foreground="#E52B50"
-                       FontSize="11"
-                       TextWrapping="Wrap"
-                       Margin="16,6"/>
+                        <Grid x:Name="ContenedorMateriales" Visibility="Collapsed">
+                            <DataGrid x:Name="DgMateriales" Style="{StaticResource Tabla}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Nombre del material"
+                                                        Binding="{Binding Nombre}" Width="*"
+                                                        ElementStyle="{StaticResource TextoTabla}"/>
+                                    <DataGridTemplateColumn Header="Cantidad" Width="100">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Width="70" Height="25"
+                                                         VerticalContentAlignment="Center"
+                                                         HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center"
+                                                         Foreground="#17475A"
+                                                         Background="White"
+                                                         BorderBrush="#BBC9C5"
+                                                         TextAlignment="Center"
+                                                         Text="{Binding CantidadTexto, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Stock" Width="85"
+                                                        Binding="{Binding StockActual, StringFormat=N2}"
+                                                        ElementStyle="{StaticResource TextoTabla}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Grid>
+                </Border>
 
-            <!-- PIE -->
-            <Border Grid.Row="4"
-                    Background="{StaticResource Turquesa}">
-                <Button Content="Ok"
-                        Style="{StaticResource BotonRedondo}"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        Margin="0,0,15,0"
+                <TextBlock x:Name="TxtError" Grid.Row="2" Foreground="#CF4059"
+                           Margin="0,4,0,0" TextWrapping="Wrap"/>
+            </Grid>
+
+            <Border Grid.Row="2" Background="{StaticResource Turquesa}"
+                    CornerRadius="0,0,15,15">
+                <Button Content="Aceptar" Width="95" Height="28"
+                        Style="{StaticResource Boton}" Background="#92D4DE"
+                        FontWeight="Bold" HorizontalAlignment="Right"
+                        VerticalAlignment="Center" Margin="0,0,16,0"
                         Click="Aceptar_Click"/>
             </Border>
         </Grid>
     </Border>
 </Window>
-
-

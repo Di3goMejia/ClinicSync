@@ -478,7 +478,7 @@
 
                                 <Image x:Name="ImgVistaPrevia"
                                        Source="/Resources/ImagenesPerfil/subir-imagen-perfil.png"
-                                       Stretch="UniformToFill"/>
+                                       Stretch="UniformToFill" Margin="0,0,-6,0"/>
                             </Border>
 
                             <StackPanel>

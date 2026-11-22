@@ -124,7 +124,7 @@
                                  FontSize="18"
                                  FontWeight="Bold"
                                  PreviewTextInput="TxtToken_PreviewTextInput"
-                                 TextChanged="TxtToken_TextChanged" Margin="41,0,120,0">
+                                 TextChanged="TxtToken_TextChanged" Margin="41,0,120,0" Height="35" VerticalAlignment="Top">
                             <TextBox.Template>
                                 <ControlTemplate TargetType="TextBox">
                                     <Border Background="{TemplateBinding Background}"
@@ -132,8 +132,9 @@
                                             BorderThickness="{TemplateBinding BorderThickness}"
                                             CornerRadius="10">
                                         <ScrollViewer x:Name="PART_ContentHost"
-                                                      Margin="{TemplateBinding Padding}"
-                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                                      Margin="10,0"
+                                                      VerticalAlignment="Center"
+                                                      Focusable="False"/>
                                     </Border>
                                 </ControlTemplate>
                             </TextBox.Template>

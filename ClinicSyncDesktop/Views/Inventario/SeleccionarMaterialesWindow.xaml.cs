@@ -99,6 +99,19 @@ namespace ClinicSyncDesktop.Views
                     _todos.Add(material);
                 }
 
+                // Mantener visibles los materiales históricos para que se puedan quitar.
+                foreach (var previo in _previos.Where(p => _todos.All(m => m.IdMaterial != p.IdMaterial)))
+                {
+                    _todos.Add(new MaterialParaEgreso
+                    {
+                        IdMaterial = previo.IdMaterial,
+                        Nombre = previo.Nombre,
+                        UnidadMedida = previo.UnidadMedida,
+                        Cantidad = previo.Cantidad,
+                        Seleccionado = true
+                    });
+                }
+
                 _vista = CollectionViewSource.GetDefaultView(_todos);
                 _vista.Filter = Filtrar;
                 listaMateriales.ItemsSource = _vista;

@@ -1,5 +1,4 @@
-﻿
-using ClinicSyncDesktop.Models;
+﻿using ClinicSyncDesktop.Models;
 using ClinicSyncDesktop.Services;
 using ClinicSyncDesktop.Validations;
 using System;
@@ -25,14 +24,18 @@ namespace ClinicSyncDesktop.Views
 
         private bool guardando;
         private bool inicializado;
+        private bool sincronizandoFecha;
+        private const string FormatoFecha = "yyyy'/'MM'/'dd";
         private bool cargandoDatos;
 
         public AgregarIngresoWindow()
         {
             InitializeComponent();
 
+            DpFecha.DisplayDateEnd = DateTime.Today;
             DpFecha.SelectedDate = DateTime.Today;
-           
+            TxtFechaIngreso.Text = DateTime.Today.ToString(FormatoFecha, CultureInfo.InvariantCulture);
+
             inicializado = true;
 
             Loaded += AgregarIngresoWindow_Loaded;
@@ -162,15 +165,46 @@ namespace ClinicSyncDesktop.Views
                 await CargarTratamientosPacienteAsync();
             }
         }
+        private void CalendarioIngreso_Click(object sender, RoutedEventArgs e)
+        {
+            if (!guardando)
+                DpFecha.IsDropDownOpen = true;
+        }
+
+        private void TxtFechaIngreso_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (inicializado && !sincronizandoFecha)
+                ErrorFecha.Text = "";
+        }
+
+        private void TxtFechaIngreso_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (inicializado && !sincronizandoFecha)
+                TryObtenerFecha(out _);
+        }
+
         private async void DpFecha_SelectedDateChanged(
             object sender, SelectionChangedEventArgs e)
         {
             if (!inicializado)
                 return;
 
+            if (!sincronizandoFecha && DpFecha.SelectedDate is DateTime fecha)
+            {
+                sincronizandoFecha = true;
+                try
+                {
+                    TxtFechaIngreso.Text = fecha.ToString(FormatoFecha, CultureInfo.InvariantCulture);
+                }
+                finally
+                {
+                    sincronizandoFecha = false;
+                }
+                ErrorFecha.Text = "";
+            }
+
             await CargarTratamientosPacienteAsync();
         }
-
 
         // POPUP DE TRATAMIENTOS
         private void SeleccionarTratamientos_Click(
@@ -333,14 +367,34 @@ namespace ClinicSyncDesktop.Views
         // VALIDACIONES EN ROJO
         private bool TryObtenerFecha(out DateTime fecha)
         {
-            fecha = default;
-            if (DpFecha.SelectedDate is not DateTime fechaSeleccionada)
+            if (!DateTime.TryParseExact(
+                    TxtFechaIngreso.Text.Trim(), FormatoFecha,
+                    CultureInfo.InvariantCulture, DateTimeStyles.None, out fecha) ||
+                fecha > DateTime.Today)
+            {
+                ErrorFecha.Text = "Ingrese una fecha válida en formato YYYY/MM/DD.";
                 return false;
-            fecha = fechaSeleccionada.Date.Add(DateTime.Now.TimeOfDay);
+            }
+
+            fecha = fecha.Date;
+            if (DpFecha.SelectedDate != fecha)
+            {
+                sincronizandoFecha = true;
+                try
+                {
+                    DpFecha.SelectedDate = fecha;
+                }
+                finally
+                {
+                    sincronizandoFecha = false;
+                }
+            }
+
+            ErrorFecha.Text = "";
             return true;
         }
 
-        private bool ValidarFormulario()
+        private bool ValidarFormulario(out DateTime fecha)
         {
             ErrorPaciente.Text = "";
             ErrorFecha.Text = "";
@@ -350,9 +404,12 @@ namespace ClinicSyncDesktop.Views
             ErrorMedioPago.Text = "";
             ErrorGeneral.Text = "";
 
+            if (!TryObtenerFecha(out fecha))
+                return false;
+
             var medioSeleccionado = CmbMedioPago.SelectedItem as ComboBoxItem;
             var resultadoValidacion = new ValidadorIngreso().Validar(new EntradaIngreso(
-             pacienteSeleccionado, DpFecha.SelectedDate, "00:00",
+             pacienteSeleccionado, fecha, "00:00",
              TxtDescuento.Text, medioSeleccionado?.Content?.ToString(), ObtenerSubtotal()));
             if (!resultadoValidacion.EsValido)
             {
@@ -396,7 +453,7 @@ namespace ClinicSyncDesktop.Views
         private async void Guardar_Click(
             object sender, RoutedEventArgs e)
         {
-            if (guardando || !ValidarFormulario())
+            if (guardando || !ValidarFormulario(out DateTime fecha))
                 return;
 
             guardando = true;
@@ -408,17 +465,13 @@ namespace ClinicSyncDesktop.Views
                     (ComboBoxItem)CmbMedioPago.SelectedItem;
 
                 LeerDescuento(out decimal descuento);
-                TryObtenerFecha(out DateTime fecha);
 
                 var request = new RegistrarIngresoRequest
                 {
                     IdPaciente = pacienteSeleccionado!.IdPaciente,
-                    Fecha = fecha,
+                    Fecha = fecha.Date.Add(DateTime.Now.TimeOfDay),
                     Descuento = descuento,
                     MedioPago = medio.Content?.ToString() ?? "",
-
-                    // Compatible con la API utilizada anteriormente:
-                    // aquí se envían IDs del catálogo de tratamientos.
 
                     IdsTratamientosVisita = tratamientosElegidos
                    .Select(t => t.IdTratamientoVisita)
@@ -464,4 +517,3 @@ namespace ClinicSyncDesktop.Views
         }
     }
 }
-

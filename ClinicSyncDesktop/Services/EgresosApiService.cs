@@ -105,7 +105,8 @@ namespace ClinicSyncDesktop.Services
             string medioPago,
             decimal monto,
             bool? activo = null,
-            CancellationToken ct = default)
+            CancellationToken ct = default,
+            IEnumerable<(int IdMaterial, decimal Cantidad)>? materiales = null)
         {
             var solicitud = new
             {
@@ -113,7 +114,8 @@ namespace ClinicSyncDesktop.Services
                 Concepto = concepto,
                 MedioPago = medioPago,
                 Monto = monto,
-                Activo = activo
+                Activo = activo,
+                Materiales = materiales?.Select(m => new { m.IdMaterial, m.Cantidad }).ToList()
             };
 
             using var respuesta = await ClienteApi.PutAutenticadoAsync(

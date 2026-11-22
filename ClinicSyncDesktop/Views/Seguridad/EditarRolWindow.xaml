@@ -135,6 +135,7 @@
                                FontWeight="Bold" 
                                Margin="16,0" 
                                VerticalAlignment="Center" />
+                    
                     <Button Grid.Column="1"
                             Content="✕"
                             Width="19"

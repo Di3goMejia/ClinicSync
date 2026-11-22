@@ -144,13 +144,14 @@
                                     <TextBox.Template>
                                         <ControlTemplate TargetType="TextBox">
                                             <Border Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                        CornerRadius="10">
-                                                <ScrollViewer x:Name="PART_ContentHost"
-                                                  Margin="{TemplateBinding Padding}"
-                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                            </Border>
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="10">
+                                    <ScrollViewer x:Name="PART_ContentHost"
+                                                  Margin="10,0"
+                                                  VerticalAlignment="Center"
+                                                  Focusable="False"/>
+                                </Border>
                                         </ControlTemplate>
                                     </TextBox.Template>     
                     </TextBox>

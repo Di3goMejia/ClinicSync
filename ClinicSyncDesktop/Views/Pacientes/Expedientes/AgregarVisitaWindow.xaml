@@ -367,71 +367,71 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Text="Buscar:"
-                       Foreground="White"
-                       FontSize="16"
-                       VerticalAlignment="Center"
-                       Margin="0,0,12,0"/>
+                                       Foreground="White"
+                                       FontSize="16"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,12,0"/>
 
                             <Border Grid.Column="1"
-                    MaxWidth="320"
-                    Height="28"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center"
-                    Background="White"
-                    CornerRadius="12">
+                                    MaxWidth="320"
+                                    Height="28"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Center"
+                                    Background="White"
+                                    CornerRadius="12">
                                 <TextBox x:Name="txtBuscarTratamiento"
-                         Background="Transparent"
-                         BorderThickness="0"
-                         Foreground="#17475A"
-                         Padding="10,0"
-                         VerticalContentAlignment="Center"
-                         TextChanged="BuscarTratamiento_TextChanged"/>
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         Foreground="#17475A"
+                                         Padding="10,0"
+                                         VerticalContentAlignment="Center"
+                                         TextChanged="BuscarTratamiento_TextChanged"/>
                             </Border>
                         </Grid>
                     </Border>
 
                     <Border Grid.Row="1"
-            Background="#D9DDD8"
-            CornerRadius="0,0,14,14"
-            Padding="0,0,0,10">
+                            Background="#D9DDD8"
+                            CornerRadius="0,0,14,14"
+                            Padding="0,0,0,10">
                         <Grid>
                             <DataGrid x:Name="dgTratamientos"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      CanUserDeleteRows="False"
-                      CanUserResizeRows="False"
-                      IsReadOnly="True"
-                      HeadersVisibility="Column"
-                      RowHeaderWidth="0"
-                      RowHeight="42"
-                      GridLinesVisibility="None"
-                      BorderThickness="0"
-                      Background="Transparent"
-                      Foreground="#17475A"
-                      RowBackground="#D9DDD8"
-                      AlternatingRowBackground="#E8EBE7"
-                      AlternationCount="2"
-                      ColumnHeaderStyle="{StaticResource EncabezadoTratamiento}"
-                      VerticalScrollBarVisibility="Auto">
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="False"
+                                      CanUserDeleteRows="False"
+                                      CanUserResizeRows="False"
+                                      IsReadOnly="True"
+                                      HeadersVisibility="Column"
+                                      RowHeaderWidth="0"
+                                      RowHeight="42"
+                                      GridLinesVisibility="None"
+                                      BorderThickness="0"
+                                      Background="Transparent"
+                                      Foreground="#17475A"
+                                      RowBackground="#D9DDD8"
+                                      AlternatingRowBackground="#E8EBE7"
+                                      AlternationCount="2"
+                                      ColumnHeaderStyle="{StaticResource EncabezadoTratamiento}"
+                                      VerticalScrollBarVisibility="Auto">
 
                                 <DataGrid.Columns>
                                     <DataGridTemplateColumn Width="55" CanUserSort="False">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Button Width="27" Height="27"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Style="{StaticResource BotonTratamiento}"
-                                        Click="SeleccionarTratamiento_Click">
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        Style="{StaticResource BotonTratamiento}"
+                                                        Click="SeleccionarTratamiento_Click">
                                                     <Image Width="22" Height="22">
                                                         <Image.Style>
                                                             <Style TargetType="Image">
                                                                 <Setter Property="Source"
-                                                        Value="/Resources/ImagenesPacientes/ImagenesExpediente/seleccion-sin-marcar.png"/>
+                                                                        Value="/Resources/ImagenesPacientes/ImagenesExpediente/seleccion-sin-marcar.png"/>
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding Seleccionado}" Value="True">
                                                                         <Setter Property="Source"
-                                                                Value="/Resources/ImagenesPacientes/ImagenesExpediente/seleccion-marcada.png"/>
+                                                                                Value="/Resources/ImagenesPacientes/ImagenesExpediente/seleccion-marcada.png"/>
                                                                     </DataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>
@@ -446,33 +446,33 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center">
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center">
                                                     <Button Content="−"
-                                            Width="25"
-                                            FontSize="16"
-                                            Style="{StaticResource BotonTratamiento}"
-                                            Click="RestarCantidad_Click"/>
+                                                            Width="25"
+                                                            FontSize="16"
+                                                            Style="{StaticResource BotonTratamiento}"
+                                                            Click="RestarCantidad_Click"/>
 
                                                     <TextBlock Text="{Binding Cantidad}"
-                                               Width="25"
-                                               FontSize="14"
-                                               Style="{StaticResource TextoTratamiento}"/>
+                                                               Width="25"
+                                                               FontSize="14"
+                                                               Style="{StaticResource TextoTratamiento}"/>
 
                                                     <Button Content="+"
-                                            Width="25"
-                                            FontSize="16"
-                                            Style="{StaticResource BotonTratamiento}"
-                                            Click="SumarCantidad_Click"/>
+                                                            Width="25"
+                                                            FontSize="16"
+                                                            Style="{StaticResource BotonTratamiento}"
+                                                            Click="SumarCantidad_Click"/>
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
                                     <DataGridTextColumn Header="Nombre del tratamiento"
-                                        Binding="{Binding Nombre}"
-                                        Width="*"
-                                        ElementStyle="{StaticResource TextoTratamiento}"/>
+                                                        Binding="{Binding Nombre}"
+                                                        Width="*"
+                                                        ElementStyle="{StaticResource TextoTratamiento}"/>
                                 </DataGrid.Columns>
                             </DataGrid>
 
