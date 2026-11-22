@@ -334,11 +334,9 @@ namespace ClinicSyncDesktop.Views
         private bool TryObtenerFecha(out DateTime fecha)
         {
             fecha = default;
-
             if (DpFecha.SelectedDate is not DateTime fechaSeleccionada)
                 return false;
-
-            fecha = fechaSeleccionada.Date;
+            fecha = fechaSeleccionada.Date.Add(DateTime.Now.TimeOfDay);
             return true;
         }
 

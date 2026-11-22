@@ -26,6 +26,9 @@ namespace ClinicSyncDesktop.Views
         private bool guardando;
         private bool cargando;
         private bool ingresoDeVisita;
+        private TimeSpan horaOriginal = TimeSpan.Zero;
+        private int idPacienteOriginal;
+        private List<TratamientoIngreso> tratamientosOriginales = new();
 
         public EditarIngresoWindow(int idIngreso)
         {
@@ -87,6 +90,8 @@ namespace ClinicSyncDesktop.Views
                 idPacienteSeleccionado = ingreso.IdPaciente;
                 ingresoDeVisita = ingreso.Tratamientos.Any(
                     t => t.IdTratamientoVisita > 0);
+                idPacienteOriginal = ingreso.IdPaciente;
+                horaOriginal = ingreso.Fecha.TimeOfDay;
 
                 // 3. Mostrar los datos del ingreso.
                 var paciente = pacientes.FirstOrDefault(
@@ -96,8 +101,7 @@ namespace ClinicSyncDesktop.Views
                     ? paciente.NombreCompleto
                     : ingreso.Paciente;
 
-                DpFecha.SelectedDate = ingreso.Fecha;
-                TxtHora.Text = ingreso.Fecha.ToString("HH:mm");
+                DpFecha.SelectedDate = ingreso.Fecha.Date;
 
                 TxtDescuento.Text =
                     ingreso.Descuento.ToString("0.00");
@@ -117,8 +121,8 @@ namespace ClinicSyncDesktop.Views
                 // 5. Recuperar tratamientos asociados.
 
                 // Recuperar directamente los tratamientos del ingreso.
-                tratamientosElegidos = ingreso.Tratamientos
-                    .ToList();
+                tratamientosElegidos = ingreso.Tratamientos.ToList();
+                tratamientosOriginales = ingreso.Tratamientos.ToList();
 
                 // Mostrar los tratamientos aunque ya estén cobrados.
                 TxtTratamientos.Text =
@@ -293,9 +297,11 @@ namespace ClinicSyncDesktop.Views
 
                 // Conservar tratamientos ya asociados al ingreso
                 // únicamente si el paciente y la fecha son los mismos.
-                var propios = tratamientosElegidos
-                    .Where(t => t.IdTratamientoVisita > 0)
-                    .ToList();
+                var propios = new List<TratamientoIngreso>();
+                if (idPacienteSeleccionado == idPacienteOriginal)
+                {
+                    propios = tratamientosOriginales.ToList();
+                }
 
                 catalogoTratamientos = disponibles
                     .Concat(propios)
@@ -389,20 +395,14 @@ namespace ClinicSyncDesktop.Views
         private bool TryObtenerFechaHora(out DateTime fecha)
         {
             fecha = default;
-
             if (DpFecha.SelectedDate is not DateTime fechaSeleccionada)
                 return false;
-
-            if (!TimeSpan.TryParseExact(
-                    TxtHora.Text.Trim(),
-                    @"hh\:mm",
-                    CultureInfo.InvariantCulture,
-                    out TimeSpan hora))
-            {
-                return false;
-            }
-
+            TimeSpan hora = horaOriginal == TimeSpan.Zero
+                ? DateTime.Now.TimeOfDay
+                : horaOriginal;
             fecha = fechaSeleccionada.Date.Add(hora);
+            if (fecha > DateTime.Now)
+                return false;
             return true;
         }
 
@@ -417,12 +417,10 @@ namespace ClinicSyncDesktop.Views
         }
 
         private void DpFecha_SelectedDateChanged(
-            object sender, SelectionChangedEventArgs e)
+    object sender, SelectionChangedEventArgs e)
         {
             if (cargando)
                 return;
-
-            LimpiarTratamientosSeleccionados();
             ErrorFecha.Text = "";
         }
 
@@ -436,10 +434,17 @@ namespace ClinicSyncDesktop.Views
             ErrorGeneral.Text = "";
 
             var medioSeleccionado = CmbMedioPago.SelectedItem as ComboBoxItem;
-            var resultadoValidacion = new ValidadorIngreso().Validar(new EntradaIngreso(
-                idPacienteSeleccionado > 0 ? new object() : null,
-                DpFecha.SelectedDate, TxtHora.Text, TxtDescuento.Text,
-                medioSeleccionado?.Content?.ToString(), tratamientosElegidos.Sum(t => t.Importe)));
+            var resultadoValidacion = new ValidadorIngreso().Validar(
+                new EntradaIngreso(
+                    idPacienteSeleccionado > 0 ? new object() : null,
+                    DpFecha.SelectedDate,
+                    "",
+                    TxtDescuento.Text,
+                    medioSeleccionado?.Content?.ToString(),
+                    tratamientosElegidos.Sum(t => t.Importe),
+                    SoloFecha: true
+                )
+            );
             if (!resultadoValidacion.EsValido)
             {
                 var error = resultadoValidacion.Errores.FirstOrDefault();
@@ -477,7 +482,11 @@ namespace ClinicSyncDesktop.Views
                     (ComboBoxItem)CmbMedioPago.SelectedItem;
 
                 LeerDescuento(out decimal descuento);
-                TryObtenerFechaHora(out DateTime fechaHora);
+                if (!TryObtenerFechaHora(out DateTime fechaHora))
+                {
+                    ErrorFecha.Text = "Seleccione una fecha válida que no sea futura.";
+                    return;
+                }
 
                 var request = new EditarIngresoRequest
                 {
