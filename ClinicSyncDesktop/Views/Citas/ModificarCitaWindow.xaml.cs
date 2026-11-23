@@ -92,7 +92,12 @@ namespace ClinicSyncDesktop.Views.Citas
 
                 // CARGAR FECHAS
                 dpInicio.SelectedDate = cita.FechaInicio.Date;
-                dpFin.SelectedDate = cita.FechaFinal.Date;
+
+                // En citas de todo el día la base guarda el fin como el día siguiente a las 00:00.
+                // Se resta un día para mostrar el último día real de la cita.
+                dpFin.SelectedDate = cita.TodoElDia
+                    ? cita.FechaFinal.Date.AddDays(-1)
+                    : cita.FechaFinal.Date;
 
                 // CARGAR HORAS
                 cmbHoraInicio.SelectedItem =
@@ -341,7 +346,10 @@ namespace ClinicSyncDesktop.Views.Citas
             }
 
             // VALIDAR ORDEN DE FECHAS
-            if (fin <= inicio)
+            // Todo el día: el mismo día es válido; solo se rechaza un fin anterior.
+            bool ordenInvalido = todoElDia ? fin < inicio : fin <= inicio;
+
+            if (ordenInvalido)
             {
                 MostrarError("La fecha y hora final deben ser posteriores al inicio.");
                 return;
