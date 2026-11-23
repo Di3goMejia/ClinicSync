@@ -177,7 +177,7 @@ namespace ClinicSyncDesktop.Views
                 ErrorFecha.Text = "";
         }
 
-        private void TxtFechaIngreso_LostFocus(object sender, RoutedEventArgs e)
+        private void TxtFechaIngreso_LostFocus(object sender, RoutedEventArgs e) 
         {
             if (!TryObtenerFecha(out _))
                 return;
@@ -512,3 +512,4 @@ namespace ClinicSyncDesktop.Views
         }
     }
 }
+
