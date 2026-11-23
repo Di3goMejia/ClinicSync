@@ -154,7 +154,7 @@
                                 Padding="6,0"
                                 Background="#E4F0F0"
                                 Style="{StaticResource BotonPlano}"
-                                Click="SeleccionarImagen_Click" Grid.ColumnSpan="2" Margin="0,2,136,3">
+                                Click="SeleccionarImagen_Click"  Margin="0,2,0,3">
 
                             <Button.Template>
                                 <ControlTemplate TargetType="{x:Type Button}">
