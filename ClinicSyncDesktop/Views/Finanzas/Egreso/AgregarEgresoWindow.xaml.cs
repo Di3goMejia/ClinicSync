@@ -321,5 +321,6 @@ namespace ClinicSyncDesktop.Views
                 btnAgregar.IsEnabled = true;
             }
         }
+
     }
 }

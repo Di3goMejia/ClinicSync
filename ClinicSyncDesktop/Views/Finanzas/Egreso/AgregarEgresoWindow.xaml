@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Agregar nuevo egreso"
         Width="460"
-        Height="452"
+        Height="414"
         WindowStartupLocation="CenterOwner"
         WindowStyle="None"
         ResizeMode="NoResize"
@@ -261,13 +261,14 @@
                   Margin="22,17,22,10">
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="90"/>
+                    <RowDefinition Height="54"/>
+                    <RowDefinition Height="54"/>
                     <RowDefinition Height="102"/>
                     <RowDefinition Height="58"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- TIPO Y FECHA -->
+                <!-- FECHA Y HORA -->
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -275,32 +276,8 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- TIPO -->
-                    <StackPanel Grid.Column="0">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Tipo:"
-                                       Style="{StaticResource Etiqueta}"/>
-                            <TextBlock Text=" *"
-                                       Foreground="#CF4059"
-                                       FontWeight="Bold"/>
-                        </StackPanel>
-
-                        <ComboBox x:Name="cmbTipo"
-                                  Margin="0,5,0,0"
-                                  Style="{StaticResource ComboRedondo}"
-                                  SelectedIndex="0"
-                                  SelectionChanged="cmbTipo_SelectionChanged">
-                            <ComboBoxItem Content="Seleccione una opción"
-                                          IsEnabled="False"/>
-                            <ComboBoxItem Content="Materiales"
-                                          Tag="MATERIALES"/>
-                            <ComboBoxItem Content="Servicios"
-                                          Tag="SERVICIOS"/>
-                        </ComboBox>
-                    </StackPanel>
-
                     <!-- FECHA -->
-                    <StackPanel Grid.Column="2">
+                    <StackPanel Grid.Column="0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Fecha:"
                                        Style="{StaticResource Etiqueta}"/>
@@ -360,23 +337,46 @@
                                         SelectedDateChanged="dpFecha_SelectedDateChanged"
                                         Panel.ZIndex="-1"/>
                         </Grid>
+                    </StackPanel>
 
+                    <!-- HORA -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Hora:"/><Run Foreground="#FFCF4059" FontWeight="Bold" Language="es-hn" Text=" "/><Run Foreground="#FFCF4059" FontWeight="Bold" Text="*"/></TextBlock>
                         <TextBox x:Name="txtHora"
+                                 Style="{StaticResource Campo}"
                                  Margin="0,5,0,0"
-                                 Height="25"
-                                 Background="#D9DDD8"
-                                 Foreground="#17475A"
-                                 BorderThickness="0"
-                                 Padding="10,0"
                                  MaxLength="5"
-                                 VerticalContentAlignment="Center"
                                  Text="00:00"
                                  ToolTip="HH:mm"/>
                     </StackPanel>
                 </Grid>
 
-                <!-- CONCEPTO -->
+                <!-- TIPO -->
                 <StackPanel Grid.Row="1">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Tipo:"
+                                   Style="{StaticResource Etiqueta}"/>
+                        <TextBlock Text=" *"
+                                   Foreground="#CF4059"
+                                   FontWeight="Bold"/>
+                    </StackPanel>
+
+                    <ComboBox x:Name="cmbTipo"
+                              Margin="0,5,0,0"
+                              Style="{StaticResource ComboRedondo}"
+                              SelectedIndex="0"
+                              SelectionChanged="cmbTipo_SelectionChanged">
+                        <ComboBoxItem Content="Seleccione una opción"
+                                      IsEnabled="False"/>
+                        <ComboBoxItem Content="Materiales"
+                                      Tag="MATERIALES"/>
+                        <ComboBoxItem Content="Servicios"
+                                      Tag="SERVICIOS"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- CONCEPTO -->
+                <StackPanel Grid.Row="2">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Concepto:"
                                    Style="{StaticResource Etiqueta}"/>
@@ -435,7 +435,7 @@
                 </StackPanel>
 
                 <!-- MEDIO DE PAGO Y MONTO -->
-                <Grid Grid.Row="2">
+                <Grid Grid.Row="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="12"/>
@@ -486,7 +486,7 @@
                             <TextBlock Text="L"
                                        Foreground="#7A8A8F"
                                        FontSize="12"
-                                       Margin="11,0,0,0"
+                                       Margin="21,0,0,0"
                                        VerticalAlignment="Center"
                                        IsHitTestVisible="False"/>
                         </Grid>
@@ -494,7 +494,7 @@
                 </Grid>
 
                 <!-- MENSAJE DE VALIDACIÓN -->
-                <Grid Grid.Row="3"
+                <Grid Grid.Row="4"
                       Margin="0,5,0,0"
                       VerticalAlignment="Top">
 

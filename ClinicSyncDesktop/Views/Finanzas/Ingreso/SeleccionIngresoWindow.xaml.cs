@@ -1,5 +1,4 @@
-﻿
-using ClinicSyncDesktop.Models;
+﻿using ClinicSyncDesktop.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -86,17 +85,17 @@ namespace ClinicSyncDesktop.Views
             tipo = TipoSeleccion.Tratamientos;
             TxtTitulo.Text = "Seleccionar tratamientos";
             var ids = seleccionados
-                .Select(t => t.IdTratamientoVisita)
+                .Select(ClaveTratamiento)
                 .ToHashSet();
 
             tratamientos = catalogo
-                .GroupBy(t => t.IdTratamientoVisita)
+                .GroupBy(ClaveTratamiento)
                 .Select(g => g.First())
                 .Select(t => new TratamientoFila
                 {
                     Tratamiento = t,
                     Seleccionado =
-                        ids.Contains(t.IdTratamientoVisita)
+                        ids.Contains(ClaveTratamiento(t))
                 })
                 .ToList();
 
@@ -136,6 +135,22 @@ namespace ClinicSyncDesktop.Views
             DgMateriales.ItemsSource = materiales;
         }
 
+        private static (bool EsDeVisita, int Id) ClaveTratamiento(TratamientoIngreso tratamiento)
+        {
+            return tratamiento.IdTratamientoVisita > 0
+                ? (true, tratamiento.IdTratamientoVisita)
+                : (false, tratamiento.IdTratamiento);
+        }
+
+        private void SeleccionarPaciente_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement { DataContext: PacienteIngreso paciente })
+            {
+                LstPacientes.SelectedItem = paciente;
+                TxtError.Text = "";
+            }
+        }
+
         // BUSCADOR DE LOS TRES MODOS
         private void Buscar_TextChanged(
             object sender, TextChangedEventArgs e)
@@ -152,12 +167,14 @@ namespace ClinicSyncDesktop.Views
 
                 if (vista == null) return;
 
+                var pacienteAnterior = LstPacientes.SelectedItem;
                 vista.Filter = objeto =>
                     objeto is PacienteIngreso p &&
                     p.NombreCompleto.Contains(
                         texto, StringComparison.OrdinalIgnoreCase);
 
-                vista.Refresh();
+                if (pacienteAnterior != null && vista.Contains(pacienteAnterior))
+                    LstPacientes.SelectedItem = pacienteAnterior;
             }
             else if (tipo == TipoSeleccion.Tratamientos)
             {
@@ -171,7 +188,6 @@ namespace ClinicSyncDesktop.Views
                     t.Nombre.Contains(
                         texto, StringComparison.OrdinalIgnoreCase);
 
-                vista.Refresh();
             }
             else
             {
@@ -185,7 +201,6 @@ namespace ClinicSyncDesktop.Views
                     m.Nombre.Contains(
                         texto, StringComparison.OrdinalIgnoreCase);
 
-                vista.Refresh();
             }
         }
 
@@ -279,4 +294,3 @@ namespace ClinicSyncDesktop.Views
         }
     }
 }
-

@@ -10,6 +10,14 @@
         public decimal Monto { get; set; }
         public bool Activo { get; set; }
         public int? IdCompra { get; set; }
+        public List<MaterialEgresoDetalle> Materiales { get; set; } = new();
 
+    }
+    public sealed class MaterialEgresoDetalle
+    {
+        public int IdMaterial { get; set; }
+        public string Nombre { get; set; } = "";
+        public string UnidadMedida { get; set; } = "";
+        public decimal Cantidad { get; set; }
     }
 }

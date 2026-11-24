@@ -76,6 +76,12 @@ namespace ClinicSyncDesktop.Services
                 TratamientoIngreso[]>(ruta);
         }
 
+        public Task<TratamientoIngreso[]> ObtenerTratamientosCatalogoAsync()
+        {
+            return ClienteApi.ObtenerAutenticadoAsync<TratamientoIngreso[]>(
+                "api/finanzas/tratamientos-catalogo");
+        }
+
         public Task<MaterialIngreso[]> ObtenerMaterialesAsync()
         {
             return ClienteApi.ObtenerAutenticadoAsync<

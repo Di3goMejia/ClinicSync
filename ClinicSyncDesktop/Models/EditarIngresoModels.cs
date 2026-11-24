@@ -24,6 +24,8 @@ namespace ClinicSyncDesktop.Models
 
         public bool Activo { get; set; }
 
+        public List<MaterialConsumido> Materiales { get; set; } = new();
+
         public List<TratamientoIngreso> Tratamientos
         { get; set; } = new();
     }
@@ -39,6 +41,8 @@ namespace ClinicSyncDesktop.Models
         public string MedioPago { get; set; } = "";
 
         public bool Activo { get; set; }
+
+        public List<MaterialConsumido> Materiales { get; set; } = new();
 
         public List<int> IdsTratamientos
         { get; set; } = new();

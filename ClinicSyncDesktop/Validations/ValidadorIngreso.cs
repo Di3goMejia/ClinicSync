@@ -1,7 +1,7 @@
 namespace ClinicSyncDesktop.Validations;
 
-public record EntradaIngreso(object? Paciente, DateTime? Fecha, string TextoHora,
-    string TextoDescuento, string? MedioPago, decimal Subtotal);
+public record EntradaIngreso(object? Paciente,DateTime? Fecha, string TextoHora, string TextoDescuento,
+    string? MedioPago, decimal Subtotal, bool SoloFecha = false);
 
 public sealed class ResultadoValidacionIngreso : ResultadoValidacion
 {
@@ -16,12 +16,32 @@ public sealed class ValidadorIngreso : IValidador<EntradaIngreso, ResultadoValid
         var resultado = new ResultadoValidacionIngreso();
         if (entrada.Paciente is null)
             resultado.RegistrarError(nameof(entrada.Paciente), "Seleccione un paciente.");
-        if (entrada.Fecha is not DateTime fecha || !TimeSpan.TryParseExact(entrada.TextoHora.Trim(), @"hh\:mm", System.Globalization.CultureInfo.InvariantCulture, out var hora))
-            resultado.RegistrarError(nameof(entrada.Fecha), "Ingrese una fecha y hora válidas.");
+        if (entrada.Fecha is not DateTime fecha)
+        {
+            resultado.RegistrarError(
+                nameof(entrada.Fecha),
+                "Seleccione una fecha.");
+        }
+        else if (entrada.SoloFecha)
+        {
+            resultado.Fecha = fecha.Date;
+            if (fecha.Date > DateTime.Today)
+            {
+                resultado.RegistrarError(nameof(entrada.Fecha),"La fecha no puede ser futura.");
+            }
+        }
         else
         {
-            resultado.Fecha = fecha.Date.Add(hora);
-            resultado.Campo(nameof(entrada.Fecha), resultado.Fecha).NoFuturo("La fecha y hora no pueden ser futuras.");
+            if (!TimeSpan.TryParseExact(entrada.TextoHora?.Trim(),@"hh\:mm",
+                System.Globalization.CultureInfo.InvariantCulture,out var hora))
+            {
+                resultado.RegistrarError(nameof(entrada.Fecha),"Ingrese una fecha y hora válidas.");
+            }
+            else
+            {
+                resultado.Fecha = fecha.Date.Add(hora);
+                resultado.Campo(nameof(entrada.Fecha),resultado.Fecha).NoFuturo("La fecha y hora no pueden ser futuras.");
+            }
         }
         if (!decimal.TryParse(entrada.TextoDescuento.Trim(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture, out var descuento) &&
             !decimal.TryParse(entrada.TextoDescuento.Trim(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out descuento))

@@ -87,22 +87,27 @@
                     <StackPanel Grid.Column="0"
                                 VerticalAlignment="Center">
                         <TextBlock Text="Imagen del material"
-                                   FontSize="17"
+                                   FontSize="20"
                                    FontWeight="Bold"
                                    Foreground="White"/>
 
                         <TextBlock x:Name="txtEncabezado"
-                                   FontSize="11"
+                                   FontSize="12"
                                    Foreground="#E7FFFF"
                                    Margin="0,2,0,0"
                                    TextTrimming="CharacterEllipsis"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1"
-                            Style="{StaticResource BotonCerrar}"
-                            Content="×"
-                            ToolTip="Cerrar ventana"
-                            Click="Cerrar_Click"/>
+                    <Button Width="35"
+                            Height="35"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Click="Cerrar_Click">
+                        <Image Source="/Resources/ImagenesPacientes/cerrar-ventana.png"/>
+                    </Button>
                 </Grid>
             </Border>
 
@@ -133,11 +138,12 @@
             <!-- PIE DE VENTANA -->
             <Border Grid.Row="2"
                     Background="White"
-                    Padding="18,0,18,18">
+                    Padding="18,0,18,18"
+                    CornerRadius="0,0,14,14">
 
                 <TextBlock Text="ClinicSync | Inventario"
                            Foreground="#7B9297"
-                           FontSize="11"
+                           FontSize="12"
                            VerticalAlignment="Center"/>
             </Border>
         </Grid>

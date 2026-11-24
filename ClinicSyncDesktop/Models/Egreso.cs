@@ -22,6 +22,8 @@ namespace ClinicSyncDesktop.Models
 
         public int? IdCompra { get; set; }
 
+        public List<ClinicSyncDesktop.Views.MaterialParaEgreso> Materiales { get; set; } = new();
+
         public string TipoTexto => Capitalizar(Tipo);
 
         public string MedioPagoTexto => Capitalizar(MedioPago);

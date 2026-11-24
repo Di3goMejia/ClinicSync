@@ -10,19 +10,20 @@
         AllowsTransparency="True"
         Background="Transparent"
         ShowInTaskbar="False">
+
     <Window.Resources>
         <LinearGradientBrush x:Key="Turquesa" StartPoint="0,0" EndPoint="1,0">
             <GradientStop Color="#32A5AB" Offset="0"/>
             <GradientStop Color="#138DAA" Offset="1"/>
         </LinearGradientBrush>
-        
+
         <Style x:Key="Etiqueta" TargetType="TextBlock">
             <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Margin" Value="0,0,0,5"/>
         </Style>
-        
+
         <Style x:Key="Campo" TargetType="TextBox">
             <Setter Property="Height" Value="30"/>
             <Setter Property="Background" Value="#D9DDD8"/>
@@ -35,13 +36,103 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
                         <Border Background="{TemplateBinding Background}" CornerRadius="15">
-                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="Center"/>
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
+        <Style x:Key="BotonIconoPlano" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="FechaNacimientoRedonda" TargetType="DatePicker">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Language" Value="es-HN"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DatePicker">
+                        <Grid>
+                            <Button x:Name="PART_Button"
+                                    Background="{TemplateBinding Background}"
+                                    Cursor="Hand"
+                                    AutomationProperties.Name="Abrir calendario de fecha de nacimiento">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="15"
+                                                Padding="11,0,7,0">
+                                            <ContentPresenter VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock x:Name="FechaElegida"
+                                               Foreground="#17475A"
+                                               VerticalAlignment="Center"
+                                               Text="{Binding SelectedDate,
+                                                   RelativeSource={RelativeSource AncestorType={x:Type DatePicker}},
+                                                   StringFormat={}{0:yyyy'/'MM'/'dd}}"/>
+
+                                    <TextBlock x:Name="FechaVacia"
+                                               Text="YYYY/MM/DD"
+                                               Foreground="#788481"
+                                               VerticalAlignment="Center"
+                                               Visibility="Collapsed"/>
+
+                                    <Image Grid.Column="1"
+                                           Source="/Resources/ImagenesPacientes/calendario.png"
+                                           Width="15"
+                                           Height="15"
+                                           VerticalAlignment="Center"/>
+                                </Grid>
+                            </Button>
+
+                            <Popup x:Name="PART_Popup"
+                                   PlacementTarget="{Binding ElementName=PART_Button}"
+                                   Placement="Bottom"
+                                   AllowsTransparency="True"
+                                   StaysOpen="False"/>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="SelectedDate" Value="{x:Null}">
+                                <Setter TargetName="FechaElegida"
+                                        Property="Visibility" Value="Collapsed"/>
+                                <Setter TargetName="FechaVacia"
+                                        Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="ComboRedondo" TargetType="ComboBox">
             <Setter Property="Height" Value="30"/>
             <Setter Property="Background" Value="#D9DDD8"/>
@@ -54,21 +145,34 @@
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
                             <Border Background="{TemplateBinding Background}" CornerRadius="15"/>
-                            
+
                             <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
                                               ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                               ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
                                               Margin="{TemplateBinding Padding}"
                                               VerticalAlignment="Center"
                                               IsHitTestVisible="False"/>
-                            
-                            <ToggleButton Background="Transparent" 
-                                          BorderThickness="0" 
-                                          Opacity="0" 
-                                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
-                            
-                            <Popup x:Name="PART_Popup" Placement="Bottom" IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" AllowsTransparency="True" StaysOpen="False">
-                                <Border Background="White" BorderBrush="#D9DDD8" BorderThickness="1" CornerRadius="8" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
+
+                            <ToggleButton Background="Transparent"
+                                          BorderThickness="0"
+                                          Opacity="0"
+                                          Focusable="False"
+                                          IsChecked="{Binding IsDropDownOpen,
+                                              RelativeSource={RelativeSource TemplatedParent},
+                                              Mode=TwoWay}"/>
+
+                            <Popup x:Name="PART_Popup"
+                                   Placement="Bottom"
+                                   IsOpen="{Binding IsDropDownOpen,
+                                       RelativeSource={RelativeSource TemplatedParent}}"
+                                   AllowsTransparency="True"
+                                   StaysOpen="False">
+                                <Border Background="White"
+                                        BorderBrush="#D9DDD8"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        MinWidth="{Binding ActualWidth,
+                                            RelativeSource={RelativeSource TemplatedParent}}">
                                     <ScrollViewer MaxHeight="160">
                                         <ItemsPresenter/>
                                     </ScrollViewer>
@@ -79,7 +183,100 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
+        <Style x:Key="ComboSexo" TargetType="ComboBox"
+               BasedOn="{StaticResource ComboRedondo}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border Background="{TemplateBinding Background}" CornerRadius="15"/>
+
+                            <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                                              Margin="10,0,25,0"
+                                              VerticalAlignment="Center"
+                                              IsHitTestVisible="False"/>
+
+                            <Image x:Name="IconoFlecha"
+                                   Source="/Resources/ImagenesPacientes/flecha-hacia-abajo-combobox.png"
+                                   Width="15"
+                                   Height="15"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,5,0"
+                                   IsHitTestVisible="False"
+                                   RenderTransformOrigin="0.5,0.5">
+                                <Image.RenderTransform>
+                                    <RotateTransform Angle="0"/>
+                                </Image.RenderTransform>
+                            </Image>
+
+                            <ToggleButton Focusable="False"
+                                          ClickMode="Press"
+                                          IsChecked="{Binding IsDropDownOpen,
+                                              RelativeSource={RelativeSource TemplatedParent},
+                                              Mode=TwoWay}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border Background="Transparent" CornerRadius="15"/>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+
+                            <Popup x:Name="PART_Popup"
+                                   Placement="Bottom"
+                                   IsOpen="{Binding IsDropDownOpen,
+                                       RelativeSource={RelativeSource TemplatedParent},
+                                       Mode=TwoWay}"
+                                   AllowsTransparency="True"
+                                   StaysOpen="False">
+                                <Border Background="White"
+                                        BorderBrush="#D9DDD8"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        MinWidth="{Binding ActualWidth,
+                                            RelativeSource={RelativeSource TemplatedParent}}">
+                                    <ScrollViewer MaxHeight="160"
+                                                  VerticalScrollBarVisibility="Auto">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDropDownOpen" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="IconoFlecha"
+                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                To="180"
+                                                Duration="0:0:0.15"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="IconoFlecha"
+                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                To="0"
+                                                Duration="0:0:0.15"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="BotonPie" TargetType="Button">
             <Setter Property="Background" Value="#92D4DE"/>
             <Setter Property="Foreground" Value="#17475A"/>
@@ -91,14 +288,17 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="17" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="17"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <Style x:Key="BotonPlano" TargetType="Button">
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -106,112 +306,144 @@
         </Style>
     </Window.Resources>
 
-    <Border Margin="7" Background="White" CornerRadius="15" ClipToBounds="True">
+    <Border Margin="7"
+            Background="White"
+            CornerRadius="15"
+            ClipToBounds="True">
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="239*"/>
-                <ColumnDefinition Width="287*"/>
-            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="55"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="45"/>
             </Grid.RowDefinitions>
-            
-            <Border Grid.Row="0" Background="{StaticResource Turquesa}" CornerRadius="11,11,0,0" MouseLeftButtonDown="Encabezado_MouseLeftButtonDown" Grid.ColumnSpan="2">
-                <Grid Margin="15,0,0,0">
-                    <TextBlock Text="Agregar nuevo usuario" 
-                               Foreground="White" 
-                               FontSize="16" 
-                               FontWeight="Bold" 
-                               VerticalAlignment="Center" />
 
-                    <Button Grid.Column="1"
-                            Content="✕"
-                            Width="19"
-                            Height="20"
-                            Margin="0,0,10,0"
+            <Border Grid.Row="0"
+                    Background="{StaticResource Turquesa}"
+                    CornerRadius="15,15,0,0"
+                    MouseLeftButtonDown="Encabezado_MouseLeftButtonDown">
+                <Grid Margin="15,0,10,0">
+                    <TextBlock Text="Agregar nuevo usuario"
+                               Foreground="White"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"/>
+
+                    <Button Width="23"
+                            Height="23"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
-                            Background="#E8424B"
-                            Foreground="White"
-                            BorderThickness="0"
-                            FontSize="12"
-                            FontWeight="Bold"
-                            Cursor="Hand"
+                            Style="{StaticResource BotonIconoPlano}"
+                            ToolTip="Cerrar"
+                            AutomationProperties.Name="Cerrar"
                             Click="Cancelar_Click">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}" CornerRadius="4">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
+                        <Image Source="/Resources/ImagenesPacientes/cerrar-ventana.png"
+                               Stretch="Uniform"/>
                     </Button>
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1" Margin="35,13,35,0" Grid.ColumnSpan="2">
+            <Grid Grid.Row="1" Margin="35,13,35,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
+
                 <StackPanel Grid.Column="0" Margin="2,0">
                     <Border x:Name="BarraPaso1" Height="5" Background="#138DAA"/>
-                    <TextBlock Text="Datos personales" Foreground="#17475A" FontSize="11" Margin="0,5,0,0"/>
+                    <TextBlock Text="Datos personales"
+                               Foreground="#17475A"
+                               FontSize="11"
+                               Margin="0,5,0,0"/>
                 </StackPanel>
+
                 <StackPanel Grid.Column="1" Margin="2,0">
                     <Border x:Name="BarraPaso2" Height="5" Background="#D9DDD8"/>
-                    <TextBlock Text="Credenciales" Foreground="#17475A" FontSize="11" Margin="0,5,0,0"/>
+                    <TextBlock Text="Credenciales"
+                               Foreground="#17475A"
+                               FontSize="11"
+                               Margin="0,5,0,0"/>
                 </StackPanel>
             </Grid>
 
-            <Grid Grid.Row="2" Margin="38,8,38,10" Grid.ColumnSpan="2">
+            <Grid Grid.Row="2" Margin="38,8,38,10">
                 <StackPanel x:Name="PanelDatosPersonales">
-                    <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Identidad"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
-                    <TextBox x:Name="TxtIdentidad" Style="{StaticResource Campo}" MaxLength="20" ToolTip="XXXX-XXXX-XXXXX"/>
-                    <TextBlock Style="{StaticResource Etiqueta}" Margin="0,10,0,5"><Run Text="Nombre completo"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
+                    <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Identidad"/><Run Language="es-hn" Text=":"/><Run Foreground="#FFCF4059" Text=" *"/></TextBlock>
+                    <TextBox x:Name="TxtIdentidad"
+                             Style="{StaticResource Campo}"
+                             MaxLength="20"
+                             ToolTip="XXXX-XXXX-XXXXX"/>
+
+                    <TextBlock Style="{StaticResource Etiqueta}" Margin="0,10,0,5"><Run Text="Nombre"/><Run Text="s:"/><Run Foreground="#FFCF4059" Text=" *"/><Run Text="&#x9;&#x9;&#x9;        Apellidos"/><Run Text=":"/><Run Foreground="#FFCF4059" Text=" *"/></TextBlock>
+
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="10"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <TextBox x:Name="TxtNombres" Grid.Column="0" Style="{StaticResource Campo}" MaxLength="50" ToolTip="Nombres"/>
-                        <TextBox x:Name="TxtApellidos" Grid.Column="2" Style="{StaticResource Campo}" MaxLength="50" ToolTip="Apellidos"/>
+
+                        <TextBox x:Name="TxtNombres"
+                                 Grid.Column="0"
+                                 Style="{StaticResource Campo}"
+                                 MaxLength="50"
+                                 ToolTip="Nombres"/>
+
+                        <TextBox x:Name="TxtApellidos"
+                                 Grid.Column="2"
+                                 Style="{StaticResource Campo}"
+                                 MaxLength="50"
+                                 ToolTip="Apellidos"/>
                     </Grid>
+
                     <Grid Margin="0,10,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="10"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
+
                         <StackPanel Grid.Column="0">
-                            <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Fecha de nacimiento"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
-                            <DatePicker x:Name="DpFechaNacimiento" Height="30" Background="#D9DDD8" Foreground="#17475A" BorderThickness="0" SelectedDateFormat="Short"/>
+                            <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Fecha de nacimiento"/><Run Language="es-hn" Text=":"/><Run Foreground="#FFCF4059" Text=" *"/></TextBlock>
+
+                            <DatePicker x:Name="DpFechaNacimiento"
+                                        Style="{StaticResource FechaNacimientoRedonda}"/>
                         </StackPanel>
+
                         <StackPanel Grid.Column="2">
-                            <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Sexo"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
-                            <ComboBox x:Name="CmbGenero" Style="{StaticResource ComboRedondo}">
+                            <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Sexo"/><Run Language="es-hn" Text=":"/><Run Foreground="#FFCF4059" Text=" *"/></TextBlock>
+
+                            <ComboBox x:Name="CmbGenero"
+                                      Style="{StaticResource ComboSexo}">
                                 <ComboBoxItem Content="Femenino" Tag="F"/>
                                 <ComboBoxItem Content="Masculino" Tag="M"/>
                             </ComboBox>
                         </StackPanel>
                     </Grid>
+
                     <Grid Margin="0,10,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="10"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
+
                         <StackPanel Grid.Column="0">
-                            <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Teléfono"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
-                            <TextBox x:Name="TxtTelefono" Style="{StaticResource Campo}" MaxLength="20"/>
+                            <TextBlock Style="{StaticResource Etiqueta}">
+                                    <Run Text="Teléfono:"/><Run Text=" *" Foreground="#CF4059"/>
+                            </TextBlock>
+                            <TextBox x:Name="TxtTelefono"
+                                     Style="{StaticResource Campo}"
+                                     MaxLength="20"/>
                         </StackPanel>
+
                         <StackPanel Grid.Column="2">
-                            <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Rol"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
-                            <ComboBox x:Name="CmbRol" Style="{StaticResource ComboRedondo}" SelectedValuePath="IdRol">
+                            <TextBlock Style="{StaticResource Etiqueta}">
+                                       <Run Text="Rol:"/><Run Text=" *" Foreground="#CF4059"/>
+                            </TextBlock>
+                            <ComboBox x:Name="CmbRol"
+                                      Style="{StaticResource ComboSexo}"
+                                      SelectedValuePath="IdRol">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Nombre}"/>
@@ -223,13 +455,22 @@
 
                     <Grid Margin="0,12,0,0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                    
-                        <Border Grid.Column="0" Background="#E8F4F4" BorderBrush="#B8D9D9" BorderThickness="1" CornerRadius="8" Width="65" Height="80" HorizontalAlignment="Left" Margin="0,10,0,0">
+
+                        <Border Grid.Column="0"
+                                Background="#E8F4F4"
+                                BorderBrush="#B8D9D9"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Width="65"
+                                Height="80"
+                                HorizontalAlignment="Left"
+                                Margin="0,10,0,0">
                             <Image x:Name="ImgPerfil" Stretch="UniformToFill" Margin="4"/>
                         </Border>
+
                         <StackPanel Grid.Column="1" Margin="12,0,0,0">
                             <Grid Margin="0,12,0,0">
                                 <Grid.ColumnDefinitions>
@@ -238,40 +479,141 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="Imagen:" Style="{StaticResource Etiqueta}" Margin="0,4,10,0"/>
-                                <Button Grid.Column="1" Height="25" Padding="8,0" Background="#E4F0F0" Style="{StaticResource BotonPlano}" Click="SeleccionarImagen_Click">
-                                    <TextBlock Text="Elegir imagen" Foreground="#168FAD" FontSize="11"/>
+
+                                <TextBlock Grid.Column="0"
+                                           Text="Imagen:"
+                                           Style="{StaticResource Etiqueta}"
+                                           Margin="0,4,10,0"/>
+
+                                <Button Grid.Column="1"
+                                            Height="25"
+                                            Padding="8,0"
+                                            Background="#E4F0F0"
+                                            Style="{StaticResource BotonPlano}"
+                                            Click="SeleccionarImagen_Click">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                        Padding="{TemplateBinding Padding}"
+                                                        CornerRadius="12.5">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                      VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="/Resources/ImagenesPacientes/ImagenesExpediente/subir-archivo.png"
+                                                   Width="18"
+                                                   Height="18"
+                                                   Stretch="Uniform"
+                                                   Margin="0,0,7,0"
+                                                   VerticalAlignment="Center"/>
+
+                                        <TextBlock Text="Elegir imagen"
+                                                       Foreground="#168FA7"
+                                                       FontSize="11"
+                                                       VerticalAlignment="Center"/>
+                                    </StackPanel>
                                 </Button>
-                                <TextBox x:Name="TxtImagen" Grid.Column="2" Height="25" Margin="6,0,4,0" IsReadOnly="True" Background="Transparent" Foreground="#17475A" BorderThickness="0" VerticalContentAlignment="Center" ToolTip="Imagen seleccionada"/>
-                                <Button x:Name="BtnQuitarImagen" Grid.Column="3" Width="22" Height="25" Background="Transparent" Style="{StaticResource BotonPlano}" Visibility="Collapsed" Click="QuitarImagen_Click">
+
+                                <TextBox x:Name="TxtImagen"
+                                         Grid.Column="2"
+                                         Height="25"
+                                         Margin="6,0,4,0"
+                                         IsReadOnly="True"
+                                         Background="Transparent"
+                                         Foreground="#17475A"
+                                         BorderThickness="0"
+                                         VerticalContentAlignment="Center"
+                                         ToolTip="Imagen seleccionada"/>
+
+                                <Button x:Name="BtnQuitarImagen"
+                                        Grid.Column="3"
+                                        Width="22"
+                                        Height="25"
+                                        Background="Transparent"
+                                        Style="{StaticResource BotonPlano}"
+                                        Visibility="Collapsed"
+                                        Click="QuitarImagen_Click">
                                     <TextBlock Text="×" Foreground="#CF4059" FontSize="18"/>
                                 </Button>
                             </Grid>
 
-                            <TextBlock Text="ⓘ Tipos de archivo aceptados: JPG, PNG (máximo 5 MB)" FontSize="10" Foreground="#AEB0B1" Margin="0,3,0,0"/>
+                            <TextBlock FontSize="10"
+                                       Foreground="#AEB0B1"
+                                       Margin="0,3,0,0"
+                                       TextWrapping="Wrap">
+                                <Run Text="ⓘ" Foreground="#E34462" FontSize="13"/>
+                                <Run Text=" Tipos de archivo aceptados: JPG, PNG (máximo 5 MB)"/>
+                            </TextBlock>
+                            
                         </StackPanel>
                     </Grid>
 
-                    <TextBlock x:Name="TxtError" Foreground="#CF4059" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0" Visibility="Collapsed"/>
+                    <TextBlock x:Name="TxtError"
+                               Foreground="#CF4059"
+                               FontSize="12"
+                               TextWrapping="Wrap"
+                               Margin="0,8,0,0"
+                               Visibility="Collapsed"/>
                 </StackPanel>
 
                 <StackPanel x:Name="PanelCredenciales" Visibility="Collapsed">
-                    <TextBlock Style="{StaticResource Etiqueta}"><Run Text="Nombre de usuario"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
-                    <TextBox x:Name="TxtNombreUsuario" Style="{StaticResource Campo}" MaxLength="64"/>
-                    <TextBlock Style="{StaticResource Etiqueta}" Margin="0,16,0,5"><Run Text="Correo electrónico"/><Run Text=" *" Foreground="#CF4059"/></TextBlock>
-                    <TextBox x:Name="TxtCorreo" Style="{StaticResource Campo}" MaxLength="320"/>
-                    <Border Background="#E8F4F4" CornerRadius="10" Padding="12" Margin="0,22,0,0">
-                        <TextBlock Text="Si presiona Agregar, el usuario recibirá una notificación por correo para activar su cuenta y completar el proceso de creación." Foreground="#17475A" FontSize="12" TextWrapping="Wrap"/>
+                    <TextBlock Text="Nombre de usuario *" Style="{StaticResource Etiqueta}"/>
+                    <TextBox x:Name="TxtNombreUsuario"
+                             Style="{StaticResource Campo}"
+                             MaxLength="64"/>
+
+                    <TextBlock Text="Correo electrónico *"
+                               Style="{StaticResource Etiqueta}"
+                               Margin="0,16,0,5"/>
+                    <TextBox x:Name="TxtCorreo"
+                             Style="{StaticResource Campo}"
+                             MaxLength="320"/>
+
+                    <Border Background="#E8F4F4"
+                            CornerRadius="10"
+                            Padding="12"
+                            Margin="0,22,0,0">
+                        <TextBlock Text="Si presiona Agregar, el usuario recibirá una notificación por correo para activar su cuenta y completar el proceso de creación."
+                                   Foreground="#17475A"
+                                   FontSize="12"
+                                   TextWrapping="Wrap"/>
                     </Border>
-                    <TextBlock x:Name="TxtErrorCredenciales" Foreground="#CF4059" FontSize="12" TextWrapping="Wrap" Margin="0,12,0,0" Visibility="Collapsed"/>
+
+                    <TextBlock x:Name="TxtErrorCredenciales"
+                               Foreground="#CF4059"
+                               FontSize="12"
+                               TextWrapping="Wrap"
+                               Margin="0,12,0,0"
+                               Visibility="Collapsed"/>
                 </StackPanel>
             </Grid>
 
-            <Border Grid.Row="3" Background="{StaticResource Turquesa}" Grid.ColumnSpan="2" CornerRadius="0,0,11,11">
+            <Border Grid.Row="3"
+                    Background="{StaticResource Turquesa}"
+                    CornerRadius="0,0,15,15">
                 <Grid Margin="20,4">
-                    <Button x:Name="BtnRegresar" Content="Regresar" Style="{StaticResource BotonPie}" HorizontalAlignment="Left" Visibility="Collapsed" Click="Regresar_Click"/>
-                    <Button x:Name="BtnSiguiente" Content="Siguiente" Style="{StaticResource BotonPie}" HorizontalAlignment="Right" Click="Siguiente_Click"/>
-                    <Button x:Name="BtnAgregar" Content="Agregar" Style="{StaticResource BotonPie}" HorizontalAlignment="Right" Visibility="Collapsed" Click="Guardar_Click"/>
+                    <Button x:Name="BtnRegresar"
+                            Content="Regresar"
+                            Style="{StaticResource BotonPie}"
+                            HorizontalAlignment="Left"
+                            Visibility="Collapsed"
+                            Click="Regresar_Click"/>
+
+                    <Button x:Name="BtnSiguiente"
+                            Content="Siguiente"
+                            Style="{StaticResource BotonPie}"
+                            HorizontalAlignment="Right"
+                            Click="Siguiente_Click"/>
+
+                    <Button x:Name="BtnAgregar"
+                            Content="Agregar"
+                            Style="{StaticResource BotonPie}"
+                            HorizontalAlignment="Right"
+                            Visibility="Collapsed"
+                            Click="Guardar_Click"/>
                 </Grid>
             </Border>
         </Grid>

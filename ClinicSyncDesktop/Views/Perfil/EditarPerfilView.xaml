@@ -105,24 +105,155 @@
             </Setter>
         </Style>
 
-        <!-- FECHA -->
         <Style x:Key="FechaPerfil" TargetType="DatePicker">
             <Setter Property="Height" Value="30"/>
-            <Setter Property="Background" Value="#D9DDDA"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Foreground" Value="#555555"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Language" Value="es-HN"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DatePicker">
+                        <Grid>
+                            <Button x:Name="PART_Button"
+                            Background="{TemplateBinding Background}"
+                            Cursor="Hand"
+                            AutomationProperties.Name="Seleccionar fecha de nacimiento">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                        CornerRadius="15"
+                                        Padding="10,0,6,0">
+                                            <ContentPresenter VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock x:Name="FechaSeleccionada"
+                                       Foreground="#17475A"
+                                       VerticalAlignment="Center"
+                                       Text="{Binding SelectedDate,
+                                           RelativeSource={RelativeSource AncestorType={x:Type DatePicker}},
+                                           StringFormat={}{0:yyyy/MM/dd}}"/>
+
+                                    <TextBlock x:Name="FechaVacia"
+                                       Text="YYYY/MM/DD"
+                                       Foreground="#788481"
+                                       VerticalAlignment="Center"
+                                       Visibility="Collapsed"/>
+
+                                    <Image Grid.Column="1"
+                                   Source="/Resources/ImagenesPacientes/calendario.png"
+                                   Width="15"
+                                   Height="15"
+                                   VerticalAlignment="Center"/>
+                                </Grid>
+                            </Button>
+
+                            <Popup x:Name="PART_Popup"
+                           PlacementTarget="{Binding ElementName=PART_Button}"
+                           Placement="Bottom"
+                           AllowsTransparency="True"
+                           StaysOpen="False"/>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="SelectedDate" Value="{x:Null}">
+                                <Setter TargetName="FechaSeleccionada"
+                                Property="Visibility"
+                                Value="Collapsed"/>
+                                <Setter TargetName="FechaVacia"
+                                Property="Visibility"
+                                Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
-        <!-- SEXO -->
         <Style x:Key="SexoPerfil" TargetType="ComboBox">
             <Setter Property="Height" Value="30"/>
-            <Setter Property="Background" Value="#D9DDDA"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="#D9DDD8"/>
+            <Setter Property="Foreground" Value="#17475A"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Foreground" Value="#555555"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border Background="{TemplateBinding Background}"
+                            CornerRadius="15"/>
+
+                            <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
+                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                      Margin="10,0,27,0"
+                                      VerticalAlignment="Center"
+                                      IsHitTestVisible="False"/>
+
+                            <Image x:Name="FlechaSexo"
+                           Source="/Resources/ImagenesPacientes/flecha-hacia-abajo-combobox.png"
+                           Width="15"
+                           Height="15"
+                           Margin="0,0,6,0"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           RenderTransformOrigin="0.5,0.5"
+                           IsHitTestVisible="False"/>
+
+                            <ToggleButton Focusable="False"
+                                  ClickMode="Press"
+                                  IsChecked="{Binding IsDropDownOpen,
+                                      RelativeSource={RelativeSource TemplatedParent},
+                                      Mode=TwoWay}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border Background="Transparent"
+                                        CornerRadius="15"/>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+
+                            <Popup x:Name="PART_Popup"
+                           Placement="Bottom"
+                           IsOpen="{TemplateBinding IsDropDownOpen}"
+                           AllowsTransparency="True"
+                           Focusable="False">
+                                <Border Background="White"
+                                BorderBrush="#D9DDD8"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="2"
+                                MinWidth="{Binding ActualWidth,
+                                    RelativeSource={RelativeSource TemplatedParent}}">
+                                    <ScrollViewer MaxHeight="160"
+                                          VerticalScrollBarVisibility="Auto">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDropDownOpen" Value="True">
+                                <Setter TargetName="FlechaSexo" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="180"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
     </UserControl.Resources>
@@ -221,13 +352,11 @@
                         <TextBox x:Name="TxtIdentidad"
                                  Style="{StaticResource CampoPerfil}"
                                  MaxLength="13"
-                                 Margin="0,6,0,18"/>
+                                 Margin="0,6,550,18" 
+                                 Height="30"/>
 
                         <!-- NOMBRE COMPLETO -->
-                        <TextBlock Style="{StaticResource EtiquetaPerfil}">
-                            Nombre Completo:
-                            <Run Text="*" Foreground="#E34462"/>
-                        </TextBlock>
+                        <TextBlock Style="{StaticResource EtiquetaPerfil}"><Run Text="Nombre"/><Run Text="s"/><Run Text=": "/><Run Foreground="#FFE34462" Text="*"/><Run Text="&#x9;&#x9;&#x9;"/><Run Text="&#x9;&#x9;"/><Run Text="&#x9;"/><Run Text="&#x9;"/><Run Language="es-hn" Text="   "/><Run Text="Apellidos"/><Run Text=": "/><Run Foreground="#FFE34462" Text="*"/></TextBlock>
 
                         <Grid Margin="0,6,0,18">
 
@@ -349,7 +478,7 @@
 
                                 <Image x:Name="ImgVistaPrevia"
                                        Source="/Resources/ImagenesPerfil/subir-imagen-perfil.png"
-                                       Stretch="UniformToFill"/>
+                                       Stretch="UniformToFill" Margin="0,0,-6,0"/>
                             </Border>
 
                             <StackPanel>
