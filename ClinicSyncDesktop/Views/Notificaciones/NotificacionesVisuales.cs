@@ -8,16 +8,33 @@ using ClinicSyncDesktop.Models;
 
 namespace ClinicSyncDesktop.Views.Notificaciones;
 
+/// <summary>
+/// 
+/// </summary>
 public static class NotificacionesVisuales
 {
+    /// <summary>
+    /// The azul
+    /// </summary>
     private static readonly Brush Azul =
         new SolidColorBrush(
             Color.FromRgb(23, 71, 90));
 
+    /// <summary>
+    /// The gris
+    /// </summary>
     private static readonly Brush Gris =
         new SolidColorBrush(
             Color.FromRgb(216, 220, 216));
 
+    /// <summary>
+    /// Crears the tarjeta.
+    /// </summary>
+    /// <param name="n">The n.</param>
+    /// <param name="leer">The leer.</param>
+    /// <param name="archivar">The archivar.</param>
+    /// <param name="grande">if set to <c>true</c> [grande].</param>
+    /// <returns></returns>
     public static Border CrearTarjeta(
         Notificacion n,
         Func<Task> leer,
@@ -172,6 +189,12 @@ public static class NotificacionesVisuales
         return tarjeta;
     }
 
+    /// <summary>
+    /// Crears the icono.
+    /// </summary>
+    /// <param name="archivo">The archivo.</param>
+    /// <param name="tamano">The tamano.</param>
+    /// <returns></returns>
     private static Image CrearIcono(string archivo, int tamano)
     {
         var ruta = new Uri(

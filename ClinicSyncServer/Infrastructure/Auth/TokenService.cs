@@ -10,15 +10,32 @@ using System.Security.Cryptography;
 
 namespace ClinicSyncServer.Infrastructure.Auth
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="ClinicSyncServer.Common.Abstracciones.ITokenService" />
     public class TokenService : ITokenService
     {
         // El desafío de 2FA usa una audiencia distinta, así el middleware de la API
         // rechaza ese token como si fuera un acceso.
+        /// <summary>
+        /// The sufijo audiencia desafio
+        /// </summary>
         private const string SufijoAudienciaDesafio = ":2fa";
 
+        /// <summary>
+        /// The JWT
+        /// </summary>
         private readonly OpcionesJwt _jwt;
+        /// <summary>
+        /// The credenciales
+        /// </summary>
         private readonly SigningCredentials _credenciales;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenService"/> class.
+        /// </summary>
+        /// <param name="opciones">The opciones.</param>
         public TokenService(IOptions<OpcionesJwt> opciones)
         {
             _jwt = opciones.Value;
@@ -28,6 +45,13 @@ namespace ClinicSyncServer.Infrastructure.Auth
             );
         }
 
+        /// <summary>
+        /// Generars the acceso JWT.
+        /// </summary>
+        /// <param name="usuarioId">The usuario identifier.</param>
+        /// <param name="sesionId">The sesion identifier.</param>
+        /// <param name="perfil">The perfil.</param>
+        /// <returns></returns>
         public string GenerarAccesoJwt(int usuarioId, Guid sesionId, PermisosUsuario perfil)
         {
             var claims = new List<Claim>
@@ -56,6 +80,11 @@ namespace ClinicSyncServer.Infrastructure.Auth
             return Emitir(claims, _jwt.Audience, DateTime.UtcNow.AddMinutes(_jwt.AccesoMinutos));
         }
 
+        /// <summary>
+        /// Generars the desafio2fa.
+        /// </summary>
+        /// <param name="usuarioId">The usuario identifier.</param>
+        /// <returns></returns>
         public string GenerarDesafio2fa(int usuarioId)
         {
             var claims = new[]
@@ -71,6 +100,8 @@ namespace ClinicSyncServer.Infrastructure.Auth
         /// <summary>
         /// Valida un desafío de 2FA y devuelve el Id del usuario, o null si no es válido.
         /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
         public int? LeerDesafio2fa(string token)
         {
             var handler = new JwtSecurityTokenHandler { MapInboundClaims = false };
@@ -98,6 +129,10 @@ namespace ClinicSyncServer.Infrastructure.Auth
             }
         }
 
+        /// <summary>
+        /// Generars the refresh token.
+        /// </summary>
+        /// <returns></returns>
         public RefreshTokenGenerado GenerarRefreshToken()
         {
             var bytes = RandomNumberGenerator.GetBytes(32);
@@ -106,6 +141,11 @@ namespace ClinicSyncServer.Infrastructure.Auth
             return new RefreshTokenGenerado(Convert.ToBase64String(bytes), SHA256.HashData(bytes));
         }
 
+        /// <summary>
+        /// Hashes the refresh token.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
         public byte[]? HashRefreshToken(string token)
         {
             try
@@ -118,8 +158,21 @@ namespace ClinicSyncServer.Infrastructure.Auth
             }
         }
 
+        /// <summary>
+        /// Gets the audiencia desafio.
+        /// </summary>
+        /// <value>
+        /// The audiencia desafio.
+        /// </value>
         private string AudienciaDesafio => _jwt.Audience + SufijoAudienciaDesafio;
 
+        /// <summary>
+        /// Emitirs the specified claims.
+        /// </summary>
+        /// <param name="claims">The claims.</param>
+        /// <param name="audiencia">The audiencia.</param>
+        /// <param name="expira">The expira.</param>
+        /// <returns></returns>
         private string Emitir(IEnumerable<Claim> claims, string audiencia, DateTime expira)
         {
             var token = new JwtSecurityToken(

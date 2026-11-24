@@ -12,16 +12,51 @@ using System.Diagnostics;
 
 namespace ClinicSyncDesktop.Views.Seguridad;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.Windows.Window" />
+/// <seealso cref="System.Windows.Markup.IComponentConnector" />
 public partial class EditarUsuarioWindow : Window
 {
+    /// <summary>
+    /// The usuarios
+    /// </summary>
     private readonly UsuariosApiService _usuarios;
+    /// <summary>
+    /// The roles
+    /// </summary>
     private readonly RolesApiService _roles;
+    /// <summary>
+    /// The original
+    /// </summary>
     private readonly UsuarioDetalle _original;
+    /// <summary>
+    /// The guardando
+    /// </summary>
     private bool _guardando;
 
+    /// <summary>
+    /// Gets a value indicating whether [error al guardar].
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if [error al guardar]; otherwise, <c>false</c>.
+    /// </value>
     public bool ErrorAlGuardar { get; private set; }
+    /// <summary>
+    /// Gets the mensaje error.
+    /// </summary>
+    /// <value>
+    /// The mensaje error.
+    /// </value>
     public string MensajeError { get; private set; } = "No fue posible actualizar el usuario.";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EditarUsuarioWindow"/> class.
+    /// </summary>
+    /// <param name="usuario">The usuario.</param>
+    /// <param name="usuarios">The usuarios.</param>
+    /// <param name="roles">The roles.</param>
     public EditarUsuarioWindow(UsuarioDetalle usuario, UsuariosApiService usuarios, RolesApiService roles)
     {
         InitializeComponent();
@@ -62,6 +97,9 @@ public partial class EditarUsuarioWindow : Window
         };
     }
 
+    /// <summary>
+    /// Cargars the datos.
+    /// </summary>
     private void CargarDatos()
     {
         TxtIdentidad.Text = _original.Identidad;
@@ -79,24 +117,41 @@ public partial class EditarUsuarioWindow : Window
         CmbGenero.SelectedIndex = _original.Genero == 'F' ? 0 : 1;
     }
 
+    /// <summary>
+    /// Handles the Click event of the Datos control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void Datos_Click(object sender, RoutedEventArgs e)
     {
         PanelDatos.Visibility = Visibility.Visible;
         PanelCuenta.Visibility = Visibility.Collapsed;
     }
 
+    /// <summary>
+    /// Handles the Click event of the Cuenta control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void Cuenta_Click(object sender, RoutedEventArgs e)
     {
         PanelDatos.Visibility = Visibility.Collapsed;
         PanelCuenta.Visibility = Visibility.Visible;
     }
 
+    /// <summary>
+    /// Limpiars the error.
+    /// </summary>
     private void LimpiarError()
     {
         TxtError.Text = string.Empty;
         TxtError.Visibility = Visibility.Collapsed;
     }
 
+    /// <summary>
+    /// Validars this instance.
+    /// </summary>
+    /// <returns></returns>
     private bool Validar()
     {
         LimpiarError();
@@ -119,6 +174,12 @@ public partial class EditarUsuarioWindow : Window
         return true;
     }
 
+    /// <summary>
+    /// Errors the specified mensaje.
+    /// </summary>
+    /// <param name="mensaje">The mensaje.</param>
+    /// <param name="campo">The campo.</param>
+    /// <returns></returns>
     private bool Error(string mensaje, UIElement campo)
     {
         TxtError.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0xB3, 0x26, 0x1E));
@@ -129,6 +190,11 @@ public partial class EditarUsuarioWindow : Window
         return false;
     }
 
+    /// <summary>
+    /// Handles the Click event of the Guardar control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private async void Guardar_Click(object sender, RoutedEventArgs e)
     {
         if (_guardando || !Validar())
@@ -169,6 +235,11 @@ public partial class EditarUsuarioWindow : Window
         }
     }
 
+    /// <summary>
+    /// Handles the Click event of the SeleccionarImagen control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private async void SeleccionarImagen_Click(object sender, RoutedEventArgs e)
     {
         var dialogo = new OpenFileDialog { Filter = "Imágenes (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png" };
@@ -201,6 +272,11 @@ public partial class EditarUsuarioWindow : Window
         }
     }
 
+    /// <summary>
+    /// Handles the Click event of the QuitarImagen control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void QuitarImagen_Click(object sender, RoutedEventArgs e)
     {
         TxtImagen.Text = string.Empty;
@@ -208,6 +284,11 @@ public partial class EditarUsuarioWindow : Window
         BtnQuitarImagen.Visibility = Visibility.Collapsed;
     }
 
+    /// <summary>
+    /// Handles the Click event of the Reenviar control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private async void Reenviar_Click(object sender, RoutedEventArgs e)
     {
         try
@@ -223,6 +304,11 @@ public partial class EditarUsuarioWindow : Window
         }
     }
 
+    /// <summary>
+    /// Handles the Click event of the CambiarEstado control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private async void CambiarEstado_Click(object sender, RoutedEventArgs e)
     {
         bool inactivo = _original.Estado.Equals("INACTIVO", StringComparison.OrdinalIgnoreCase)
@@ -258,6 +344,11 @@ public partial class EditarUsuarioWindow : Window
         }
     }
 
+    /// <summary>
+    /// Handles the Click event of the Restablecer control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private async void Restablecer_Click(object sender, RoutedEventArgs e)
     {
         var password = SolicitarPassword("Confirma la solicitud ingresando tu contraseña:");
@@ -276,12 +367,22 @@ public partial class EditarUsuarioWindow : Window
         }
     }
 
+    /// <summary>
+    /// Solicitars the password.
+    /// </summary>
+    /// <param name="mensaje">The mensaje.</param>
+    /// <returns></returns>
     private string? SolicitarPassword(string mensaje)
     {
         var dialogo = new SolicitarPasswordWindow(mensaje) { Owner = this };
         return dialogo.ShowDialog() == true ? dialogo.Password : null;
     }
 
+    /// <summary>
+    /// Handles the Click event of the Cerrar control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void Cerrar_Click(object sender, RoutedEventArgs e)
     {
         bool cambios = TxtIdentidad.Text != _original.Identidad ||
@@ -300,11 +401,20 @@ public partial class EditarUsuarioWindow : Window
         DialogResult = false;
     }
 
+    /// <summary>
+    /// Handles the MouseLeftButtonDown event of the Encabezado control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
     private void Encabezado_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) 
     { 
         if (e.LeftButton == MouseButtonState.Pressed) DragMove(); 
     }
 
+    /// <summary>
+    /// Mostrars the confirmacion.
+    /// </summary>
+    /// <param name="mensaje">The mensaje.</param>
     private void MostrarConfirmacion(string mensaje)
     {
         TxtError.Text = mensaje;

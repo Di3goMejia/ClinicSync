@@ -3,9 +3,20 @@ using ClinicSyncServer.Features.Inventario.Requests;
 
 namespace ClinicSyncServer.Features.Inventario
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="ClinicSyncServer.Features.Inventario.IInventarioService" />
     public class InventarioService(InventarioRepository repo)
         : IInventarioService
     {
+        /// <summary>
+        /// Insertars the asynchronous.
+        /// </summary>
+        /// <param name="req">The req.</param>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public Task<int> InsertarAsync(
             RegistrarMaterialRequest req,
             int idUsuario,
@@ -14,6 +25,12 @@ namespace ClinicSyncServer.Features.Inventario
             return repo.InsertarAsync(req, idUsuario, ct);
         }
 
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public Task<IEnumerable<Material>> ListarAsync(
             ListarMaterialesQuery query,
             CancellationToken ct = default)
@@ -21,6 +38,12 @@ namespace ClinicSyncServer.Features.Inventario
             return repo.ListarAsync(query, ct);
         }
 
+        /// <summary>
+        /// Obteners the por identifier asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public Task<Material?> ObtenerPorIdAsync(
             int id,
             CancellationToken ct = default)
@@ -28,6 +51,14 @@ namespace ClinicSyncServer.Features.Inventario
             return repo.ObtenerPorIdAsync(id, ct);
         }
 
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="req">The req.</param>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<Material?> ModificarAsync(
             int id,
             MaterialRequest req,
@@ -44,6 +75,13 @@ namespace ClinicSyncServer.Features.Inventario
             return await repo.ObtenerPorIdAsync(id, ct);
         }
 
+        /// <summary>
+        /// Cambiars the estado asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="activo">if set to <c>true</c> [activo].</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<bool> CambiarEstadoAsync(
             int id,
             bool activo,

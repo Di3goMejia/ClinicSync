@@ -11,8 +11,15 @@ using System.Security.Claims;
 
 namespace ClinicSyncServer.Features.Auth
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class AuthEndpoints
     {
+        /// <summary>
+        /// Maps the authentication endpoints.
+        /// </summary>
+        /// <param name="app">The application.</param>
         public static void MapAuthEndpoints(this WebApplication app)
         {
             // ==========================================
@@ -479,6 +486,11 @@ namespace ClinicSyncServer.Features.Auth
         // INFORMACIÓN DEL EQUIPO DEL CLIENTE
         // ==========================================
 
+        /// <summary>
+        /// Datoses the de.
+        /// </summary>
+        /// <param name="ctx">The CTX.</param>
+        /// <returns></returns>
         private static DatosCliente DatosDe(
             HttpContext ctx) => new(
                 ctx.Connection.RemoteIpAddress?.ToString(),

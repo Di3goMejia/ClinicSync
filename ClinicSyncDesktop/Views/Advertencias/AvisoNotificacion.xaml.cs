@@ -7,10 +7,23 @@ using System.Windows.Threading;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Controls.UserControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class AvisoNotificacion : UserControl
     {
+        /// <summary>
+        /// The temporizador
+        /// </summary>
         private readonly DispatcherTimer temporizador;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AvisoNotificacion"/> class.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
+        /// <param name="exitoso">if set to <c>true</c> [exitoso].</param>
         public AvisoNotificacion(
             string mensaje,
             bool exitoso)
@@ -46,6 +59,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // DESAPARECER AUTOMÁTICAMENTE
+        /// <summary>
+        /// Temporizadors the tick.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Temporizador_Tick(
             object? sender,
             EventArgs e)
@@ -54,6 +72,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CERRAR CON LA X
+        /// <summary>
+        /// Handles the Click event of the Cerrar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Cerrar_Click(
             object sender,
             RoutedEventArgs e)
@@ -62,6 +85,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // QUITAR AVISO
+        /// <summary>
+        /// Cerrars the aviso.
+        /// </summary>
         private void CerrarAviso()
         {
             temporizador.Stop();
@@ -80,6 +106,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // DETENER TEMPORIZADOR AL QUITARLO
+        /// <summary>
+        /// Handles the Unloaded event of the AvisoNotificacion control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void AvisoNotificacion_Unloaded(
             object sender,
             RoutedEventArgs e)

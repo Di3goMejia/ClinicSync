@@ -1,9 +1,22 @@
 namespace ClinicSyncDesktop.Validations;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.IEquatable&lt;ClinicSyncDesktop.Validations.EntradaCambioContrasena&gt;" />
 public record EntradaCambioContrasena(string Actual, string Nueva, string Confirmacion);
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.IValidador&lt;ClinicSyncDesktop.Validations.EntradaCambioContrasena, ClinicSyncDesktop.Validations.ResultadoValidacion&gt;" />
 public sealed class ValidadorCambioContrasena : IValidador<EntradaCambioContrasena, ResultadoValidacion>
 {
+    /// <summary>
+    /// Validars the specified entrada.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <returns></returns>
     public ResultadoValidacion Validar(EntradaCambioContrasena entrada)
     {
         var resultado = new ResultadoValidacion();

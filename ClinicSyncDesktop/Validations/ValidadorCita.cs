@@ -1,5 +1,9 @@
 namespace ClinicSyncDesktop.Validations;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.IEquatable&lt;ClinicSyncDesktop.Validations.EntradaCita&gt;" />
 public record EntradaCita(
     object? Paciente,
     string Titulo,
@@ -9,14 +13,39 @@ public record EntradaCita(
     string? HoraInicio,
     string? HoraFin);
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.ResultadoValidacion" />
 public sealed class ResultadoValidacionCita : ResultadoValidacion
 {
+    /// <summary>
+    /// Gets or sets the inicio.
+    /// </summary>
+    /// <value>
+    /// The inicio.
+    /// </value>
     public DateTime Inicio { get; set; }
+    /// <summary>
+    /// Gets or sets the fin.
+    /// </summary>
+    /// <value>
+    /// The fin.
+    /// </value>
     public DateTime Fin { get; set; }
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.IValidador&lt;ClinicSyncDesktop.Validations.EntradaCita, ClinicSyncDesktop.Validations.ResultadoValidacionCita&gt;" />
 public sealed class ValidadorCita : IValidador<EntradaCita, ResultadoValidacionCita>
 {
+    /// <summary>
+    /// Validars the specified entrada.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <returns></returns>
     public ResultadoValidacionCita Validar(EntradaCita entrada)
     {
         var resultado = new ResultadoValidacionCita();

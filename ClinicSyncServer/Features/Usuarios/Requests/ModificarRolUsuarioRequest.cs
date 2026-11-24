@@ -2,6 +2,10 @@
 
 namespace ClinicSyncServer.Features.Usuarios.Requests
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.IEquatable&lt;ClinicSyncServer.Features.Usuarios.Requests.ModificarRolUsuarioRequest&gt;" />
     public record ModificarRolUsuarioRequest(
         int? IdUsuario,
 

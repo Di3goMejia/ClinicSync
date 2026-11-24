@@ -15,25 +15,49 @@ using System.Windows.Threading;
 
 namespace ClinicSync.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class MenuLateral : Window
     {
         // BOTÓN ACTUALMENTE SELECCIONADO
+        /// <summary>
+        /// The boton seleccionado
+        /// </summary>
         private Button? botonSeleccionado;
 
         // SERVICIOS
+        /// <summary>
+        /// The tratamientos service
+        /// </summary>
         private readonly TratamientosApiService tratamientosService = new();
+        /// <summary>
+        /// The notificaciones service
+        /// </summary>
         private readonly NotificacionesApiService notificacionesService = new();
 
         // NOTIFICACIONES
+        /// <summary>
+        /// The reloj notificaciones
+        /// </summary>
         private readonly DispatcherTimer relojNotificaciones =
             new() { Interval = TimeSpan.FromMinutes(1) };
 
+        /// <summary>
+        /// The cargando notificaciones
+        /// </summary>
         private bool cargandoNotificaciones;
 
         // ==========================================
         // CONSTRUCTOR
         // ==========================================
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MenuLateral"/> class.
+        /// </summary>
+        /// <param name="modulo">The modulo.</param>
         public MenuLateral(string modulo = "Pacientes")
         {
             InitializeComponent();
@@ -47,6 +71,11 @@ namespace ClinicSync.Views
         // OBTENER USUARIO Y ROL
         // ==========================================
 
+        /// <summary>
+        /// Handles the Loaded event of the Ventana control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Ventana_Loaded(
             object sender,
             RoutedEventArgs e)
@@ -58,6 +87,9 @@ namespace ClinicSync.Views
         // ACTUALIZAR DATOS DEL USUARIO
         // ==========================================
 
+        /// <summary>
+        /// Actualizars the datos usuario asynchronous.
+        /// </summary>
         private async Task ActualizarDatosUsuarioAsync()
         {
             try
@@ -85,6 +117,11 @@ namespace ClinicSync.Views
         // BOTONES DEL MENÚ
         // ==========================================
 
+        /// <summary>
+        /// Handles the Click event of the Modulo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Modulo_Click(
             object sender,
             RoutedEventArgs e)
@@ -102,6 +139,10 @@ namespace ClinicSync.Views
         // ABRIR MÓDULOS
         // ==========================================
 
+        /// <summary>
+        /// Abrirs the modulo.
+        /// </summary>
+        /// <param name="modulo">The modulo.</param>
         public void AbrirModulo(string modulo)
         {
             switch (modulo)
@@ -209,6 +250,10 @@ namespace ClinicSync.Views
         // RESALTAR OPCIÓN ACTIVA
         // ==========================================
 
+        /// <summary>
+        /// Resaltars the boton.
+        /// </summary>
+        /// <param name="boton">The boton.</param>
         private void ResaltarBoton(Button? boton)
         {
             if (botonSeleccionado != null)
@@ -240,6 +285,11 @@ namespace ClinicSync.Views
         // VISTA TEMPORAL
         // ==========================================
 
+        /// <summary>
+        /// Crears the vista temporal.
+        /// </summary>
+        /// <param name="modulo">The modulo.</param>
+        /// <returns></returns>
         private static UserControl CrearVistaTemporal(
             string modulo)
         {
@@ -276,6 +326,10 @@ namespace ClinicSync.Views
         // ABRIR EXPEDIENTE
         // ==========================================
 
+        /// <summary>
+        /// Abrirs the expediente.
+        /// </summary>
+        /// <param name="idPaciente">The identifier paciente.</param>
         public void AbrirExpediente(int idPaciente)
         {
             ContenidoPrincipal.Content =
@@ -288,6 +342,9 @@ namespace ClinicSync.Views
         // VOLVER A PACIENTES
         // ==========================================
 
+        /// <summary>
+        /// Volvers a pacientes.
+        /// </summary>
         public void VolverAPacientes()
         {
             AbrirModulo("Pacientes");
@@ -297,6 +354,11 @@ namespace ClinicSync.Views
         // CAMPANA DE NOTIFICACIONES
         // ==========================================
 
+        /// <summary>
+        /// Handles the Click event of the Campana control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Campana_Click(
             object sender,
             RoutedEventArgs e)
@@ -316,6 +378,11 @@ namespace ClinicSync.Views
         // BOTÓN DE USUARIO
         // ==========================================
 
+        /// <summary>
+        /// Handles the Click event of the Usuario control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Usuario_Click(
             object sender,
             RoutedEventArgs e)
@@ -330,6 +397,11 @@ namespace ClinicSync.Views
         // MARCAR NOTIFICACIONES COMO LEÍDAS
         // ==========================================
 
+        /// <summary>
+        /// Handles the Click event of the MarcarLeidas control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void MarcarLeidas_Click(
             object sender,
             RoutedEventArgs e)
@@ -351,6 +423,11 @@ namespace ClinicSync.Views
         // VER TODAS LAS NOTIFICACIONES
         // ==========================================
 
+        /// <summary>
+        /// Handles the Click event of the VerTodas control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void VerTodas_Click(
             object sender,
             RoutedEventArgs e)
@@ -364,6 +441,11 @@ namespace ClinicSync.Views
         // ICONO DE CONFIGURACIÓN
         // ==========================================
 
+        /// <summary>
+        /// Handles the Click event of the Configuracion control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Configuracion_Click(
             object sender,
             RoutedEventArgs e)
@@ -377,6 +459,11 @@ namespace ClinicSync.Views
         // CERRAR SESIÓN
         // ==========================================
 
+        /// <summary>
+        /// Handles the Click event of the CerrarSesion control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void CerrarSesion_Click(
             object sender,
             RoutedEventArgs e)
@@ -412,6 +499,9 @@ namespace ClinicSync.Views
         // PREPARAR NOTIFICACIONES
         // ==========================================
 
+        /// <summary>
+        /// Preparars the notificaciones.
+        /// </summary>
         private void PrepararNotificaciones()
         {
             relojNotificaciones.Tick += async (_, _) =>
@@ -432,6 +522,9 @@ namespace ClinicSync.Views
         // CARGAR NOTIFICACIONES
         // ==========================================
 
+        /// <summary>
+        /// Cargars the notificaciones asynchronous.
+        /// </summary>
         private async Task CargarNotificacionesAsync()
         {
             if (cargandoNotificaciones)
@@ -524,6 +617,9 @@ namespace ClinicSync.Views
         // MOSTRAR PERFIL EN MODO CONSULTA
         // ==========================================
 
+        /// <summary>
+        /// Mostrars the perfil.
+        /// </summary>
         private void MostrarPerfil()
         {
             // CREAR VISTA DE SOLO LECTURA
@@ -540,6 +636,10 @@ namespace ClinicSync.Views
         // ABRIR PERFIL EN MODO EDICIÓN
         // ==========================================
 
+        /// <summary>
+        /// Abrirs the editar perfil.
+        /// </summary>
+        /// <param name="perfil">The perfil.</param>
         private void AbrirEditarPerfil(
             PerfilActual perfil)
         {

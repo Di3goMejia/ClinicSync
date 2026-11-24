@@ -4,6 +4,9 @@ using System.Text;
 
 namespace ClinicSyncDesktop.Services
 {
+    /// <summary>
+    /// 
+    /// </summary>
     internal class RecuperacionService
     {
     }

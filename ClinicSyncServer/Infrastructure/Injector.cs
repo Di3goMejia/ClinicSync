@@ -11,8 +11,17 @@ using ClinicSyncServer.Infrastructure.Facial;
 
 namespace ClinicSyncServer.Infrastructure
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class Injector
     {
+        /// <summary>
+        /// Adds the infraestructura.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="config">The configuration.</param>
+        /// <returns></returns>
         public static IServiceCollection AddInfraestructura(
             this IServiceCollection services, IConfiguration config
         )

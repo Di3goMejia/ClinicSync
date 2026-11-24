@@ -12,15 +12,42 @@ using System.Windows.Media;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class AgregarEgresoWindow : Window
     {
+        /// <summary>
+        /// The egresos service
+        /// </summary>
         private readonly EgresosApiService _egresosService;
+        /// <summary>
+        /// The cultura
+        /// </summary>
         private static readonly CultureInfo Cultura = CultureInfo.InvariantCulture;
+        /// <summary>
+        /// The formateando
+        /// </summary>
         private bool _formateando;
+        /// <summary>
+        /// The materiales
+        /// </summary>
         private List<MaterialParaEgreso> _materiales = new();
+        /// <summary>
+        /// The validador
+        /// </summary>
         private readonly ValidadorEgreso _validador = new();
+        /// <summary>
+        /// The controles
+        /// </summary>
         private readonly Dictionary<string, Control> _controles;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AgregarEgresoWindow"/> class.
+        /// </summary>
+        /// <param name="egresosService">The egresos service.</param>
         public AgregarEgresoWindow(EgresosApiService egresosService)
         {
             InitializeComponent();
@@ -43,6 +70,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // MOVER LA VENTANA DESDE EL ENCABEZADO
+        /// <summary>
+        /// Handles the MouseLeftButtonDown event of the Encabezado control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
         private void Encabezado_MouseLeftButtonDown(
             object sender,
             MouseButtonEventArgs e)
@@ -52,12 +84,19 @@ namespace ClinicSyncDesktop.Views
         }
 
         // MENSAJES DE VALIDACIÓN
+        /// <summary>
+        /// Mostrars the error.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
         private void MostrarError(string mensaje)
         {
             txtError.Text = mensaje;
             iconoError.Visibility = Visibility.Visible;
         }
 
+        /// <summary>
+        /// Ocultars the error.
+        /// </summary>
         private void OcultarError()
         {
             txtError.Text = string.Empty;
@@ -65,6 +104,10 @@ namespace ClinicSyncDesktop.Views
         }
 
         // ¿HAY DATOS ESCRITOS? (SIN CONTAR LA FECHA POR DEFECTO)
+        /// <summary>
+        /// Hays the datos escritos.
+        /// </summary>
+        /// <returns></returns>
         private bool HayDatosEscritos() =>
             cmbTipo.SelectedIndex > 0 ||
             cmbMedio.SelectedIndex > 0 ||
@@ -73,6 +116,11 @@ namespace ClinicSyncDesktop.Views
             !string.IsNullOrWhiteSpace(txtMonto.Text);
 
         // CERRAR, PIDIENDO CONFIRMACIÓN SI HAY DATOS
+        /// <summary>
+        /// Handles the Click event of the Cerrar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Cerrar_Click(
             object sender,
             RoutedEventArgs e)
@@ -94,11 +142,20 @@ namespace ClinicSyncDesktop.Views
 
         // ===================== TIPO Y MATERIALES =====================
 
+        /// <summary>
+        /// Eses the materiales.
+        /// </summary>
+        /// <returns></returns>
         private bool EsMateriales() =>
             ((cmbTipo.SelectedItem as ComboBoxItem)?.Tag as string)
                 == "MATERIALES";
 
         // MATERIALES MUESTRA EL SELECTOR; SERVICIOS, EL TEXTO LIBRE
+        /// <summary>
+        /// Handles the SelectionChanged event of the cmbTipo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
         private void cmbTipo_SelectionChanged(
             object sender,
             SelectionChangedEventArgs e)
@@ -117,6 +174,11 @@ namespace ClinicSyncDesktop.Views
             OcultarError();
         }
 
+        /// <summary>
+        /// Handles the Click event of the Materiales control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
         private void Materiales_Click(
             object sender,
             MouseButtonEventArgs e)
@@ -134,6 +196,9 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Actualizars the texto materiales.
+        /// </summary>
         private void ActualizarTextoMateriales()
         {
             if (_materiales.Count == 0)
@@ -154,6 +219,11 @@ namespace ClinicSyncDesktop.Views
 
         // ===================== FECHA =====================
 
+        /// <summary>
+        /// Tries the obtener fecha.
+        /// </summary>
+        /// <param name="fecha">The fecha.</param>
+        /// <returns></returns>
         private bool TryObtenerFecha(out DateTime fecha) =>
             DateTime.TryParseExact(
                 txtFecha.Text.Trim(),
@@ -162,6 +232,11 @@ namespace ClinicSyncDesktop.Views
                 DateTimeStyles.None,
                 out fecha);
 
+        /// <summary>
+        /// Tries the obtener fecha hora.
+        /// </summary>
+        /// <param name="fecha">The fecha.</param>
+        /// <returns></returns>
         private bool TryObtenerFechaHora(out DateTime fecha)
         {
             fecha = default;
@@ -181,6 +256,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // ESCRIBE SOLO DÍGITOS Y PONE LAS DIAGONALES SOLAS
+        /// <summary>
+        /// Handles the TextChanged event of the txtFecha control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void txtFecha_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -221,6 +301,11 @@ namespace ClinicSyncDesktop.Views
             _formateando = false;
         }
 
+        /// <summary>
+        /// Handles the LostFocus event of the txtFecha control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void txtFecha_LostFocus(
             object sender,
             RoutedEventArgs e)
@@ -232,6 +317,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the Calendario control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Calendario_Click(
             object sender,
             RoutedEventArgs e)
@@ -239,6 +329,11 @@ namespace ClinicSyncDesktop.Views
             dpFecha.IsDropDownOpen = true;
         }
 
+        /// <summary>
+        /// Dps the fecha selected date changed.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
         private void dpFecha_SelectedDateChanged(
             object? sender,
             SelectionChangedEventArgs e)
@@ -253,6 +348,11 @@ namespace ClinicSyncDesktop.Views
         // ===================== MONTO =====================
 
         // SOLO DÍGITOS Y UN PUNTO DECIMAL
+        /// <summary>
+        /// Handles the PreviewTextInput event of the txtMonto control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextCompositionEventArgs"/> instance containing the event data.</param>
         private void txtMonto_PreviewTextInput(
             object sender,
             TextCompositionEventArgs e)
@@ -264,6 +364,11 @@ namespace ClinicSyncDesktop.Views
 
         // ===================== AGREGAR =====================
 
+        /// <summary>
+        /// Handles the Click event of the Agregar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Agregar_Click(
             object sender,
             RoutedEventArgs e)

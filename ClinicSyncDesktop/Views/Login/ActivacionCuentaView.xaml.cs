@@ -12,13 +12,30 @@ using System.Windows.Media;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class ActivacionCuentaView : Window
     {
+        /// <summary>
+        /// The enviando
+        /// </summary>
         private bool enviando = false;
 
+        /// <summary>
+        /// The color error
+        /// </summary>
         private readonly Brush colorError = Brushes.Red;
+        /// <summary>
+        /// The color normal
+        /// </summary>
         private readonly Brush colorNormal = Brushes.LightGray;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActivacionCuentaView"/> class.
+        /// </summary>
         public ActivacionCuentaView()
         {
             InitializeComponent();
@@ -29,6 +46,12 @@ namespace ClinicSyncDesktop.Views
         // FUNCIONES GENERALES PARA MOSTRAR ERRORES
         // ============================================
 
+        /// <summary>
+        /// Mostrars the error.
+        /// </summary>
+        /// <param name="campo">The campo.</param>
+        /// <param name="etiqueta">The etiqueta.</param>
+        /// <param name="mensaje">The mensaje.</param>
         private void MostrarError(
             Control campo,
             TextBlock etiqueta,
@@ -41,6 +64,11 @@ namespace ClinicSyncDesktop.Views
             etiqueta.Visibility = Visibility.Visible;
         }
 
+        /// <summary>
+        /// Limpiars the error.
+        /// </summary>
+        /// <param name="campo">The campo.</param>
+        /// <param name="etiqueta">The etiqueta.</param>
         private void LimpiarError(
             Control campo,
             TextBlock etiqueta)
@@ -52,6 +80,11 @@ namespace ClinicSyncDesktop.Views
             etiqueta.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Mostrars the mensaje general.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
+        /// <param name="esError">if set to <c>true</c> [es error].</param>
         private void MostrarMensajeGeneral(
             string mensaje,
             bool esError = true)
@@ -65,6 +98,9 @@ namespace ClinicSyncDesktop.Views
                 Visibility.Visible;
         }
 
+        /// <summary>
+        /// Limpiars the mensaje general.
+        /// </summary>
         private void LimpiarMensajeGeneral()
         {
             LblMensajeGeneral.Text = "";
@@ -76,6 +112,10 @@ namespace ClinicSyncDesktop.Views
         // VALIDACIÓN DEL TOKEN / CÓDIGO
         // ============================================
 
+        /// <summary>
+        /// Validars the token local.
+        /// </summary>
+        /// <returns></returns>
         private bool ValidarTokenLocal()
         {
             string token = TxtToken.Text.Trim();
@@ -94,6 +134,10 @@ namespace ClinicSyncDesktop.Views
         // VALIDACIÓN DE NUEVA CONTRASEÑA
         // ============================================
 
+        /// <summary>
+        /// Validars the nueva password.
+        /// </summary>
+        /// <returns></returns>
         private bool ValidarNuevaPassword()
         {
             string password = TxtNuevaPassword.Password;
@@ -111,6 +155,10 @@ namespace ClinicSyncDesktop.Views
         // VALIDACIÓN DE CONFIRMAR CONTRASEÑA
         // ============================================
 
+        /// <summary>
+        /// Validars the confirmar password.
+        /// </summary>
+        /// <returns></returns>
         private bool ValidarConfirmarPassword()
         {
             string password = TxtNuevaPassword.Password;
@@ -130,6 +178,11 @@ namespace ClinicSyncDesktop.Views
         // BOTÓN VALIDAR TOKEN (PASO 1)
         // ============================================
 
+        /// <summary>
+        /// Handles the Click event of the BtnValidarToken control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void BtnValidarToken_Click(
             object sender,
             RoutedEventArgs e)
@@ -180,6 +233,11 @@ namespace ClinicSyncDesktop.Views
         // BOTÓN ACTIVAR CUENTA (PASO 2)
         // ============================================
 
+        /// <summary>
+        /// Handles the Click event of the BtnActivarCuenta control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void BtnActivarCuenta_Click(
             object sender,
             RoutedEventArgs e)
@@ -252,11 +310,19 @@ namespace ClinicSyncDesktop.Views
         // MANEJO DEL PORTAPAPELES Y ENTRADA DE TEXTO
         // ============================================
 
+        /// <summary>
+        /// Handles the Click event of the BtnPegar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void BtnPegar_Click(object sender, RoutedEventArgs e)
         {
             PegarCodigoDesdePortapapeles();
         }
 
+        /// <summary>
+        /// Pegars the codigo desde portapapeles.
+        /// </summary>
         private void PegarCodigoDesdePortapapeles()
         {
             try
@@ -282,6 +348,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Called when [pasting token].
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="DataObjectPastingEventArgs"/> instance containing the event data.</param>
         private void OnPastingToken(object sender, DataObjectPastingEventArgs e)
         {
             if (e.DataObject.GetDataPresent(DataFormats.Text))
@@ -301,6 +372,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the PreviewTextInput event of the TxtToken control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextCompositionEventArgs"/> instance containing the event data.</param>
         private void TxtToken_PreviewTextInput(
             object sender,
             TextCompositionEventArgs e)
@@ -308,6 +384,11 @@ namespace ClinicSyncDesktop.Views
             e.Handled = !Regex.IsMatch(e.Text, @"^[0-9]+$");
         }
 
+        /// <summary>
+        /// Handles the TextChanged event of the TxtToken control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void TxtToken_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -328,6 +409,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the PasswordChanged event of the TxtNuevaPassword control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void TxtNuevaPassword_PasswordChanged(
             object sender,
             RoutedEventArgs e)
@@ -341,6 +427,11 @@ namespace ClinicSyncDesktop.Views
                 LblErrorConfirmar);
         }
 
+        /// <summary>
+        /// Handles the PasswordChanged event of the TxtConfirmarPassword control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void TxtConfirmarPassword_PasswordChanged(
             object sender,
             RoutedEventArgs e)
@@ -354,6 +445,11 @@ namespace ClinicSyncDesktop.Views
         // BOTÓN REGRESAR
         // ============================================
 
+        /// <summary>
+        /// Handles the Click event of the BtnRegresar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void BtnRegresar_Click(
             object sender,
             RoutedEventArgs e)

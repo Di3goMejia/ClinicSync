@@ -2,13 +2,27 @@
 
 namespace ClinicSyncServer.Features.Inventario.Imagenes
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="ClinicSyncServer.Features.Inventario.Imagenes.IAlmacenamientoImagenesService" />
     public class AlmacenamientoImagenesService
         : IAlmacenamientoImagenesService
     {
+        /// <summary>
+        /// The tamano maximo
+        /// </summary>
         private const long TamanoMaximo = 5 * 1024 * 1024;
 
+        /// <summary>
+        /// The carpeta
+        /// </summary>
         private readonly string carpeta;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AlmacenamientoImagenesService"/> class.
+        /// </summary>
+        /// <param name="environment">The environment.</param>
         public AlmacenamientoImagenesService(
             IWebHostEnvironment environment)
         {
@@ -21,6 +35,19 @@ namespace ClinicSyncServer.Features.Inventario.Imagenes
             Directory.CreateDirectory(carpeta);
         }
 
+        /// <summary>
+        /// Guardars the asynchronous.
+        /// </summary>
+        /// <param name="archivo">The archivo.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">
+        /// Debes seleccionar una imagen.
+        /// or
+        /// La imagen no puede superar los 5 MB.
+        /// or
+        /// El archivo debe ser una imagen PNG, JPEG o WebP válida.
+        /// </exception>
         public async Task<string> GuardarAsync(
             IFormFile archivo,
             CancellationToken ct = default)
@@ -65,6 +92,12 @@ namespace ClinicSyncServer.Features.Inventario.Imagenes
             return $"/api/inventario/materiales/imagenes/{nombre}";
         }
 
+        /// <summary>
+        /// Obteners the ruta.
+        /// </summary>
+        /// <param name="nombreArchivo">The nombre archivo.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Nombre de archivo no válido.</exception>
         public string ObtenerRuta(string nombreArchivo)
         {
             string nombreSeguro = Path.GetFileName(nombreArchivo);
@@ -79,6 +112,12 @@ namespace ClinicSyncServer.Features.Inventario.Imagenes
             return Path.Combine(carpeta, nombreSeguro);
         }
 
+        /// <summary>
+        /// Obteners the extension.
+        /// </summary>
+        /// <param name="firma">The firma.</param>
+        /// <param name="longitud">The longitud.</param>
+        /// <returns></returns>
         private static string? ObtenerExtension(
             byte[] firma, int longitud)
         {

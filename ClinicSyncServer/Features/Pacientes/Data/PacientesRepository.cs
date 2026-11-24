@@ -6,16 +6,31 @@ using System.Data;
 
 namespace ClinicSyncServer.Features.Pacientes.Data
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class PacientesRepository
     {
+        /// <summary>
+        /// The factory
+        /// </summary>
         private readonly SqlConnectionFactory factory;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PacientesRepository"/> class.
+        /// </summary>
+        /// <param name="factory">The factory.</param>
         public PacientesRepository(SqlConnectionFactory factory)
         {
             this.factory = factory;
         }
 
         // LISTAR PACIENTES
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<PacienteListado>> ListarAsync(
             CancellationToken ct = default)
         {
@@ -31,6 +46,11 @@ namespace ClinicSyncServer.Features.Pacientes.Data
         }
 
         // REGISTRAR PACIENTE
+        /// <summary>
+        /// Insertars the asynchronous.
+        /// </summary>
+        /// <param name="paciente">The paciente.</param>
+        /// <param name="ct">The ct.</param>
         public async Task InsertarAsync(
             RegistrarPacienteRequest paciente,
             CancellationToken ct = default)
@@ -56,6 +76,12 @@ namespace ClinicSyncServer.Features.Pacientes.Data
         }
 
         // MODIFICAR DATOS DEL PACIENTE
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="idPaciente">The identifier paciente.</param>
+        /// <param name="paciente">The paciente.</param>
+        /// <param name="ct">The ct.</param>
         public async Task ModificarAsync(
             int idPaciente,
             ModificarPacienteRequest paciente,
@@ -87,6 +113,12 @@ namespace ClinicSyncServer.Features.Pacientes.Data
         }
 
         // CAMBIAR ESTADO DEL PACIENTE
+        /// <summary>
+        /// Cambiars the estado asynchronous.
+        /// </summary>
+        /// <param name="idPaciente">The identifier paciente.</param>
+        /// <param name="activo">if set to <c>true</c> [activo].</param>
+        /// <param name="ct">The ct.</param>
         public async Task CambiarEstadoAsync(
             int idPaciente,
             bool activo,
@@ -117,6 +149,16 @@ namespace ClinicSyncServer.Features.Pacientes.Data
         }
 
         // PARÁMETROS COMPARTIDOS PARA REGISTRAR Y EDITAR
+        /// <summary>
+        /// Crears the parametros paciente.
+        /// </summary>
+        /// <param name="identidad">The identidad.</param>
+        /// <param name="nombres">The nombres.</param>
+        /// <param name="apellidos">The apellidos.</param>
+        /// <param name="fechaNacimiento">The fecha nacimiento.</param>
+        /// <param name="genero">The genero.</param>
+        /// <param name="telefono">The telefono.</param>
+        /// <returns></returns>
         private static DynamicParameters CrearParametrosPaciente(
             string identidad,
             string nombres,

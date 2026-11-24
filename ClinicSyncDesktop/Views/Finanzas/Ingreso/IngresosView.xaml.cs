@@ -9,25 +9,52 @@ using System.Windows.Media;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Controls.UserControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
+    /// <seealso cref="System.Windows.Markup.IStyleConnector" />
     public partial class IngresosView : UserControl
     {
         // SERVICIO DE INGRESOS
+        /// <summary>
+        /// The servicio
+        /// </summary>
         private readonly IngresosApiService servicio = new();
 
         // LISTA COMPLETA DE INGRESOS
+        /// <summary>
+        /// The ingresos
+        /// </summary>
         private IngresoListado[] ingresos =
             Array.Empty<IngresoListado>();
 
         // FILTRO SELECCIONADO
+        /// <summary>
+        /// The filtro actual
+        /// </summary>
         private string filtroActual = "Todos";
+        /// <summary>
+        /// The estado actual
+        /// </summary>
         private string estadoActual = "Todos";
         // EVENTO PARA EDICIÓN
+        /// <summary>
+        /// Occurs when [editar ingreso solicitado].
+        /// </summary>
         public event Action<IngresoListado>? EditarIngresoSolicitado;
 
         // EVITA CARGAS SIMULTÁNEAS
+        /// <summary>
+        /// The cargando ingresos
+        /// </summary>
         private bool cargandoIngresos = false;
 
         // CONSTRUCTOR
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IngresosView"/> class.
+        /// </summary>
         public IngresosView()
         {
             InitializeComponent();
@@ -43,6 +70,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CARGAR INGRESOS AL ABRIR LA PANTALLA
+        /// <summary>
+        /// Handles the Loaded event of the IngresosView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void IngresosView_Loaded(
             object sender, RoutedEventArgs e)
         {
@@ -50,6 +82,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // OBTENER INGRESOS DESDE LA API
+        /// <summary>
+        /// Cargars the ingresos asynchronous.
+        /// </summary>
         private async Task CargarIngresosAsync()
         {
             if (cargandoIngresos)
@@ -87,6 +122,10 @@ namespace ClinicSyncDesktop.Views
         }
 
         // MOSTRAR ERRORES EN PANTALLA
+        /// <summary>
+        /// Mostrars the error.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
         private void MostrarError(string mensaje)
         {
             ErrorListado.Text = mensaje;
@@ -94,6 +133,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // FILTRAR LOS INGRESOS SEGÚN LA FECHA
+        /// <summary>
+        /// Aplicars the filtro.
+        /// </summary>
         private void AplicarFiltro()
         {
             DateTime hoy = DateTime.Today;
@@ -150,6 +192,10 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CAMBIAR FILTRO Y ACTUALIZAR LA TABLA
+        /// <summary>
+        /// Cambiars the filtro.
+        /// </summary>
+        /// <param name="filtro">The filtro.</param>
         private void CambiarFiltro(string filtro)
         {
             filtroActual = filtro;
@@ -161,6 +207,11 @@ namespace ClinicSyncDesktop.Views
             AplicarFiltro();
         }
 
+        /// <summary>
+        /// Handles the SelectionChanged event of the CmbEstadoIngresos control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
         private void CmbEstadoIngresos_SelectionChanged(
             object sender,
             SelectionChangedEventArgs e)
@@ -176,6 +227,9 @@ namespace ClinicSyncDesktop.Views
             AplicarFiltro();
         }
         // ACTUALIZAR LOS COLORES DE LOS CUATRO BOTONES
+        /// <summary>
+        /// Actualizars the botones.
+        /// </summary>
         private void ActualizarBotones()
         {
             // Color del botón seleccionado.
@@ -208,6 +262,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // BOTÓN HOY
+        /// <summary>
+        /// Handles the Click event of the Hoy control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Hoy_Click(
             object sender, RoutedEventArgs e)
         {
@@ -215,6 +274,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // BOTÓN SEMANA
+        /// <summary>
+        /// Handles the Click event of the Semana control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Semana_Click(
             object sender, RoutedEventArgs e)
         {
@@ -222,6 +286,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // BOTÓN MES
+        /// <summary>
+        /// Handles the Click event of the Mes control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Mes_Click(
             object sender, RoutedEventArgs e)
         {
@@ -229,6 +298,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // BOTÓN TODOS
+        /// <summary>
+        /// Handles the Click event of the BtnTodos control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void BtnTodos_Click(
             object sender, RoutedEventArgs e)
         {
@@ -236,6 +310,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // AGREGAR NUEVO INGRESO
+        /// <summary>
+        /// Handles the Click event of the AgregarNuevo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void AgregarNuevo_Click(
             object sender, RoutedEventArgs e)
         {
@@ -252,6 +331,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // EDITAR INGRESO CON EL BOTÓN ENGRANAJE
+        /// <summary>
+        /// Handles the Click event of the EditarIngreso control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void EditarIngreso_Click(
             object sender, RoutedEventArgs e)
         {

@@ -2,8 +2,19 @@
 
 namespace ClinicSyncDesktop.Validations;
 
+/// <summary>
+/// 
+/// </summary>
 public static class HelperValidacion
 {
+    /// <summary>
+    /// Aplicars the resultado.
+    /// </summary>
+    /// <param name="resultado">The resultado.</param>
+    /// <param name="controles">The controles.</param>
+    /// <param name="mostrarError">The mostrar error.</param>
+    /// <param name="ocultarError">The ocultar error.</param>
+    /// <returns></returns>
     public static bool AplicarResultado(
         ResultadoValidacion resultado,
         IReadOnlyDictionary<string, Control> controles,

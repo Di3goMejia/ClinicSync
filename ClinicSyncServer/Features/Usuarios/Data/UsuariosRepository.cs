@@ -9,8 +9,16 @@ using System.Data;
 
 namespace ClinicSyncServer.Features.Usuarios.Data
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class UsuariosRepository(SqlConnectionFactory factory)
     {
+        /// <summary>
+        /// Obteners the para login asynchronous.
+        /// </summary>
+        /// <param name="identificador">The identificador.</param>
+        /// <returns></returns>
         public async Task<UsuarioAuth?> ObtenerParaLoginAsync(string identificador)
         {
             await using var db = factory.Crear();
@@ -23,6 +31,11 @@ namespace ClinicSyncServer.Features.Usuarios.Data
             );
         }
 
+        /// <summary>
+        /// Obteners the clave password asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <returns></returns>
         public async Task<string?> ObtenerClavePasswordAsync(int idUsuario)
         {
             await using var db = factory.Crear();
@@ -35,6 +48,11 @@ namespace ClinicSyncServer.Features.Usuarios.Data
             );
         }
 
+        /// <summary>
+        /// Obteners the imagen perfil asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <returns></returns>
         public async Task<string?> ObtenerImagenPerfilAsync(int idUsuario)
         {
             await using var db = factory.Crear();
@@ -47,6 +65,10 @@ namespace ClinicSyncServer.Features.Usuarios.Data
             );
         }
 
+        /// <summary>
+        /// Registrars the login exitoso asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
         public async Task RegistrarLoginExitosoAsync(int idUsuario)
         {
             await using var db = factory.Crear();
@@ -59,6 +81,12 @@ namespace ClinicSyncServer.Features.Usuarios.Data
             );
         }
 
+        /// <summary>
+        /// Establecers the password asynchronous.
+        /// </summary>
+        /// <param name="tokenHash">The token hash.</param>
+        /// <param name="tipo">The tipo.</param>
+        /// <param name="clave">The clave.</param>
         public async Task EstablecerPasswordAsync(byte[] tokenHash, string tipo, string clave)
         {
             await using SqlConnection db = factory.Crear();
@@ -69,6 +97,13 @@ namespace ClinicSyncServer.Features.Usuarios.Data
                 commandType: CommandType.StoredProcedure);
         }
 
+        /// <summary>
+        /// Crears the con empleado asynchronous.
+        /// </summary>
+        /// <param name="req">The req.</param>
+        /// <param name="tokenHash">The token hash.</param>
+        /// <param name="expira">The expira.</param>
+        /// <returns></returns>
         public async Task<CrearUsuarioResponse> CrearConEmpleadoAsync(CrearUsuarioRequest req, byte[] tokenHash, DateTime expira)
         {
             await using var db = factory.Crear();
@@ -102,6 +137,10 @@ namespace ClinicSyncServer.Features.Usuarios.Data
             }
         }
 
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IEnumerable<UsuarioListado>> ListarAsync()
         {
             await using SqlConnection db = factory.Crear();
@@ -112,6 +151,11 @@ namespace ClinicSyncServer.Features.Usuarios.Data
                 commandType: CommandType.StoredProcedure);
         }
 
+        /// <summary>
+        /// Obteners the por identifier asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public async Task<UsuarioDetalle?> ObtenerPorIdAsync(int id)
         {
             await using SqlConnection db = factory.Crear();
@@ -124,6 +168,10 @@ namespace ClinicSyncServer.Features.Usuarios.Data
             );
         }
 
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="req">The req.</param>
         public async Task ModificarAsync(ModificarUsuarioRequest req)
         {
             await using SqlConnection db = factory.Crear();
@@ -144,6 +192,10 @@ namespace ClinicSyncServer.Features.Usuarios.Data
         }
 
 
+        /// <summary>
+        /// Modificars the rol asynchronous.
+        /// </summary>
+        /// <param name="req">The req.</param>
         public async Task ModificarRolAsync(ModificarRolUsuarioRequest req)
         {
             await using SqlConnection db = factory.Crear();
@@ -163,6 +215,13 @@ namespace ClinicSyncServer.Features.Usuarios.Data
             }
         }
 
+        /// <summary>
+        /// Cambiars the imagen perfil asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="clave">The clave.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="KeyNotFoundException">El usuario no existe.</exception>
         public async Task CambiarImagenPerfilAsync(int idUsuario, string clave, CancellationToken ct = default)
         {
             await using var db = factory.Crear();
@@ -181,6 +240,13 @@ namespace ClinicSyncServer.Features.Usuarios.Data
                 throw new KeyNotFoundException("El usuario no existe.");
         }
 
+        /// <summary>
+        /// Cambiars the estado asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="activo">if set to <c>true</c> [activo].</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="KeyNotFoundException">El usuario no existe.</exception>
         public async Task CambiarEstadoAsync(int idUsuario, bool activo, CancellationToken ct = default)
         {
             await using var db = factory.Crear();
@@ -200,6 +266,11 @@ namespace ClinicSyncServer.Features.Usuarios.Data
                 throw new KeyNotFoundException("El usuario no existe.");
         }
 
+        /// <summary>
+        /// Eliminars the imagen perfil asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="ct">The ct.</param>
         public async Task EliminarImagenPerfilAsync(
             int idUsuario,
             CancellationToken ct = default)

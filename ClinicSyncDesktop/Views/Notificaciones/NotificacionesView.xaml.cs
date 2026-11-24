@@ -9,19 +9,39 @@ using ClinicSyncDesktop.Services;
 
 namespace ClinicSyncDesktop.Views.Notificaciones
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Controls.UserControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class NotificacionesView : UserControl
     {
         // SERVICIO DE NOTIFICACIONES
+        /// <summary>
+        /// The servicio
+        /// </summary>
         private readonly NotificacionesApiService servicio = new();
 
         // LISTA COMPLETA
+        /// <summary>
+        /// The todas
+        /// </summary>
         private Notificacion[] todas =
             Array.Empty<Notificacion>();
 
+        /// <summary>
+        /// The listo
+        /// </summary>
         private bool listo;
+        /// <summary>
+        /// The cargando
+        /// </summary>
         private bool cargando;
 
         // CONSTRUCTOR
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotificacionesView"/> class.
+        /// </summary>
         public NotificacionesView()
         {
             InitializeComponent();
@@ -30,6 +50,11 @@ namespace ClinicSyncDesktop.Views.Notificaciones
         }
 
         // CARGAR AL ABRIR EL MÓDULO
+        /// <summary>
+        /// Handles the Loaded event of the NotificacionesView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void NotificacionesView_Loaded(
             object sender, RoutedEventArgs e)
         {
@@ -42,6 +67,9 @@ namespace ClinicSyncDesktop.Views.Notificaciones
         }
 
         // CONSULTAR API
+        /// <summary>
+        /// Recargars the asynchronous.
+        /// </summary>
         private async Task RecargarAsync()
         {
             if (cargando)
@@ -73,6 +101,9 @@ namespace ClinicSyncDesktop.Views.Notificaciones
         }
 
         // MOSTRAR NOTIFICACIONES SEGÚN LOS FILTROS
+        /// <summary>
+        /// Pintars this instance.
+        /// </summary>
         private void Pintar()
         {
             if (!listo ||
@@ -176,6 +207,11 @@ namespace ClinicSyncDesktop.Views.Notificaciones
         }
 
         // BUSCAR
+        /// <summary>
+        /// Filtroes the cambiado.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void FiltroCambiado(
             object sender,
             TextChangedEventArgs e)
@@ -184,6 +220,11 @@ namespace ClinicSyncDesktop.Views.Notificaciones
         }
 
         // FILTRO POR FECHA
+        /// <summary>
+        /// Filtroes the fecha cambiado.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
         private void FiltroFechaCambiado(
             object sender,
             SelectionChangedEventArgs e)
@@ -192,6 +233,11 @@ namespace ClinicSyncDesktop.Views.Notificaciones
         }
 
         // FILTROS DE TIPO Y ESTADO
+        /// <summary>
+        /// Comboes the cambiado.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
         private void ComboCambiado(
             object sender,
             SelectionChangedEventArgs e)
@@ -200,6 +246,11 @@ namespace ClinicSyncDesktop.Views.Notificaciones
         }
 
         // MARCAR TODAS COMO LEÍDAS
+        /// <summary>
+        /// Handles the Click event of the MarcarTodas control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void MarcarTodas_Click(
             object sender,
             RoutedEventArgs e)
@@ -217,6 +268,11 @@ namespace ClinicSyncDesktop.Views.Notificaciones
         }
 
         // ARCHIVAR NOTIFICACIONES LEÍDAS
+        /// <summary>
+        /// Handles the Click event of the ArchivarLeidas control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void ArchivarLeidas_Click(
             object sender,
             RoutedEventArgs e)
@@ -239,6 +295,10 @@ namespace ClinicSyncDesktop.Views.Notificaciones
         }
 
         // MOSTRAR ERRORES EN PANTALLA
+        /// <summary>
+        /// Mostrars the error.
+        /// </summary>
+        /// <param name="ex">The ex.</param>
         private void MostrarError(Exception ex)
         {
             ErrorListado.Text = ex.Message;
@@ -246,6 +306,11 @@ namespace ClinicSyncDesktop.Views.Notificaciones
         }
 
         // LIMPIAR LOS FILTROS
+        /// <summary>
+        /// Handles the Click event of the Limpiar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Limpiar_Click(
             object sender,
             RoutedEventArgs e)

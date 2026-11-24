@@ -13,13 +13,28 @@ using System.Linq;
 
 namespace ClinicSyncDesktop.Services
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class AgendaApiService
     {
         // Las fechas viajan SIN zona horaria (ej. 2026-11-10T09:00:00).
+        /// <summary>
+        /// Fechas the specified fecha.
+        /// </summary>
+        /// <param name="fecha">The fecha.</param>
+        /// <returns></returns>
         private static string Fecha(DateTime fecha) =>
             fecha.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture);
 
         // CALENDARIO (vistas Día / Semana / Mes)
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <param name="desde">The desde.</param>
+        /// <param name="hasta">The hasta.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<List<EventoAgenda>> ListarAsync(
             DateTime desde,
             DateTime hasta,
@@ -35,6 +50,12 @@ namespace ClinicSyncDesktop.Services
         }
 
         // PRÓXIMAS CITAS ("Ver más..." = una cantidad mayor)
+        /// <summary>
+        /// Proximases the asynchronous.
+        /// </summary>
+        /// <param name="cantidad">The cantidad.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<List<ProximaCita>> ProximasAsync(
             int cantidad = 4,
             CancellationToken ct = default)
@@ -49,6 +70,14 @@ namespace ClinicSyncDesktop.Services
         }
 
         // ¿EL HORARIO ESTÁ LIBRE?
+        /// <summary>
+        /// Verificars the disponibilidad asynchronous.
+        /// </summary>
+        /// <param name="inicio">The inicio.</param>
+        /// <param name="fin">The fin.</param>
+        /// <param name="ct">The ct.</param>
+        /// <param name="idEventoExcluir">The identifier evento excluir.</param>
+        /// <returns></returns>
         public async Task<DisponibilidadAgenda> VerificarDisponibilidadAsync(
             DateTime inicio,
             DateTime fin,
@@ -72,6 +101,11 @@ namespace ClinicSyncDesktop.Services
 
 
         // PACIENTES ACTIVOS (para el selector del formulario)
+        /// <summary>
+        /// Listars the pacientes activos asynchronous.
+        /// </summary>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<List<PacienteOpcion>> ListarPacientesActivosAsync(
             CancellationToken ct = default)
         {
@@ -89,6 +123,13 @@ namespace ClinicSyncDesktop.Services
 
 
         // OBTENER UNA CITA POR ID
+        /// <summary>
+        /// Obteners the por identifier asynchronous.
+        /// </summary>
+        /// <param name="idEvento">The identifier evento.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">El identificador de la cita no es válido.</exception>
         public async Task<EventoAgenda> ObtenerPorIdAsync(
             int idEvento,
             CancellationToken ct = default)
@@ -105,6 +146,24 @@ namespace ClinicSyncDesktop.Services
         // REGISTRAR CITA
         // Si el horario está ocupado, lanza HttpRequestException con
         // StatusCode = Conflict (409) y el mensaje "Esta hora no esta disponible."
+        /// <summary>
+        /// Registrars the asynchronous.
+        /// </summary>
+        /// <param name="idPaciente">The identifier paciente.</param>
+        /// <param name="titulo">The titulo.</param>
+        /// <param name="inicio">The inicio.</param>
+        /// <param name="fin">The fin.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="direccion">The direccion.</param>
+        /// <param name="notas">The notas.</param>
+        /// <param name="todoElDia">if set to <c>true</c> [todo el dia].</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="HttpRequestException">
+        /// null
+        /// or
+        /// La API no devolvió el identificador de la cita.
+        /// </exception>
         public async Task<int> RegistrarAsync(
             int idPaciente,
             string titulo,
@@ -154,6 +213,21 @@ namespace ClinicSyncDesktop.Services
         }
 
         // MODIFICAR CITA
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="idEvento">The identifier evento.</param>
+        /// <param name="idPaciente">The identifier paciente.</param>
+        /// <param name="titulo">The titulo.</param>
+        /// <param name="inicio">The inicio.</param>
+        /// <param name="fin">The fin.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="direccion">The direccion.</param>
+        /// <param name="notas">The notas.</param>
+        /// <param name="todoElDia">if set to <c>true</c> [todo el dia].</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="ArgumentException">El identificador de la cita no es válido.</exception>
+        /// <exception cref="HttpRequestException">null</exception>
         public async Task ModificarAsync(
             int idEvento,
             int idPaciente,
@@ -203,6 +277,13 @@ namespace ClinicSyncDesktop.Services
         }
 
         // CANCELAR CITA
+        /// <summary>
+        /// Cancelars the asynchronous.
+        /// </summary>
+        /// <param name="idEvento">The identifier evento.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="ArgumentException">El identificador de la cita no es válido.</exception>
+        /// <exception cref="HttpRequestException">null</exception>
         public async Task CancelarAsync(
             int idEvento,
             CancellationToken ct = default)
@@ -232,6 +313,13 @@ namespace ClinicSyncDesktop.Services
         }
 
         // LEER EL MENSAJE DE ERROR DE LA API
+        /// <summary>
+        /// Obteners the mensaje error asynchronous.
+        /// </summary>
+        /// <param name="respuesta">The respuesta.</param>
+        /// <param name="mensajePredeterminado">The mensaje predeterminado.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         private static async Task<string> ObtenerMensajeErrorAsync(
             HttpResponseMessage respuesta,
             string mensajePredeterminado,
@@ -279,8 +367,17 @@ namespace ClinicSyncDesktop.Services
             return mensajePredeterminado;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private sealed class RespuestaRegistro
         {
+            /// <summary>
+            /// Gets or sets the identifier evento.
+            /// </summary>
+            /// <value>
+            /// The identifier evento.
+            /// </value>
             public int IdEvento { get; set; }
         }
     }

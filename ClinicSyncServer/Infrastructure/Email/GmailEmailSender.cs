@@ -9,15 +9,37 @@ using MimeKit;
 
 namespace ClinicSyncServer.Infrastructure.Email
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="ClinicSyncServer.Common.Abstracciones.IEmailSender" />
     public class GmailEmailSender : IEmailSender
     {
+        /// <summary>
+        /// The configuration
+        /// </summary>
         private readonly IConfiguration _config;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GmailEmailSender"/> class.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
         public GmailEmailSender(IConfiguration config)
         {
             _config = config;
         }
 
+        /// <summary>
+        /// Enviars the restablecimiento asynchronous.
+        /// </summary>
+        /// <param name="correo">The correo.</param>
+        /// <param name="codigo">The codigo.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="Exception">
+        /// Falta configurar Gmail.
+        /// or
+        /// Falta la clave de Gmail.
+        /// </exception>
         public async Task EnviarRestablecimientoAsync(
             string correo,
             string codigo,
@@ -70,6 +92,17 @@ namespace ClinicSyncServer.Infrastructure.Email
             await smtp.DisconnectAsync(true, ct);
         }
 
+        /// <summary>
+        /// Enviars the reactivacion asynchronous.
+        /// </summary>
+        /// <param name="correo">The correo.</param>
+        /// <param name="nombre">The nombre.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="Exception">
+        /// Falta configurar Gmail.
+        /// or
+        /// Falta la clave de Gmail.
+        /// </exception>
         public async Task EnviarReactivacionAsync(string correo, string nombre, CancellationToken ct = default)
         {
             string remitente = _config["Gmail:Correo"] ?? throw new Exception("Falta configurar Gmail.");
@@ -86,6 +119,17 @@ namespace ClinicSyncServer.Infrastructure.Email
             await smtp.DisconnectAsync(true, ct);
         }
 
+        /// <summary>
+        /// Enviars the desactivacion asynchronous.
+        /// </summary>
+        /// <param name="correo">The correo.</param>
+        /// <param name="nombre">The nombre.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="Exception">
+        /// Falta configurar Gmail.
+        /// or
+        /// Falta la clave de Gmail.
+        /// </exception>
         public async Task EnviarDesactivacionAsync(
             string correo,
             string nombre,
@@ -115,6 +159,18 @@ namespace ClinicSyncServer.Infrastructure.Email
             await smtp.DisconnectAsync(true, ct);
         }
 
+        /// <summary>
+        /// Enviars the activacion asynchronous.
+        /// </summary>
+        /// <param name="correo">The correo.</param>
+        /// <param name="nombre">The nombre.</param>
+        /// <param name="token">The token.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="Exception">
+        /// Falta configurar Gmail.
+        /// or
+        /// Falta la clave de Gmail.
+        /// </exception>
         public async Task EnviarActivacionAsync(
             string correo,
             string nombre,

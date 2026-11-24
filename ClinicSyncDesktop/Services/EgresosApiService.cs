@@ -13,9 +13,20 @@ using ClinicSyncDesktop.Models;
 
 namespace ClinicSyncDesktop.Services
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class EgresosApiService
     {
         // LISTAR EGRESOS POR RANGO DE FECHAS
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <param name="desde">The desde.</param>
+        /// <param name="hasta">The hasta.</param>
+        /// <param name="activo">The activo.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<List<Egreso>> ListarAsync(
             DateTime desde,
             DateTime hasta,
@@ -39,6 +50,20 @@ namespace ClinicSyncDesktop.Services
         }
 
         // REGISTRAR EGRESO
+        /// <summary>
+        /// Registrars the asynchronous.
+        /// </summary>
+        /// <param name="tipo">The tipo.</param>
+        /// <param name="fecha">The fecha.</param>
+        /// <param name="concepto">The concepto.</param>
+        /// <param name="medioPago">The medio pago.</param>
+        /// <param name="monto">The monto.</param>
+        /// <param name="materiales">The materiales.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="HttpRequestException">
+        /// La API no devolvió el identificador del egreso.
+        /// </exception>
         public async Task<int> RegistrarAsync(
             string tipo,
             DateTime fecha,
@@ -89,6 +114,12 @@ namespace ClinicSyncDesktop.Services
                     "La API no devolvió el identificador del egreso.");
         }
 
+        /// <summary>
+        /// Obteners the asynchronous.
+        /// </summary>
+        /// <param name="idEgreso">The identifier egreso.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<Egreso> ObtenerAsync(
             int idEgreso,
             CancellationToken ct = default)
@@ -98,6 +129,18 @@ namespace ClinicSyncDesktop.Services
                 $"api/finanzas/egresos/{idEgreso}");
         }
 
+        /// <summary>
+        /// Actualizars the asynchronous.
+        /// </summary>
+        /// <param name="idEgreso">The identifier egreso.</param>
+        /// <param name="fecha">The fecha.</param>
+        /// <param name="concepto">The concepto.</param>
+        /// <param name="medioPago">The medio pago.</param>
+        /// <param name="monto">The monto.</param>
+        /// <param name="activo">The activo.</param>
+        /// <param name="ct">The ct.</param>
+        /// <param name="materiales">The materiales.</param>
+        /// <exception cref="HttpRequestException"></exception>
         public async Task ActualizarAsync(
             int idEgreso,
             DateTime fecha,
@@ -134,6 +177,13 @@ namespace ClinicSyncDesktop.Services
 
 
         // LEER MENSAJE DE ERROR DE LA API
+        /// <summary>
+        /// Obteners the mensaje error asynchronous.
+        /// </summary>
+        /// <param name="respuesta">The respuesta.</param>
+        /// <param name="mensajePredeterminado">The mensaje predeterminado.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         private static async Task<string> ObtenerMensajeErrorAsync(
             HttpResponseMessage respuesta,
             string mensajePredeterminado,
@@ -171,8 +221,17 @@ namespace ClinicSyncDesktop.Services
         }
 
         // RESPUESTA DEL REGISTRO
+        /// <summary>
+        /// 
+        /// </summary>
         private sealed class RespuestaRegistro
         {
+            /// <summary>
+            /// Gets or sets the identifier egreso.
+            /// </summary>
+            /// <value>
+            /// The identifier egreso.
+            /// </value>
             public int IdEgreso { get; set; }
         }
     }

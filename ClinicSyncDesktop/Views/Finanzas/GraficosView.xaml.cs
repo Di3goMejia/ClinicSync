@@ -12,16 +12,33 @@ using System.Windows.Media;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Controls.UserControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class GraficosView : UserControl
     {
+        /// <summary>
+        /// The graficos service
+        /// </summary>
         private readonly GraficosApiService? _graficosService;
 
         // FILTRO INICIAL
+        /// <summary>
+        /// The filtro actual
+        /// </summary>
         private string filtroActual = "Todos";
 
         // IDENTIFICA LA CONSULTA MÁS RECIENTE
+        /// <summary>
+        /// The numero consulta
+        /// </summary>
         private int numeroConsulta = 0;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraficosView"/> class.
+        /// </summary>
         public GraficosView()
         {
             InitializeComponent();
@@ -29,6 +46,10 @@ namespace ClinicSyncDesktop.Views
             ActualizarBotones();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraficosView"/> class.
+        /// </summary>
+        /// <param name="service">The service.</param>
         public GraficosView(GraficosApiService service)
             : this()
         {
@@ -36,6 +57,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CARGAR DATOS DEL GRÁFICO
+        /// <summary>
+        /// Cargars the datos asynchronous.
+        /// </summary>
         private async Task CargarDatosAsync()
         {
             if (_graficosService is null)
@@ -136,6 +160,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CARGAR AL ABRIR LA VISTA
+        /// <summary>
+        /// Handles the Loaded event of the GraficosView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void GraficosView_Loaded(
             object sender,
             RoutedEventArgs e)
@@ -144,6 +173,10 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CAMBIAR FILTRO
+        /// <summary>
+        /// Cambiars the filtro.
+        /// </summary>
+        /// <param name="filtro">The filtro.</param>
         private async void CambiarFiltro(string filtro)
         {
             filtroActual = filtro;
@@ -154,6 +187,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // ACTUALIZAR COLOR DE LOS BOTONES
+        /// <summary>
+        /// Actualizars the botones.
+        /// </summary>
         private void ActualizarBotones()
         {
             var colorSeleccion = new SolidColorBrush(
@@ -183,6 +219,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // BOTÓN HOY
+        /// <summary>
+        /// Handles the Click event of the Hoy control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Hoy_Click(
             object sender,
             RoutedEventArgs e)
@@ -191,6 +232,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // BOTÓN SEMANA
+        /// <summary>
+        /// Handles the Click event of the Semana control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Semana_Click(
             object sender,
             RoutedEventArgs e)
@@ -199,6 +245,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // BOTÓN MES
+        /// <summary>
+        /// Handles the Click event of the Mes control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Mes_Click(
             object sender,
             RoutedEventArgs e)
@@ -207,6 +258,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // BOTÓN TODOS
+        /// <summary>
+        /// Handles the Click event of the Todos control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Todos_Click(
             object sender,
             RoutedEventArgs e)

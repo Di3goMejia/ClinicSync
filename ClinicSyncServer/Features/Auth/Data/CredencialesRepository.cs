@@ -6,8 +6,16 @@ using System.Data;
 
 namespace ClinicSyncServer.Features.Auth.Data
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class CredencialesRepository(SqlConnectionFactory factory)
     {
+        /// <summary>
+        /// Obteners the para login asynchronous.
+        /// </summary>
+        /// <param name="identificador">The identificador.</param>
+        /// <returns></returns>
         public async Task<UsuarioAuth?> ObtenerParaLoginAsync(string identificador)
         {
             await using SqlConnection db = factory.Crear();
@@ -19,6 +27,10 @@ namespace ClinicSyncServer.Features.Auth.Data
                 commandType: CommandType.StoredProcedure);
         }
 
+        /// <summary>
+        /// Registrars the login exitoso asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
         public async Task RegistrarLoginExitosoAsync(int idUsuario)
         {
             await using SqlConnection db = factory.Crear();
@@ -29,6 +41,11 @@ namespace ClinicSyncServer.Features.Auth.Data
                 commandType: CommandType.StoredProcedure);
         }
 
+        /// <summary>
+        /// Obteners the contacto asynchronous.
+        /// </summary>
+        /// <param name="identificador">The identificador.</param>
+        /// <returns></returns>
         public async Task<UsuarioContacto?> ObtenerContactoAsync(string identificador)
         {
             await using SqlConnection db = factory.Crear();
@@ -40,6 +57,12 @@ namespace ClinicSyncServer.Features.Auth.Data
                 commandType: CommandType.StoredProcedure);
         }
 
+        /// <summary>
+        /// Establecers the password asynchronous.
+        /// </summary>
+        /// <param name="tokenHash">The token hash.</param>
+        /// <param name="proposito">The proposito.</param>
+        /// <param name="passwordHash">The password hash.</param>
         public async Task EstablecerPasswordAsync(byte[] tokenHash, string proposito, string passwordHash)
         {
             await using SqlConnection db = factory.Crear();
@@ -64,6 +87,11 @@ namespace ClinicSyncServer.Features.Auth.Data
         }
 
         // OBTENER HASH DE CONTRASEÑA DEL USUARIO
+        /// <summary>
+        /// Obteners the clave asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <returns></returns>
         public async Task<string?> ObtenerClaveAsync(int idUsuario)
         {
             await using SqlConnection db = factory.Crear();
@@ -76,6 +104,12 @@ namespace ClinicSyncServer.Features.Auth.Data
         }
 
         // CAMBIAR CONTRASEÑA DESDE PERFIL
+        /// <summary>
+        /// Cambiars the mi password asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="idSesionActual">The identifier sesion actual.</param>
+        /// <param name="claveHash">The clave hash.</param>
         public async Task CambiarMiPasswordAsync(
             int idUsuario,
             Guid idSesionActual,

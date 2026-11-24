@@ -12,24 +12,77 @@ using static ClinicSyncDesktop.Views.EditarVisitaWindow;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class VisualizarVisitaWindow : Window
     {
+        /// <summary>
+        /// The identifier visita
+        /// </summary>
         private readonly int idVisita;
+        /// <summary>
+        /// The identifier paciente
+        /// </summary>
         private readonly int idPaciente;
+        /// <summary>
+        /// The paciente activo
+        /// </summary>
         private readonly bool pacienteActivo;
+        /// <summary>
+        /// The tratamientos
+        /// </summary>
         private TratamientoFila[] tratamientos = Array.Empty<TratamientoFila>();
 
+        /// <summary>
+        /// Gets a value indicating whether [visita actualizada].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [visita actualizada]; otherwise, <c>false</c>.
+        /// </value>
         public bool VisitaActualizada { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public sealed record TratamientoFila(int Cantidad, string Nombre);
 
+        /// <summary>
+        /// 
+        /// </summary>
         private sealed class ProfesionalListado
         {
+            /// <summary>
+            /// Gets or sets the identifier empleado.
+            /// </summary>
+            /// <value>
+            /// The identifier empleado.
+            /// </value>
             public int IdEmpleado { get; set; }
+            /// <summary>
+            /// Gets or sets the nombres.
+            /// </summary>
+            /// <value>
+            /// The nombres.
+            /// </value>
             public string Nombres { get; set; } = "";
+            /// <summary>
+            /// Gets or sets the apellidos.
+            /// </summary>
+            /// <value>
+            /// The apellidos.
+            /// </value>
             public string Apellidos { get; set; } = "";
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VisualizarVisitaWindow"/> class.
+        /// </summary>
+        /// <param name="idVisita">The identifier visita.</param>
+        /// <param name="idPaciente">The identifier paciente.</param>
+        /// <param name="pacienteActivo">if set to <c>true</c> [paciente activo].</param>
         public VisualizarVisitaWindow(int idVisita, int idPaciente, bool pacienteActivo)
         {
             InitializeComponent();
@@ -47,11 +100,19 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Loaded event of the Ventana control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Ventana_Loaded(object sender, RoutedEventArgs e)
         {
             await CargarAsync();
         }
 
+        /// <summary>
+        /// Cargars the asynchronous.
+        /// </summary>
         private async Task CargarAsync()
         {
             btnEditar.IsEnabled = false;
@@ -87,6 +148,10 @@ namespace ClinicSyncDesktop.Views
             btnEditar.IsEnabled = pacienteActivo;
         }
 
+        /// <summary>
+        /// Cargars the profesional asynchronous.
+        /// </summary>
+        /// <param name="idEmpleado">The identifier empleado.</param>
         private async Task CargarProfesionalAsync(int idEmpleado)
         {
             if (idEmpleado <= 0)
@@ -124,6 +189,9 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Cargars the tratamientos asynchronous.
+        /// </summary>
         private async Task CargarTratamientosAsync()
         {
             tratamientos = Array.Empty<TratamientoFila>();
@@ -153,6 +221,9 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Cargars the archivos asynchronous.
+        /// </summary>
         private async Task CargarArchivosAsync()
         {
             PanelArchivos.Children.Clear();

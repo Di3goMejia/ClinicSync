@@ -8,8 +8,17 @@ using System.Data;
 
 namespace ClinicSyncServer.Features.Roles.Data;
 
+/// <summary>
+/// 
+/// </summary>
 public sealed class RolesRepository(SqlConnectionFactory factory)
 {
+    /// <summary>
+    /// Listars the asynchronous.
+    /// </summary>
+    /// <param name="query">The query.</param>
+    /// <param name="ct">The ct.</param>
+    /// <returns></returns>
     public async Task<IEnumerable<RolListado>> ListarAsync(ListarRolesQuery query, CancellationToken ct = default)
     {
         await using var db = factory.Crear();
@@ -22,6 +31,14 @@ public sealed class RolesRepository(SqlConnectionFactory factory)
             cancellationToken: ct));
     }
 
+    /// <summary>
+    /// Crears the asynchronous.
+    /// </summary>
+    /// <param name="nombre">The nombre.</param>
+    /// <param name="descripcion">The descripcion.</param>
+    /// <param name="codigo">The codigo.</param>
+    /// <param name="ct">The ct.</param>
+    /// <returns></returns>
     public async Task<CrearRolResponse> CrearAsync(string nombre, string? descripcion, string codigo, CancellationToken ct = default)
     {
         await using var db = factory.Crear();
@@ -41,6 +58,12 @@ public sealed class RolesRepository(SqlConnectionFactory factory)
         }
     }
 
+    /// <summary>
+    /// Obteners the por identifier asynchronous.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="ct">The ct.</param>
+    /// <returns></returns>
     public async Task<RolDetalle?> ObtenerPorIdAsync(int id, CancellationToken ct = default)
     {
         await using var db = factory.Crear();
@@ -56,6 +79,12 @@ public sealed class RolesRepository(SqlConnectionFactory factory)
         return rol;
     }
 
+    /// <summary>
+    /// Modificars the asynchronous.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="request">The request.</param>
+    /// <param name="ct">The ct.</param>
     public async Task ModificarAsync(int id, ModificarRolRequest request, CancellationToken ct = default)
     {
         await using var db = factory.Crear();
@@ -75,6 +104,12 @@ public sealed class RolesRepository(SqlConnectionFactory factory)
         }
     }
 
+    /// <summary>
+    /// Cambiars the estado asynchronous.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="activo">if set to <c>true</c> [activo].</param>
+    /// <param name="ct">The ct.</param>
     public async Task CambiarEstadoAsync(int id, bool activo, CancellationToken ct = default)
     {
         await using var db = factory.Crear();
@@ -94,6 +129,12 @@ public sealed class RolesRepository(SqlConnectionFactory factory)
         }
     }
 
+    /// <summary>
+    /// Contars the usuarios asynchronous.
+    /// </summary>
+    /// <param name="idRol">The identifier rol.</param>
+    /// <param name="ct">The ct.</param>
+    /// <returns></returns>
     public async Task<int> ContarUsuariosAsync(int idRol, CancellationToken ct = default)
     {
         await using var db = factory.Crear();
@@ -111,12 +152,24 @@ public sealed class RolesRepository(SqlConnectionFactory factory)
         return usuarios.Count();
     }
 
+    /// <summary>
+    /// Eses the protegido asynchronous.
+    /// </summary>
+    /// <param name="idRol">The identifier rol.</param>
+    /// <param name="ct">The ct.</param>
+    /// <returns></returns>
     public async Task<bool> EsProtegidoAsync(int idRol, CancellationToken ct = default)
     {
         var rol = await ObtenerPorIdAsync(idRol, ct);
         return rol!.Protegido;
     }
 
+    /// <summary>
+    /// Obteners the permisos asynchronous.
+    /// </summary>
+    /// <param name="idRol">The identifier rol.</param>
+    /// <param name="ct">The ct.</param>
+    /// <returns></returns>
     public async Task<IReadOnlyList<string>> ObtenerPermisosAsync(int idRol, CancellationToken ct = default)
     {
         await using var db = factory.Crear();
@@ -129,6 +182,12 @@ public sealed class RolesRepository(SqlConnectionFactory factory)
         return permisos.ToList();
     }
 
+    /// <summary>
+    /// Reemplazars the permisos asynchronous.
+    /// </summary>
+    /// <param name="idRol">The identifier rol.</param>
+    /// <param name="codigos">The codigos.</param>
+    /// <param name="ct">The ct.</param>
     public async Task ReemplazarPermisosAsync(int idRol, IEnumerable<string> codigos, CancellationToken ct = default)
     {
         await using var db = factory.Crear();

@@ -9,11 +9,23 @@ using System.Text.Json;
 
 namespace ClinicSyncServer.Features.Expedientes.Data
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class VisitasRepository(SqlConnectionFactory factory)
     {
+        /// <summary>
+        /// The factory
+        /// </summary>
         private readonly SqlConnectionFactory _factory = factory;
 
         // LISTAR VISITAS
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <param name="idPaciente">The identifier paciente.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<VisitaListado>> ListarAsync(
             int idPaciente,
             CancellationToken ct = default)
@@ -31,6 +43,12 @@ namespace ClinicSyncServer.Features.Expedientes.Data
         }
 
         // OBTENER VISITA
+        /// <summary>
+        /// Obteners the por identifier asynchronous.
+        /// </summary>
+        /// <param name="idVisita">The identifier visita.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<VisitaListado?> ObtenerPorIdAsync(
             int idVisita,
             CancellationToken ct = default)
@@ -49,6 +67,12 @@ namespace ClinicSyncServer.Features.Expedientes.Data
         }
 
         // LISTAR TRATAMIENTOS DE UNA VISITA
+        /// <summary>
+        /// Listars the tratamientos asynchronous.
+        /// </summary>
+        /// <param name="idVisita">The identifier visita.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<TratamientoVisitaListado>>
             ListarTratamientosAsync(
                 int idVisita,
@@ -67,6 +91,12 @@ namespace ClinicSyncServer.Features.Expedientes.Data
         }
 
         // INSERTAR VISITA
+        /// <summary>
+        /// Insertars the asynchronous.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<int> InsertarAsync(
             CrearVisitaRequest request,
             CancellationToken ct = default)
@@ -91,6 +121,12 @@ namespace ClinicSyncServer.Features.Expedientes.Data
         }
 
         // MODIFICAR VISITA
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="idVisita">The identifier visita.</param>
+        /// <param name="request">The request.</param>
+        /// <param name="ct">The ct.</param>
         public async Task ModificarAsync(
             int idVisita,
             ModificarVisitaRequest request,
@@ -116,6 +152,12 @@ namespace ClinicSyncServer.Features.Expedientes.Data
         }
 
         // CAMBIAR ESTADO DE VISITA
+        /// <summary>
+        /// Cambiars the estado asynchronous.
+        /// </summary>
+        /// <param name="idVisita">The identifier visita.</param>
+        /// <param name="activo">if set to <c>true</c> [activo].</param>
+        /// <param name="ct">The ct.</param>
         public async Task CambiarEstadoAsync(int idVisita, bool activo, CancellationToken ct = default)
         {
             await using var db = _factory.Crear();
@@ -131,6 +173,12 @@ namespace ClinicSyncServer.Features.Expedientes.Data
         }
 
         // REGISTRAR VISITA CON SUS TRATAMIENTOS
+        /// <summary>
+        /// Insertars the completa asynchronous.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<int> InsertarCompletaAsync(
             CrearVisitaCompletaRequest request,
             CancellationToken ct = default)
@@ -159,6 +207,12 @@ namespace ClinicSyncServer.Features.Expedientes.Data
         }
 
         // MODIFICAR VISITA CON SUS TRATAMIENTOS
+        /// <summary>
+        /// Modificars the completa asynchronous.
+        /// </summary>
+        /// <param name="idVisita">The identifier visita.</param>
+        /// <param name="request">The request.</param>
+        /// <param name="ct">The ct.</param>
         public async Task ModificarCompletaAsync(
             int idVisita,
             ModificarVisitaCompletaRequest request,

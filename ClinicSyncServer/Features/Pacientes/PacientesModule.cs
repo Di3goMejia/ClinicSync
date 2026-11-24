@@ -3,8 +3,16 @@ using ClinicSyncServer.Features.Pacientes.Data;
 
 namespace ClinicSyncServer.Features.Pacientes
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class PacientesModule
     {
+        /// <summary>
+        /// Adds the pacientes.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <returns></returns>
         public static IServiceCollection AddPacientes(
             this IServiceCollection services)
         {
@@ -17,6 +25,11 @@ namespace ClinicSyncServer.Features.Pacientes
             return services;
         }
 
+        /// <summary>
+        /// Maps the pacientes module.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <returns></returns>
         public static WebApplication MapPacientesModule(
             this WebApplication app)
         {

@@ -1,5 +1,9 @@
 namespace ClinicSyncDesktop.Validations;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.IEquatable&lt;ClinicSyncDesktop.Validations.EntradaMaterial&gt;" />
 public record EntradaMaterial(
     string Nombre,
     string Codigo,
@@ -8,15 +12,46 @@ public record EntradaMaterial(
     string TextoCantidadInicial,
     string TextoStockMinimo);
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.ResultadoValidacion" />
 public class ResultadoValidacionMaterial : ResultadoValidacion
 {
+    /// <summary>
+    /// Gets or sets the precio compra.
+    /// </summary>
+    /// <value>
+    /// The precio compra.
+    /// </value>
     public decimal PrecioCompra { get; set; }
+    /// <summary>
+    /// Gets or sets the cantidad inicial.
+    /// </summary>
+    /// <value>
+    /// The cantidad inicial.
+    /// </value>
     public decimal CantidadInicial { get; set; }
+    /// <summary>
+    /// Gets or sets the stock minimo.
+    /// </summary>
+    /// <value>
+    /// The stock minimo.
+    /// </value>
     public decimal StockMinimo { get; set; }
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.IValidador&lt;ClinicSyncDesktop.Validations.EntradaMaterial, ClinicSyncDesktop.Validations.ResultadoValidacionMaterial&gt;" />
 public class ValidadorMaterial : IValidador<EntradaMaterial, ResultadoValidacionMaterial>
 {
+    /// <summary>
+    /// Validars the specified entrada.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <returns></returns>
     public ResultadoValidacionMaterial Validar(EntradaMaterial entrada)
     {
         var resultado = new ResultadoValidacionMaterial();
@@ -47,6 +82,16 @@ public class ValidadorMaterial : IValidador<EntradaMaterial, ResultadoValidacion
         return resultado;
     }
 
+    /// <summary>
+    /// Validars the decimal.
+    /// </summary>
+    /// <param name="resultado">The resultado.</param>
+    /// <param name="campo">The campo.</param>
+    /// <param name="texto">The texto.</param>
+    /// <param name="requerido">The requerido.</param>
+    /// <param name="invalido">The invalido.</param>
+    /// <param name="maximo">The maximo.</param>
+    /// <param name="valor">The valor.</param>
     private static void ValidarDecimal(
         ResultadoValidacion resultado, string campo, string texto,
         string requerido, string invalido, decimal maximo, out decimal valor)

@@ -18,20 +18,58 @@ using System.Windows.Media.Imaging;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
+    /// <seealso cref="System.Windows.Markup.IStyleConnector" />
     public partial class EditarVisitaWindow : Window
     {
+        /// <summary>
+        /// The identifier visita
+        /// </summary>
         private readonly int idVisita;
+        /// <summary>
+        /// The identifier paciente
+        /// </summary>
         private readonly int idPaciente;
+        /// <summary>
+        /// The identifier empleado
+        /// </summary>
         private int idEmpleado;
 
+        /// <summary>
+        /// The paciente activo
+        /// </summary>
         private bool pacienteActivo;
+        /// <summary>
+        /// The estado verificado
+        /// </summary>
         private bool estadoVerificado;
+        /// <summary>
+        /// The guardando
+        /// </summary>
         private bool guardando;
 
+        /// <summary>
+        /// The tratamientos
+        /// </summary>
         private readonly ObservableCollection<TratamientoOpcion> tratamientos = new();
+        /// <summary>
+        /// The vista tratamientos
+        /// </summary>
         private ICollectionView? vistaTratamientos;
+        /// <summary>
+        /// The mensaje archivo
+        /// </summary>
         private TextBlock? mensajeArchivo;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditarVisitaWindow"/> class.
+        /// </summary>
+        /// <param name="idVisita">The identifier visita.</param>
+        /// <param name="idPaciente">The identifier paciente.</param>
         public EditarVisitaWindow(int idVisita, int idPaciente)
         {
             InitializeComponent();
@@ -47,54 +85,211 @@ namespace ClinicSyncDesktop.Views
             AplicarRestriccionesPaciente();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public class VisitaDetalle
         {
+            /// <summary>
+            /// Gets or sets the identifier visita.
+            /// </summary>
+            /// <value>
+            /// The identifier visita.
+            /// </value>
             public int IdVisita { get; set; }
+            /// <summary>
+            /// Gets or sets the identifier expediente.
+            /// </summary>
+            /// <value>
+            /// The identifier expediente.
+            /// </value>
             public int IdExpediente { get; set; }
+            /// <summary>
+            /// Gets or sets the identifier empleado.
+            /// </summary>
+            /// <value>
+            /// The identifier empleado.
+            /// </value>
             public int IdEmpleado { get; set; }
+            /// <summary>
+            /// Gets or sets the fecha.
+            /// </summary>
+            /// <value>
+            /// The fecha.
+            /// </value>
             public DateTime Fecha { get; set; }
+            /// <summary>
+            /// Gets or sets the motivo.
+            /// </summary>
+            /// <value>
+            /// The motivo.
+            /// </value>
             public string Motivo { get; set; } = "";
+            /// <summary>
+            /// Gets or sets the notas.
+            /// </summary>
+            /// <value>
+            /// The notas.
+            /// </value>
             public string? Notas { get; set; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public class PacienteEstadoApi
         {
+            /// <summary>
+            /// Gets or sets the identifier paciente.
+            /// </summary>
+            /// <value>
+            /// The identifier paciente.
+            /// </value>
             public int IdPaciente { get; set; }
+            /// <summary>
+            /// Gets or sets a value indicating whether this <see cref="PacienteEstadoApi"/> is activo.
+            /// </summary>
+            /// <value>
+            ///   <c>true</c> if activo; otherwise, <c>false</c>.
+            /// </value>
             public bool Activo { get; set; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public class TratamientoApi
         {
+            /// <summary>
+            /// Gets or sets the identifier tratamiento.
+            /// </summary>
+            /// <value>
+            /// The identifier tratamiento.
+            /// </value>
             public int IdTratamiento { get; set; }
+            /// <summary>
+            /// Gets or sets the nombre.
+            /// </summary>
+            /// <value>
+            /// The nombre.
+            /// </value>
             public string Nombre { get; set; } = "";
+            /// <summary>
+            /// Gets or sets a value indicating whether this <see cref="TratamientoApi"/> is activo.
+            /// </summary>
+            /// <value>
+            ///   <c>true</c> if activo; otherwise, <c>false</c>.
+            /// </value>
             public bool Activo { get; set; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public class TratamientoRegistrado
         {
+            /// <summary>
+            /// Gets or sets the identifier tratamiento.
+            /// </summary>
+            /// <value>
+            /// The identifier tratamiento.
+            /// </value>
             public int IdTratamiento { get; set; }
+            /// <summary>
+            /// Gets or sets the cantidad.
+            /// </summary>
+            /// <value>
+            /// The cantidad.
+            /// </value>
             public int Cantidad { get; set; }
+            /// <summary>
+            /// Gets or sets the nombre tratamiento.
+            /// </summary>
+            /// <value>
+            /// The nombre tratamiento.
+            /// </value>
             public string NombreTratamiento { get; set; } = "";
+            /// <summary>
+            /// Gets or sets a value indicating whether [tratamiento activo].
+            /// </summary>
+            /// <value>
+            ///   <c>true</c> if [tratamiento activo]; otherwise, <c>false</c>.
+            /// </value>
             public bool TratamientoActivo { get; set; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public class ArchivoExpedienteApi
         {
+            /// <summary>
+            /// Gets or sets the identifier archivo.
+            /// </summary>
+            /// <value>
+            /// The identifier archivo.
+            /// </value>
             public Guid IdArchivo { get; set; }
+            /// <summary>
+            /// Gets or sets the nombre archivo.
+            /// </summary>
+            /// <value>
+            /// The nombre archivo.
+            /// </value>
             public string NombreArchivo { get; set; } = "";
+            /// <summary>
+            /// Gets or sets the fecha subida.
+            /// </summary>
+            /// <value>
+            /// The fecha subida.
+            /// </value>
             public DateTime FechaSubida { get; set; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
         public class TratamientoOpcion : INotifyPropertyChanged
         {
+            /// <summary>
+            /// Gets or sets the identifier tratamiento.
+            /// </summary>
+            /// <value>
+            /// The identifier tratamiento.
+            /// </value>
             public int IdTratamiento { get; set; }
+            /// <summary>
+            /// Gets or sets the nombre.
+            /// </summary>
+            /// <value>
+            /// The nombre.
+            /// </value>
             public string Nombre { get; set; } = "";
 
+            /// <summary>
+            /// Gets a value indicating whether [puede editar].
+            /// </summary>
+            /// <value>
+            ///   <c>true</c> if [puede editar]; otherwise, <c>false</c>.
+            /// </value>
             public bool PuedeEditar { get; init; } = true;
 
+            /// <summary>
+            /// The seleccionado
+            /// </summary>
             private bool seleccionado;
+            /// <summary>
+            /// The cantidad
+            /// </summary>
             private int cantidad = 1;
 
+            /// <summary>
+            /// Gets or sets a value indicating whether this <see cref="TratamientoOpcion"/> is seleccionado.
+            /// </summary>
+            /// <value>
+            ///   <c>true</c> if seleccionado; otherwise, <c>false</c>.
+            /// </value>
             public bool Seleccionado
             {
                 get => seleccionado;
@@ -105,6 +300,12 @@ namespace ClinicSyncDesktop.Views
                 }
             }
 
+            /// <summary>
+            /// Gets or sets the cantidad.
+            /// </summary>
+            /// <value>
+            /// The cantidad.
+            /// </value>
             public int Cantidad
             {
                 get => cantidad;
@@ -115,14 +316,26 @@ namespace ClinicSyncDesktop.Views
                 }
             }
 
+            /// <summary>
+            /// Occurs when a property value changes.
+            /// </summary>
             public event PropertyChangedEventHandler? PropertyChanged;
 
+            /// <summary>
+            /// Notificars the specified propiedad.
+            /// </summary>
+            /// <param name="propiedad">The propiedad.</param>
             private void Notificar([CallerMemberName] string? propiedad = null)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propiedad));
             }
         }
 
+        /// <summary>
+        /// Handles the Loaded event of the Ventana control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Ventana_Loaded(object sender, RoutedEventArgs e)
         {
             btnGuardar.IsEnabled = false;
@@ -158,6 +371,9 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Verificars the estado paciente asynchronous.
+        /// </summary>
         private async Task VerificarEstadoPacienteAsync()
         {
             estadoVerificado = false;
@@ -184,6 +400,9 @@ namespace ClinicSyncDesktop.Views
             estadoVerificado = true;
         }
 
+        /// <summary>
+        /// Aplicars the restricciones paciente.
+        /// </summary>
         private void AplicarRestriccionesPaciente()
         {
             bool permitir = estadoVerificado && pacienteActivo;
@@ -208,6 +427,9 @@ namespace ClinicSyncDesktop.Views
                 : null;
         }
 
+        /// <summary>
+        /// Cargars the visita asynchronous.
+        /// </summary>
         private async Task CargarVisitaAsync()
         {
             var visita = await ClienteApi.ObtenerAutenticadoAsync<VisitaDetalle>(
@@ -238,6 +460,9 @@ namespace ClinicSyncDesktop.Views
             txtNotas.Text = visita.Notas ?? "";
         }
 
+        /// <summary>
+        /// Cargars the tratamientos asynchronous.
+        /// </summary>
         private async Task CargarTratamientosAsync()
         {
             var catalogo = await ClienteApi.ObtenerAutenticadoAsync<TratamientoApi[]>(
@@ -280,6 +505,10 @@ namespace ClinicSyncDesktop.Views
                 tratamientos.Add(opcion);
         }
 
+        /// <summary>
+        /// Mostrars the pestana.
+        /// </summary>
+        /// <param name="pestana">The pestana.</param>
         private void MostrarPestana(string pestana)
         {
             PanelAntecedentes.Visibility = pestana == "Antecedentes"
@@ -300,21 +529,41 @@ namespace ClinicSyncDesktop.Views
                 pestana == "Notas" ? activo : inactivo);
         }
 
+        /// <summary>
+        /// Handles the Click event of the Antecedentes control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Antecedentes_Click(object sender, RoutedEventArgs e)
         {
             MostrarPestana("Antecedentes");
         }
 
+        /// <summary>
+        /// Handles the Click event of the Tratamientos control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Tratamientos_Click(object sender, RoutedEventArgs e)
         {
             MostrarPestana("Tratamientos");
         }
 
+        /// <summary>
+        /// Handles the Click event of the Notas control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Notas_Click(object sender, RoutedEventArgs e)
         {
             MostrarPestana("Notas");
         }
 
+        /// <summary>
+        /// Handles the TextChanged event of the Buscar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void Buscar_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (vistaTratamientos == null)

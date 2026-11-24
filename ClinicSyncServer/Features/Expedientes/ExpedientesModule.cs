@@ -5,9 +5,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ClinicSyncServer.Features.Expedientes
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class ExpedientesModule
     {
         // REGISTRAR SERVICIOS
+        /// <summary>
+        /// Adds the expedientes.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <returns></returns>
         public static IServiceCollection AddExpedientes(
             this IServiceCollection services)
         {
@@ -22,6 +30,11 @@ namespace ClinicSyncServer.Features.Expedientes
         }
 
         // REGISTRAR ENDPOINTS
+        /// <summary>
+        /// Maps the expedientes module.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <returns></returns>
         public static WebApplication MapExpedientesModule(
             this WebApplication app)
         {

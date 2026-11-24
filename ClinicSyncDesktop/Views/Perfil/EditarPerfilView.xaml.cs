@@ -12,34 +12,67 @@ using System.Windows.Media.Imaging;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Controls.UserControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class EditarPerfilView : UserControl
     {
         // DATOS DEL USUARIO AUTENTICADO
+        /// <summary>
+        /// The perfil
+        /// </summary>
         private readonly PerfilActual perfil;
 
         // IMAGEN SELECCIONADA
+        /// <summary>
+        /// The ruta imagen seleccionada
+        /// </summary>
         private string? rutaImagenSeleccionada;
 
         // CONTROL DE GUARDADO
+        /// <summary>
+        /// The guardando
+        /// </summary>
         private bool guardando = false;
 
         // CONTROL DE CARGA DE FOTOGRAFÍAS
+        /// <summary>
+        /// The version imagen
+        /// </summary>
         private int versionImagen = 0;
 
         // FOTOGRAFÍA QUE YA EXISTE EN EL SERVIDOR
+        /// <summary>
+        /// The fotografia guardada
+        /// </summary>
         private byte[]? fotografiaGuardada;
 
         // Solo oculta la imagen durante esta edición, sin borrarla del servidor.
+        /// <summary>
+        /// The imagen oculta temporalmente
+        /// </summary>
         private bool imagenOcultaTemporalmente = false;
 
         // EVENTOS DE NAVEGACIÓN
+        /// <summary>
+        /// Occurs when [cancelado].
+        /// </summary>
         public event Action? Cancelado;
+        /// <summary>
+        /// Occurs when [guardado].
+        /// </summary>
         public event Action? Guardado;
 
         // ==========================================
         // CONSTRUCTOR
         // ==========================================
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditarPerfilView"/> class.
+        /// </summary>
+        /// <param name="perfilActual">The perfil actual.</param>
         public EditarPerfilView(PerfilActual perfilActual)
         {
             InitializeComponent();
@@ -57,6 +90,9 @@ namespace ClinicSyncDesktop.Views
         // CARGAR DATOS DEL PERFIL
         // ==========================================
 
+        /// <summary>
+        /// Cargars the datos.
+        /// </summary>
         private void CargarDatos()
         {
             TxtNombrePerfil.Text = perfil.NombreCorto;

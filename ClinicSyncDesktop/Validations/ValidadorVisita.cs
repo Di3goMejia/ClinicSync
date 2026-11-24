@@ -1,9 +1,22 @@
 namespace ClinicSyncDesktop.Validations;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.IEquatable&lt;ClinicSyncDesktop.Validations.EntradaVisita&gt;" />
 public record EntradaVisita(int IdEmpleado, string Doctor, string TextoFecha, string Motivo);
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.IValidador&lt;ClinicSyncDesktop.Validations.EntradaVisita, ClinicSyncDesktop.Validations.ResultadoValidacion&gt;" />
 public class ValidadorVisita : IValidador<EntradaVisita, ResultadoValidacion>
 {
+    /// <summary>
+    /// Validars the specified entrada.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <returns></returns>
     public ResultadoValidacion Validar(EntradaVisita entrada)
     {
         var resultado = new ResultadoValidacion();

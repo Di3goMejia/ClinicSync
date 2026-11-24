@@ -10,26 +10,86 @@ using System.Windows.Media;
 
 namespace ClinicSyncDesktop.Views.Seguridad;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.Windows.Window" />
+/// <seealso cref="System.Windows.Markup.IComponentConnector" />
+/// <seealso cref="System.Windows.Markup.IStyleConnector" />
 public partial class AgregarRolWindow : Window
 {
+    /// <summary>
+    /// 
+    /// </summary>
     private sealed class RolBaseOpcion(string nombre, Rol? rol)
     {
+        /// <summary>
+        /// Gets the nombre.
+        /// </summary>
+        /// <value>
+        /// The nombre.
+        /// </value>
         public string Nombre { get; } = nombre;
+        /// <summary>
+        /// Gets the rol.
+        /// </summary>
+        /// <value>
+        /// The rol.
+        /// </value>
         public Rol? Rol { get; } = rol;
     }
 
+    /// <summary>
+    /// The validador
+    /// </summary>
     private readonly ValidadorRol _validador = new();
+    /// <summary>
+    /// The controles
+    /// </summary>
     private readonly Dictionary<string, Control> _controles;
+    /// <summary>
+    /// The permisos
+    /// </summary>
     private readonly ObservableCollection<PermisoFilaDesktop> _permisos = [];
+    /// <summary>
+    /// The grupos visibles
+    /// </summary>
     private readonly ObservableCollection<PermisoGrupoDesktop> _gruposVisibles = [];
+    /// <summary>
+    /// The permisos service
+    /// </summary>
     private readonly PermisosApiService _permisosService = new();
+    /// <summary>
+    /// The roles service
+    /// </summary>
     private readonly RolesApiService _rolesService = new();
+    /// <summary>
+    /// Gets the nombre.
+    /// </summary>
+    /// <value>
+    /// The nombre.
+    /// </value>
     public string Nombre => TxtNombre.Text.Trim();
+    /// <summary>
+    /// Gets the descripcion.
+    /// </summary>
+    /// <value>
+    /// The descripcion.
+    /// </value>
     public string? Descripcion => 
         string.IsNullOrWhiteSpace(TxtDescripcion.Text) ? null : TxtDescripcion.Text.Trim();
+    /// <summary>
+    /// Gets the permisos.
+    /// </summary>
+    /// <value>
+    /// The permisos.
+    /// </value>
     public IReadOnlyList<string> Permisos => 
         _permisos.Where(p => p.Seleccionado).Select(p => p.Codigo).ToList();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AgregarRolWindow"/> class.
+    /// </summary>
     public AgregarRolWindow()
     {
         InitializeComponent();
@@ -45,6 +105,9 @@ public partial class AgregarRolWindow : Window
         TxtDescripcion.TextChanged += (_, _) => LimpiarError();
     }
 
+    /// <summary>
+    /// Cargars the asynchronous.
+    /// </summary>
     private async Task CargarAsync()
     {
         try
@@ -74,12 +137,19 @@ public partial class AgregarRolWindow : Window
         }
     }
 
+    /// <summary>
+    /// Limpiars the error.
+    /// </summary>
     private void LimpiarError()
     {
         TxtError.Text = string.Empty;
         TxtError.Visibility = Visibility.Collapsed;
     }
 
+    /// <summary>
+    /// Validars the information.
+    /// </summary>
+    /// <returns></returns>
     private bool ValidarInfo()
     {
         var entrada = new EntradaRol(
@@ -91,6 +161,11 @@ public partial class AgregarRolWindow : Window
         return HelperValidacion.AplicarResultado(resultado, _controles, MostrarError, LimpiarError);
     }
 
+    /// <summary>
+    /// Handles the Click event of the Siguiente control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void Siguiente_Click(object sender, RoutedEventArgs e)
     {
         if (!ValidarInfo())
@@ -109,6 +184,11 @@ public partial class AgregarRolWindow : Window
         TxtMensajePermisos.Text = $"Selecciona los permisos que desea asignar al rol {Nombre}";
     }
 
+    /// <summary>
+    /// Handles the Click event of the Regresar control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void Regresar_Click(object sender, RoutedEventArgs e)
     {
         PanelInfo.Visibility = Visibility.Visible;
@@ -121,6 +201,11 @@ public partial class AgregarRolWindow : Window
         BtnRegresar.Visibility = Visibility.Collapsed;
     }
 
+    /// <summary>
+    /// Handles the Click event of the Cancelar control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void Cancelar_Click(object sender, RoutedEventArgs e)
     {
         bool hayDatos = !string.IsNullOrWhiteSpace(TxtNombre.Text) ||
@@ -137,6 +222,11 @@ public partial class AgregarRolWindow : Window
         DialogResult = false;
     }
 
+    /// <summary>
+    /// Handles the SelectionChanged event of the RolBase control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
     private void RolBase_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (CmbRolBase.SelectedItem is not RolBaseOpcion opcion || _permisos.Count == 0)
@@ -154,6 +244,10 @@ public partial class AgregarRolWindow : Window
         _ = CopiarPermisosAsync(opcion.Rol.IdRol);
     }
 
+    /// <summary>
+    /// Copiars the permisos asynchronous.
+    /// </summary>
+    /// <param name="idRol">The identifier rol.</param>
     private async Task CopiarPermisosAsync(int idRol)
     {
         try
@@ -172,8 +266,21 @@ public partial class AgregarRolWindow : Window
         }
     }
 
+    /// <summary>
+    /// Handles the TextChanged event of the FiltroPermisos control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
     private void FiltroPermisos_TextChanged(object sender, TextChangedEventArgs e) => FiltrarPermisos();
+    /// <summary>
+    /// Handles the Changed event of the FiltroPermisos control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
     private void FiltroPermisos_Changed(object sender, SelectionChangedEventArgs e) => FiltrarPermisos();
+    /// <summary>
+    /// Filtrars the permisos.
+    /// </summary>
     private void FiltrarPermisos()
     {
         var texto = TxtBuscarPermiso.Text.Trim();
@@ -189,6 +296,9 @@ public partial class AgregarRolWindow : Window
             _gruposVisibles.Add(new PermisoGrupoDesktop(grupo.Key, grupo));
     }
 
+    /// <summary>
+    /// Actualizars the grupos.
+    /// </summary>
     private void ActualizarGrupos()
     {
         foreach (var grupo in _gruposVisibles)
@@ -197,6 +307,11 @@ public partial class AgregarRolWindow : Window
         ListaPermisos.Items.Refresh();
     }
 
+    /// <summary>
+    /// Handles the Click event of the GrupoSeleccionado control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void GrupoSeleccionado_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not CheckBox checkBox || checkBox.DataContext is not PermisoGrupoDesktop grupo)

@@ -5,9 +5,20 @@ using ClinicSyncServer.Features.Agenda.Responses;
 
 namespace ClinicSyncServer.Features.Agenda
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="ClinicSyncServer.Features.Agenda.IAgendaService" />
     public sealed class AgendaService(AgendaRepository repo) : IAgendaService
     {
         // El token trae el IdUsuario; la agenda trabaja con el IdEmpleado.
+        /// <summary>
+        /// Obteners the identifier empleado asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="NoAutorizadoException">El usuario no está activo o no tiene un empleado asociado.</exception>
         private async Task<int> ObtenerIdEmpleadoAsync(
             int idUsuario,
             CancellationToken ct)
@@ -19,6 +30,12 @@ namespace ClinicSyncServer.Features.Agenda
                     "El usuario no está activo o no tiene un empleado asociado.");
         }
 
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public Task<IEnumerable<EventoAgendaResponse>> ListarAsync(
             ListarAgendaQuery query,
             CancellationToken ct = default)
@@ -26,6 +43,12 @@ namespace ClinicSyncServer.Features.Agenda
             return repo.ListarAsync(query, ct);
         }
 
+        /// <summary>
+        /// Proximases the asynchronous.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public Task<IEnumerable<ProximaCitaResponse>> ProximasAsync(
             ProximasCitasQuery query,
             CancellationToken ct = default)
@@ -33,6 +56,12 @@ namespace ClinicSyncServer.Features.Agenda
             return repo.ProximasAsync(query, ct);
         }
 
+        /// <summary>
+        /// Obteners the por identifier asynchronous.
+        /// </summary>
+        /// <param name="idEvento">The identifier evento.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public Task<EventoAgendaResponse?> ObtenerPorIdAsync(
             int idEvento,
             CancellationToken ct = default)
@@ -40,6 +69,13 @@ namespace ClinicSyncServer.Features.Agenda
             return repo.ObtenerPorIdAsync(idEvento, ct);
         }
 
+        /// <summary>
+        /// Verificars the disponibilidad asynchronous.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<DisponibilidadResponse> VerificarDisponibilidadAsync(
             DisponibilidadQuery query,
             int idUsuario,
@@ -50,6 +86,13 @@ namespace ClinicSyncServer.Features.Agenda
             return await repo.VerificarDisponibilidadAsync(query, idEmpleado, ct);
         }
 
+        /// <summary>
+        /// Insertars the asynchronous.
+        /// </summary>
+        /// <param name="req">The req.</param>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<int> InsertarAsync(
             CitaRequest req,
             int idUsuario,
@@ -61,6 +104,13 @@ namespace ClinicSyncServer.Features.Agenda
         }
 
         // MODIFICAR UNA CITA
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="idEvento">The identifier evento.</param>
+        /// <param name="req">The req.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public Task ModificarAsync(
             int idEvento,
             CitaRequest req,
@@ -70,6 +120,12 @@ namespace ClinicSyncServer.Features.Agenda
         }
 
         // CANCELAR UNA CITA
+        /// <summary>
+        /// Cancelars the asynchronous.
+        /// </summary>
+        /// <param name="idEvento">The identifier evento.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public Task CancelarAsync(
             int idEvento,
             CancellationToken ct = default)

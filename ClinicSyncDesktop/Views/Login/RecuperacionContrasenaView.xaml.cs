@@ -11,16 +11,33 @@ using System.Threading.Tasks;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class RecuperacionContrasenaView : Window
     {
+        /// <summary>
+        /// The enviando
+        /// </summary>
         private bool enviando = false;
 
+        /// <summary>
+        /// The color error
+        /// </summary>
         private readonly Brush colorError =
             Brushes.Red;
 
+        /// <summary>
+        /// The color normal
+        /// </summary>
         private readonly Brush colorNormal =
             Brushes.LightGray;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RecuperacionContrasenaView"/> class.
+        /// </summary>
         public RecuperacionContrasenaView()
         {
             InitializeComponent();
@@ -30,6 +47,12 @@ namespace ClinicSyncDesktop.Views
         // FUNCIONES GENERALES PARA MOSTRAR ERRORES
         // ============================================
 
+        /// <summary>
+        /// Mostrars the error.
+        /// </summary>
+        /// <param name="campo">The campo.</param>
+        /// <param name="etiqueta">The etiqueta.</param>
+        /// <param name="mensaje">The mensaje.</param>
         private void MostrarError(
             Control campo,
             TextBlock etiqueta,
@@ -42,6 +65,11 @@ namespace ClinicSyncDesktop.Views
             etiqueta.Visibility = Visibility.Visible;
         }
 
+        /// <summary>
+        /// Limpiars the error.
+        /// </summary>
+        /// <param name="campo">The campo.</param>
+        /// <param name="etiqueta">The etiqueta.</param>
         private void LimpiarError(
             Control campo,
             TextBlock etiqueta)
@@ -53,6 +81,11 @@ namespace ClinicSyncDesktop.Views
             etiqueta.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Mostrars the mensaje general.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
+        /// <param name="esError">if set to <c>true</c> [es error].</param>
         private void MostrarMensajeGeneral(
             string mensaje,
             bool esError = true)
@@ -66,6 +99,9 @@ namespace ClinicSyncDesktop.Views
                 Visibility.Visible;
         }
 
+        /// <summary>
+        /// Limpiars the mensaje general.
+        /// </summary>
         private void LimpiarMensajeGeneral()
         {
             LblMensajeGeneral.Text = "";
@@ -77,6 +113,10 @@ namespace ClinicSyncDesktop.Views
         // VALIDACIÓN DEL CORREO
         // ============================================
 
+        /// <summary>
+        /// Validars the correo.
+        /// </summary>
+        /// <returns></returns>
         private bool ValidarCorreo()
         {
             string correo = TxtCorreo.Text.Trim();
@@ -95,6 +135,10 @@ namespace ClinicSyncDesktop.Views
         // VALIDACIÓN DEL CÓDIGO
         // ============================================
 
+        /// <summary>
+        /// Validars the codigo.
+        /// </summary>
+        /// <returns></returns>
         private bool ValidarCodigo()
         {
             string codigo = TxtCodigo.Text.Trim();
@@ -113,6 +157,10 @@ namespace ClinicSyncDesktop.Views
         // VALIDACIÓN DE NUEVA CONTRASEÑA
         // ============================================
 
+        /// <summary>
+        /// Validars the nueva password.
+        /// </summary>
+        /// <returns></returns>
         private bool ValidarNuevaPassword()
         {
             string password = TxtNuevaPassword.Password;
@@ -130,6 +178,10 @@ namespace ClinicSyncDesktop.Views
         // VALIDACIÓN DE CONFIRMAR CONTRASEÑA
         // ============================================
 
+        /// <summary>
+        /// Validars the confirmar password.
+        /// </summary>
+        /// <returns></returns>
         private bool ValidarConfirmarPassword()
         {
             string password = TxtNuevaPassword.Password;
@@ -149,6 +201,11 @@ namespace ClinicSyncDesktop.Views
         // BOTÓN ENVIAR CÓDIGO
         // ============================================
 
+        /// <summary>
+        /// Handles the Click event of the BtnEnviarCodigo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void BtnEnviarCodigo_Click(
             object sender,
             RoutedEventArgs e)
@@ -161,6 +218,9 @@ namespace ClinicSyncDesktop.Views
             await EnviarCodigoAsync();
         }
 
+        /// <summary>
+        /// Enviars the codigo asynchronous.
+        /// </summary>
         private async Task EnviarCodigoAsync()
         {
             if (enviando)
@@ -212,6 +272,11 @@ namespace ClinicSyncDesktop.Views
         // BOTÓN CONTINUAR
         // ============================================
 
+        /// <summary>
+        /// Handles the Click event of the BtnContinuar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void BtnContinuar_Click(
             object sender,
             RoutedEventArgs e)
@@ -234,6 +299,11 @@ namespace ClinicSyncDesktop.Views
         // BOTÓN GUARDAR CONTRASEÑA
         // ============================================
 
+        /// <summary>
+        /// Handles the Click event of the BtnGuardarPassword control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void BtnGuardarPassword_Click(
             object sender,
             RoutedEventArgs e)
@@ -320,6 +390,11 @@ namespace ClinicSyncDesktop.Views
         // BOTÓN REENVIAR CÓDIGO
         // ============================================
 
+        /// <summary>
+        /// Handles the Click event of the BtnReenviar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void BtnReenviar_Click(
             object sender,
             RoutedEventArgs e)
@@ -344,6 +419,11 @@ namespace ClinicSyncDesktop.Views
         // PERMITIR SOLO NÚMEROS
         // ============================================
 
+        /// <summary>
+        /// Handles the PreviewTextInput event of the TxtCodigo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextCompositionEventArgs"/> instance containing the event data.</param>
         private void TxtCodigo_PreviewTextInput(
             object sender,
             TextCompositionEventArgs e)
@@ -357,6 +437,11 @@ namespace ClinicSyncDesktop.Views
         // LIMPIAR ERRORES AL ESCRIBIR
         // ============================================
 
+        /// <summary>
+        /// Handles the TextChanged event of the TxtCorreo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void TxtCorreo_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -366,6 +451,11 @@ namespace ClinicSyncDesktop.Views
                 LblErrorCorreo);
         }
 
+        /// <summary>
+        /// Handles the TextChanged event of the TxtCodigo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void TxtCodigo_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -375,6 +465,11 @@ namespace ClinicSyncDesktop.Views
                 LblErrorCodigo);
         }
 
+        /// <summary>
+        /// Handles the PasswordChanged event of the TxtNuevaPassword control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void TxtNuevaPassword_PasswordChanged(
             object sender,
             RoutedEventArgs e)
@@ -388,6 +483,11 @@ namespace ClinicSyncDesktop.Views
                 LblErrorConfirmar);
         }
 
+        /// <summary>
+        /// Handles the PasswordChanged event of the TxtConfirmarPassword control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void TxtConfirmarPassword_PasswordChanged(
             object sender,
             RoutedEventArgs e)
@@ -401,6 +501,11 @@ namespace ClinicSyncDesktop.Views
         // BOTÓN REGRESAR
         // ============================================
 
+        /// <summary>
+        /// Handles the Click event of the BtnRegresar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void BtnRegresar_Click(
             object sender,
             RoutedEventArgs e)

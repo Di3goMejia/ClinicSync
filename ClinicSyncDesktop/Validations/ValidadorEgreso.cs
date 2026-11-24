@@ -1,17 +1,46 @@
 namespace ClinicSyncDesktop.Validations;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.IEquatable&lt;ClinicSyncDesktop.Validations.EntradaEgreso&gt;" />
 public record EntradaEgreso(
     string? Tipo, string? Medio, string Concepto, string TextoFecha,
     DateTime? FechaSeleccionada, string TextoHora, string TextoMonto);
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.ResultadoValidacion" />
 public class ResultadoValidacionEgreso : ResultadoValidacion
 {
+    /// <summary>
+    /// Gets or sets the fecha.
+    /// </summary>
+    /// <value>
+    /// The fecha.
+    /// </value>
     public DateTime Fecha { get; set; }
+    /// <summary>
+    /// Gets or sets the monto.
+    /// </summary>
+    /// <value>
+    /// The monto.
+    /// </value>
     public decimal Monto { get; set; }
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.IValidador&lt;ClinicSyncDesktop.Validations.EntradaEgreso, ClinicSyncDesktop.Validations.ResultadoValidacionEgreso&gt;" />
 public class ValidadorEgreso : IValidador<EntradaEgreso, ResultadoValidacionEgreso>
 {
+    /// <summary>
+    /// Validars the specified entrada.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <returns></returns>
     public ResultadoValidacionEgreso Validar(EntradaEgreso entrada)
     {
         var resultado = new ResultadoValidacionEgreso();

@@ -7,11 +7,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicSyncServer.Features.Finanzas
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.IEquatable&lt;ClinicSyncServer.Features.Finanzas.MaterialConsumoRequest&gt;" />
     public record MaterialConsumoRequest(
         int IdMaterial,
         string Nombre,
         decimal Cantidad);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.IEquatable&lt;ClinicSyncServer.Features.Finanzas.CrearIngresoRequest&gt;" />
     public record CrearIngresoRequest(
         int IdPaciente,
         DateTime Fecha,
@@ -20,47 +28,176 @@ namespace ClinicSyncServer.Features.Finanzas
         string MedioPago,
         List<MaterialConsumoRequest> Materiales);
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static class FinanzasEndpoints
     {
 
+        /// <summary>
+        /// 
+        /// </summary>
         public sealed class IngresoDetalleDto
         {
+            /// <summary>
+            /// Gets or sets the identifier ingreso.
+            /// </summary>
+            /// <value>
+            /// The identifier ingreso.
+            /// </value>
             public int IdIngreso { get; set; }
+            /// <summary>
+            /// Gets or sets the identifier paciente.
+            /// </summary>
+            /// <value>
+            /// The identifier paciente.
+            /// </value>
             public int IdPaciente { get; set; }
+            /// <summary>
+            /// Gets or sets the paciente.
+            /// </summary>
+            /// <value>
+            /// The paciente.
+            /// </value>
             public string Paciente { get; set; } = "";
+            /// <summary>
+            /// Gets or sets the fecha.
+            /// </summary>
+            /// <value>
+            /// The fecha.
+            /// </value>
             public DateTime Fecha { get; set; }
+            /// <summary>
+            /// Gets or sets the subtotal.
+            /// </summary>
+            /// <value>
+            /// The subtotal.
+            /// </value>
             public decimal Subtotal { get; set; }
+            /// <summary>
+            /// Gets or sets the descuento.
+            /// </summary>
+            /// <value>
+            /// The descuento.
+            /// </value>
             public decimal Descuento { get; set; }
+            /// <summary>
+            /// Gets or sets the total.
+            /// </summary>
+            /// <value>
+            /// The total.
+            /// </value>
             public decimal Total { get; set; }
+            /// <summary>
+            /// Gets or sets the medio pago.
+            /// </summary>
+            /// <value>
+            /// The medio pago.
+            /// </value>
             public string MedioPago { get; set; } = "";
+            /// <summary>
+            /// Gets or sets a value indicating whether this <see cref="IngresoDetalleDto"/> is activo.
+            /// </summary>
+            /// <value>
+            ///   <c>true</c> if activo; otherwise, <c>false</c>.
+            /// </value>
             public bool Activo { get; set; }
 
+            /// <summary>
+            /// Gets or sets the materiales.
+            /// </summary>
+            /// <value>
+            /// The materiales.
+            /// </value>
             public List<MaterialDetalleDto> Materiales { get; set; } = new();
 
+            /// <summary>
+            /// Gets or sets the tratamientos.
+            /// </summary>
+            /// <value>
+            /// The tratamientos.
+            /// </value>
             public List<TratamientoIngresoDto> Tratamientos
             { get; set; } = new();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public sealed class MaterialDetalleDto
         {
+            /// <summary>
+            /// Gets or sets the identifier material.
+            /// </summary>
+            /// <value>
+            /// The identifier material.
+            /// </value>
             public int IdMaterial { get; set; }
+            /// <summary>
+            /// Gets or sets the nombre.
+            /// </summary>
+            /// <value>
+            /// The nombre.
+            /// </value>
             public string Nombre { get; set; } = "";
+            /// <summary>
+            /// Gets or sets the cantidad.
+            /// </summary>
+            /// <value>
+            /// The cantidad.
+            /// </value>
             public decimal Cantidad { get; set; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public sealed class TratamientoIngresoDto
         {
+            /// <summary>
+            /// Gets or sets the identifier tratamiento visita.
+            /// </summary>
+            /// <value>
+            /// The identifier tratamiento visita.
+            /// </value>
             public int IdTratamientoVisita { get; set; }
 
+            /// <summary>
+            /// Gets or sets the identifier tratamiento.
+            /// </summary>
+            /// <value>
+            /// The identifier tratamiento.
+            /// </value>
             public int IdTratamiento { get; set; }
 
+            /// <summary>
+            /// Gets or sets the nombre.
+            /// </summary>
+            /// <value>
+            /// The nombre.
+            /// </value>
             public string Nombre { get; set; } = "";
 
+            /// <summary>
+            /// Gets or sets the precio.
+            /// </summary>
+            /// <value>
+            /// The precio.
+            /// </value>
             public decimal Precio { get; set; }
 
+            /// <summary>
+            /// Gets or sets the cantidad.
+            /// </summary>
+            /// <value>
+            /// The cantidad.
+            /// </value>
             public int Cantidad { get; set; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public sealed record EditarIngresoDto(
             int IdPaciente,
             DateTime Fecha,
@@ -71,37 +208,152 @@ namespace ClinicSyncServer.Features.Finanzas
             List<MaterialConsumoRequest>? Materiales = null
         );
 
+        /// <summary>
+        /// 
+        /// </summary>
         public sealed class ResumenDto
         {
+            /// <summary>
+            /// Gets or sets the total ingresos.
+            /// </summary>
+            /// <value>
+            /// The total ingresos.
+            /// </value>
             public decimal TotalIngresos { get; set; }
+            /// <summary>
+            /// Gets or sets the total egresos.
+            /// </summary>
+            /// <value>
+            /// The total egresos.
+            /// </value>
             public decimal TotalEgresos { get; set; }
+            /// <summary>
+            /// Gets or sets the saldo neto.
+            /// </summary>
+            /// <value>
+            /// The saldo neto.
+            /// </value>
             public decimal SaldoNeto { get; set; }
+            /// <summary>
+            /// Gets or sets the grafico.
+            /// </summary>
+            /// <value>
+            /// The grafico.
+            /// </value>
             public GraficoResumenDto? Grafico { get; set; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public sealed class GraficoResumenDto
         {
+            /// <summary>
+            /// Gets or sets the periodo.
+            /// </summary>
+            /// <value>
+            /// The periodo.
+            /// </value>
             public string Periodo { get; set; } = "";
+            /// <summary>
+            /// Gets or sets the agrupacion.
+            /// </summary>
+            /// <value>
+            /// The agrupacion.
+            /// </value>
             public string Agrupacion { get; set; } = "";
+            /// <summary>
+            /// Gets or sets the desde.
+            /// </summary>
+            /// <value>
+            /// The desde.
+            /// </value>
             public string Desde { get; set; } = "";
+            /// <summary>
+            /// Gets or sets the hasta.
+            /// </summary>
+            /// <value>
+            /// The hasta.
+            /// </value>
             public string Hasta { get; set; } = "";
 
+            /// <summary>
+            /// Gets or sets the etiquetas.
+            /// </summary>
+            /// <value>
+            /// The etiquetas.
+            /// </value>
             public IReadOnlyList<string> Etiquetas { get; set; } = [];
+            /// <summary>
+            /// Gets or sets the ingresos.
+            /// </summary>
+            /// <value>
+            /// The ingresos.
+            /// </value>
             public IReadOnlyList<decimal> Ingresos { get; set; } = [];
+            /// <summary>
+            /// Gets or sets the egresos.
+            /// </summary>
+            /// <value>
+            /// The egresos.
+            /// </value>
             public IReadOnlyList<decimal> Egresos { get; set; } = [];
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public sealed record PeriodoResumen(string Etiqueta, decimal Ingresos, decimal Egresos);
 
+        /// <summary>
+        /// 
+        /// </summary>
         public sealed class MovimientoResumenDto
         {
+            /// <summary>
+            /// Gets or sets the fecha.
+            /// </summary>
+            /// <value>
+            /// The fecha.
+            /// </value>
             public DateTime Fecha { get; set; }
+            /// <summary>
+            /// Gets or sets the concepto.
+            /// </summary>
+            /// <value>
+            /// The concepto.
+            /// </value>
             public string Concepto { get; set; } = "";
+            /// <summary>
+            /// Gets or sets the medio pago.
+            /// </summary>
+            /// <value>
+            /// The medio pago.
+            /// </value>
             public string MedioPago { get; set; } = "";
+            /// <summary>
+            /// Gets or sets the monto.
+            /// </summary>
+            /// <value>
+            /// The monto.
+            /// </value>
             public decimal Monto { get; set; }
+            /// <summary>
+            /// Gets or sets the tipo.
+            /// </summary>
+            /// <value>
+            /// The tipo.
+            /// </value>
             public string Tipo { get; set; } = "";
         }
 
+        /// <summary>
+        /// Generars the etiquetas.
+        /// </summary>
+        /// <param name="desde">The desde.</param>
+        /// <param name="hasta">The hasta.</param>
+        /// <param name="agrupacion">The agrupacion.</param>
+        /// <returns></returns>
         private static List<string> GenerarEtiquetas(DateOnly desde, DateOnly hasta, Agrupacion agrupacion)
         {
             var lista = new List<string>();
@@ -289,6 +541,9 @@ namespace ClinicSyncServer.Features.Finanzas
                 {
                     await using var db = factory.Crear();
                     var tratamientos = await db.QueryAsync<TratamientoIngresoDto>(
+                        /// <summary>
+                        /// Initializes a new instance of the <see cref=".$Program"/> class.
+                        /// </summary>
                         """
                         SELECT IdTratamiento, Nombre, Precio, 1 AS Cantidad
                         FROM dbo.Tratamientos

@@ -12,15 +12,39 @@ using System.Text.Json;
 
 namespace ClinicSyncDesktop.Services
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.IDisposable" />
     public class ServicioReconocimientoFacial : IDisposable
     {
+        /// <summary>
+        /// The clasificador
+        /// </summary>
         private readonly CascadeClassifier _clasificador;
+        /// <summary>
+        /// The reconocedor
+        /// </summary>
         private LBPHFaceRecognizer? _reconocedor;
+        /// <summary>
+        /// The liberado
+        /// </summary>
         private bool _liberado;
 
+        /// <summary>
+        /// The ancho rostro
+        /// </summary>
         private const int AnchoRostro = 100;
+        /// <summary>
+        /// The alto rostro
+        /// </summary>
         private const int AltoRostro = 100;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServicioReconocimientoFacial"/> class.
+        /// </summary>
+        /// <exception cref="FileNotFoundException">No se encontró el clasificador facial. " +
+        ///                     "Comprueba que el archivo XML se copie al directorio de salida.</exception>
         public ServicioReconocimientoFacial()
         {
             string rutaClasificador = Path.Combine(
@@ -39,6 +63,11 @@ namespace ClinicSyncDesktop.Services
             _clasificador = new CascadeClassifier(rutaClasificador);
         }
 
+        /// <summary>
+        /// Detectars the rostros.
+        /// </summary>
+        /// <param name="imagen">The imagen.</param>
+        /// <returns></returns>
         public Rectangle[] DetectarRostros(Mat imagen)
         {
             ComprobarNoLiberado();
@@ -73,6 +102,17 @@ namespace ClinicSyncDesktop.Services
             return filtrados.ToArray();
         }
 
+        /// <summary>
+        /// Preparars the rostro.
+        /// </summary>
+        /// <param name="imagen">The imagen.</param>
+        /// <param name="rostro">The rostro.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">
+        /// La imagen está vacía.
+        /// or
+        /// La región del rostro no es válida. - rostro
+        /// </exception>
         public Mat PrepararRostro(Mat imagen, Rectangle rostro)
         {
             ComprobarNoLiberado();
@@ -125,6 +165,16 @@ namespace ClinicSyncDesktop.Services
         }
 
 
+        /// <summary>
+        /// Serializars the muestras.
+        /// </summary>
+        /// <param name="muestras">The muestras.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">
+        /// Debes proporcionar al menos una muestra facial. - muestras
+        /// or
+        /// Cada muestra debe ser una imagen gris de 100 x 100 píxeles.
+        /// </exception>
         public byte[] SerializarMuestras(IList<Mat> muestras)
         {
             ComprobarNoLiberado();
@@ -157,6 +207,18 @@ namespace ClinicSyncDesktop.Services
         }
 
 
+        /// <summary>
+        /// Deserializars the muestras.
+        /// </summary>
+        /// <param name="datos">The datos.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">
+        /// Los datos de las muestras están vacíos. - datos
+        /// or
+        /// No se encontraron muestras faciales válidas.
+        /// or
+        /// Una muestra facial tiene un tamaño incorrecto.
+        /// </exception>
         public List<Mat> DeserializarMuestras(byte[] datos)
         {
             ComprobarNoLiberado();
@@ -225,6 +287,12 @@ namespace ClinicSyncDesktop.Services
             }
         }
 
+        /// <summary>
+        /// Recuperars the muestras desde credencial.
+        /// </summary>
+        /// <param name="credencial">The credencial.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">La credencial facial está vacía. - credencial</exception>
         public List<Mat> RecuperarMuestrasDesdeCredencial(byte[] credencial)
         {
             ComprobarNoLiberado();
@@ -239,6 +307,17 @@ namespace ClinicSyncDesktop.Services
             return DeserializarMuestras(credencial);
         }
 
+        /// <summary>
+        /// Entrenars the specified rostros.
+        /// </summary>
+        /// <param name="rostros">The rostros.</param>
+        /// <param name="etiquetas">The etiquetas.</param>
+        /// <exception cref="ArgumentNullException">Las imágenes y las etiquetas son obligatorias.</exception>
+        /// <exception cref="ArgumentException">
+        /// Debe existir una etiqueta por cada imagen facial.
+        /// or
+        /// Cada rostro debe ser una imagen gris de 100 x 100 píxeles.
+        /// </exception>
         public void Entrenar(
             IList<Mat> rostros,
             IList<int> etiquetas)
@@ -301,6 +380,11 @@ namespace ClinicSyncDesktop.Services
         }
 
 
+        /// <summary>
+        /// Guardars the modelo.
+        /// </summary>
+        /// <param name="rutaArchivo">The ruta archivo.</param>
+        /// <exception cref="ArgumentException">Debes indicar la ruta del modelo. - rutaArchivo</exception>
         public void GuardarModelo(string rutaArchivo)
         {
             ComprobarNoLiberado();
@@ -321,6 +405,10 @@ namespace ClinicSyncDesktop.Services
         }
 
 
+        /// <summary>
+        /// Exportars the modelo bytes.
+        /// </summary>
+        /// <returns></returns>
         public byte[] ExportarModeloBytes()
         {
             ComprobarNoLiberado();
@@ -342,6 +430,11 @@ namespace ClinicSyncDesktop.Services
             }
         }
 
+        /// <summary>
+        /// Cargars the modelo desde bytes.
+        /// </summary>
+        /// <param name="datosModelo">The datos modelo.</param>
+        /// <exception cref="ArgumentException">Los datos del modelo facial están vacíos. - datosModelo</exception>
         public void CargarModeloDesdeBytes(byte[] datosModelo)
         {
             ComprobarNoLiberado();
@@ -368,6 +461,11 @@ namespace ClinicSyncDesktop.Services
         }
 
 
+        /// <summary>
+        /// Cargars the modelo.
+        /// </summary>
+        /// <param name="rutaArchivo">The ruta archivo.</param>
+        /// <exception cref="FileNotFoundException">No se encontró el modelo facial entrenado.</exception>
         public void CargarModelo(string rutaArchivo)
         {
             ComprobarNoLiberado();
@@ -401,6 +499,14 @@ namespace ClinicSyncDesktop.Services
         }
 
 
+        /// <summary>
+        /// Intentars the reconocer.
+        /// </summary>
+        /// <param name="imagen">The imagen.</param>
+        /// <param name="rostro">The rostro.</param>
+        /// <param name="etiqueta">The etiqueta.</param>
+        /// <param name="distancia">The distancia.</param>
+        /// <returns></returns>
         public bool IntentarReconocer(
             Mat imagen,
             Rectangle rostro,
@@ -427,6 +533,12 @@ namespace ClinicSyncDesktop.Services
                    distancia <= 100;
         }
 
+        /// <summary>
+        /// Convertirs a escala grises.
+        /// </summary>
+        /// <param name="imagen">The imagen.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">La imagen debe tener 1, 3 o 4 canales.</exception>
         private static Mat ConvertirAEscalaGrises(Mat imagen)
         {
             Mat escalaGrises = new Mat();
@@ -466,6 +578,10 @@ namespace ClinicSyncDesktop.Services
             }
         }
 
+        /// <summary>
+        /// Comprobars the reconocedor.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Primero debes entrenar o cargar un modelo facial.</exception>
         private void ComprobarReconocedor()
         {
             if (_reconocedor == null)
@@ -475,6 +591,10 @@ namespace ClinicSyncDesktop.Services
             }
         }
 
+        /// <summary>
+        /// Comprobars the no liberado.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">ServicioReconocimientoFacial</exception>
         private void ComprobarNoLiberado()
         {
             if (_liberado)
@@ -484,6 +604,9 @@ namespace ClinicSyncDesktop.Services
             }
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             if (_liberado)

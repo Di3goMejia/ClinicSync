@@ -12,24 +12,47 @@ using System.Windows.Threading;
 
 namespace ClinicSync.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class MenuPrincipal : Window
     {
+        /// <summary>
+        /// The servicio notificaciones
+        /// </summary>
         private readonly NotificacionesApiService servicioNotificaciones = new();
 
+        /// <summary>
+        /// The reloj notificaciones
+        /// </summary>
         private readonly DispatcherTimer relojNotificaciones = new()
         {
             Interval = TimeSpan.FromMinutes(1)
         };
 
+        /// <summary>
+        /// The cargando notificaciones
+        /// </summary>
         private bool cargandoNotificaciones;
+        /// <summary>
+        /// The es administrador
+        /// </summary>
         private bool esAdministrador;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MenuPrincipal"/> class.
+        /// </summary>
         public MenuPrincipal()
         {
             InitializeComponent();
             PrepararNotificaciones();
         }
 
+        /// <summary>
+        /// Preparars the notificaciones.
+        /// </summary>
         private void PrepararNotificaciones()
         {
             relojNotificaciones.Tick += async (_, _) =>
@@ -44,6 +67,9 @@ namespace ClinicSync.Views
             Closed += (_, _) => relojNotificaciones.Stop();
         }
 
+        /// <summary>
+        /// Cargars the notificaciones asynchronous.
+        /// </summary>
         private async Task CargarNotificacionesAsync()
         {
             if (cargandoNotificaciones)
@@ -111,6 +137,11 @@ namespace ClinicSync.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Loaded event of the Ventana control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Ventana_Loaded(object sender, RoutedEventArgs e)
         {
             esAdministrador = false;
@@ -136,6 +167,11 @@ namespace ClinicSync.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the BotonModulo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void BotonModulo_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button boton)
@@ -153,6 +189,11 @@ namespace ClinicSync.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the Campana control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Campana_Click(object sender, RoutedEventArgs e)
         {
             PopupPerfil.IsOpen = false;
@@ -164,12 +205,22 @@ namespace ClinicSync.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the PerfilMenu control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void PerfilMenu_Click(object sender, RoutedEventArgs e)
         {
             PopupNotificaciones.IsOpen = false;
             PopupPerfil.IsOpen = !PopupPerfil.IsOpen;
         }
 
+        /// <summary>
+        /// Handles the Click event of the MarcarLeidas control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void MarcarLeidas_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -183,6 +234,11 @@ namespace ClinicSync.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the VerTodas control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void VerTodas_Click(object sender, RoutedEventArgs e)
         {
             PopupNotificaciones.IsOpen = false;
@@ -194,6 +250,11 @@ namespace ClinicSync.Views
             Close();
         }
 
+        /// <summary>
+        /// Handles the Click event of the Configuracion control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Configuracion_Click(object sender, RoutedEventArgs e)
         {
             PopupPerfil.IsOpen = false;
@@ -205,6 +266,11 @@ namespace ClinicSync.Views
             Close();
         }
 
+        /// <summary>
+        /// Handles the Click event of the CerrarSesion control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void CerrarSesion_Click(object sender, RoutedEventArgs e)
         {
             PopupPerfil.IsOpen = false;

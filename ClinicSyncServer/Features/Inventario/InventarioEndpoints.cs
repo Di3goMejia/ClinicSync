@@ -10,6 +10,9 @@ using PermisosSeguridad = ClinicSyncServer.Common.Seguridad.Permisos;
 
 namespace ClinicSyncServer.Features.Inventario
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class InventarioEndpoints
     {
         public static void MapInventarioEndpoints(this WebApplication app)

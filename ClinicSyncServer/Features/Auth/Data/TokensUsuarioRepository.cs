@@ -5,8 +5,18 @@ using ClinicSyncServer.Common.Data;
 
 namespace ClinicSyncServer.Features.Auth.Data
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class TokensUsuarioRepository(SqlConnectionFactory factory)
     {
+        /// <summary>
+        /// Insertars the asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="tokenHash">The token hash.</param>
+        /// <param name="proposito">The proposito.</param>
+        /// <param name="expira">The expira.</param>
         public async Task InsertarAsync(int idUsuario, byte[] tokenHash, string proposito, DateTime expira)
         {
             await using SqlConnection db = factory.Crear();
@@ -16,6 +26,11 @@ namespace ClinicSyncServer.Features.Auth.Data
                 commandType: CommandType.StoredProcedure);
         }
 
+        /// <summary>
+        /// Anulars the pendientes asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="proposito">The proposito.</param>
         public async Task AnularPendientesAsync(int idUsuario, string proposito)
         {
             await using var db = factory.Crear();
@@ -25,6 +40,12 @@ namespace ClinicSyncServer.Features.Auth.Data
                 new { IdUsuario = idUsuario, Proposito = proposito });
         }
 
+        /// <summary>
+        /// Existes the token hash asynchronous.
+        /// </summary>
+        /// <param name="tokenHash">The token hash.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<bool> ExisteTokenHashAsync(byte[] tokenHash, CancellationToken ct = default)
         {
             await using SqlConnection db = factory.Crear();
@@ -39,6 +60,13 @@ namespace ClinicSyncServer.Features.Auth.Data
             return count > 0;
         }
 
+        /// <summary>
+        /// Validars the token asynchronous.
+        /// </summary>
+        /// <param name="tokenHash">The token hash.</param>
+        /// <param name="proposito">The proposito.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<bool> ValidarTokenAsync(byte[] tokenHash, string proposito, CancellationToken ct = default)
         {
             await using SqlConnection db = factory.Crear();

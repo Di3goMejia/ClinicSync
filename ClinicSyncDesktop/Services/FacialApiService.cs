@@ -9,9 +9,18 @@ using System.Threading.Tasks;
 
 namespace ClinicSyncDesktop.Services
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class FacialApiService
     {
         // REGISTRAR CREDENCIAL FACIAL
+        /// <summary>
+        /// Registrars the credencial asynchronous.
+        /// </summary>
+        /// <param name="muestras">The muestras.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="ArgumentException">Se necesitan entre 5 y 10 muestras faciales. - muestras</exception>
         public async Task RegistrarCredencialAsync(
             IReadOnlyCollection<string> muestras,
             CancellationToken ct = default)
@@ -35,6 +44,9 @@ namespace ClinicSyncDesktop.Services
         }
 
         // DESACTIVAR CREDENCIAL FACIAL
+        /// <summary>
+        /// Desactivars the credencial asynchronous.
+        /// </summary>
         public async Task DesactivarCredencialAsync()
         {
             using var respuesta =
@@ -45,6 +57,12 @@ namespace ClinicSyncDesktop.Services
         }
 
         // INTERPRETAR RESPUESTA DE LA API
+        /// <summary>
+        /// Verificars the respuesta asynchronous.
+        /// </summary>
+        /// <param name="respuesta">The respuesta.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="HttpRequestException">null</exception>
         private static async Task VerificarRespuestaAsync(
             HttpResponseMessage respuesta,
             CancellationToken ct = default)

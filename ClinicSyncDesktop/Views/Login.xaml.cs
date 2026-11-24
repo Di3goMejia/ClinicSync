@@ -8,11 +8,25 @@ using ClinicSyncDesktop.Validations;
 
 namespace ClinicSync.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class Login : Window
     {
+        /// <summary>
+        /// The contrasena visible
+        /// </summary>
         private bool contrasenaVisible = false;
+        /// <summary>
+        /// The iniciando sesion
+        /// </summary>
         private bool iniciandoSesion = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Login"/> class.
+        /// </summary>
         public Login()
         {
             InitializeComponent();
@@ -26,6 +40,11 @@ namespace ClinicSync.Views
         }
 
         // MOSTRAR U OCULTAR CONTRASEÑA
+        /// <summary>
+        /// Handles the Click event of the BtnMostrarContrasena control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void BtnMostrarContrasena_Click(
             object sender, RoutedEventArgs e)
         {
@@ -58,6 +77,12 @@ namespace ClinicSync.Views
         }
 
         // INICIAR SESIÓN MEDIANTE LA API
+        /// <summary>
+        /// Handles the Click event of the Acceder control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        /// <exception cref="InvalidOperationException">El servidor no proporcionó un desafío de autenticación válido.</exception>
         private async void Acceder_Click(
             object sender, RoutedEventArgs e)
         {
@@ -163,6 +188,11 @@ namespace ClinicSync.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the OlvidoContrasena control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void OlvidoContrasena_Click(
         object sender, RoutedEventArgs e)
         {
@@ -174,6 +204,11 @@ namespace ClinicSync.Views
             ventana.ShowDialog();
         }
 
+        /// <summary>
+        /// Handles the Click event of the ActivarCuenta control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void ActivarCuenta_Click(
         object sender, RoutedEventArgs e)
         {
@@ -185,6 +220,11 @@ namespace ClinicSync.Views
             ventana.ShowDialog();
         }
 
+        /// <summary>
+        /// Handles the Checked event of the ChkRecordarSesion control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void ChkRecordarSesion_Checked(object sender, RoutedEventArgs e)
         {
 

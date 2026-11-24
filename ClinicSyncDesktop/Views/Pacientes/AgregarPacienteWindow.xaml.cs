@@ -12,8 +12,19 @@ using ClinicSyncDesktop.Validations;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class AgregarPacienteWindow : Window
     {
+        /// <summary>
+        /// Gets the paciente creado.
+        /// </summary>
+        /// <value>
+        /// The paciente creado.
+        /// </value>
         public PacienteVista? PacienteCreado
         {
             get;
@@ -21,20 +32,44 @@ namespace ClinicSyncDesktop.Views
         }
 
         // INDICA SI FALLÓ EL REGISTRO EN EL SERVIDOR
+        /// <summary>
+        /// Gets a value indicating whether [error al registrar].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [error al registrar]; otherwise, <c>false</c>.
+        /// </value>
         public bool ErrorAlRegistrar { get; private set; } = false;
 
+        /// <summary>
+        /// Gets or sets the identidad ya registrada.
+        /// </summary>
+        /// <value>
+        /// The identidad ya registrada.
+        /// </value>
         public Func<string, bool>? IdentidadYaRegistrada
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// The popup calendario
+        /// </summary>
         private Popup? popupCalendario;
 
+        /// <summary>
+        /// The actualizando fecha
+        /// </summary>
         private bool actualizandoFecha = false;
 
+        /// <summary>
+        /// The guardando
+        /// </summary>
         private bool guardando = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AgregarPacienteWindow"/> class.
+        /// </summary>
         public AgregarPacienteWindow()
         {
             InitializeComponent();
@@ -52,6 +87,11 @@ namespace ClinicSyncDesktop.Views
         // =====================================
         // ABRIR CALENDARIO
         // =====================================
+        /// <summary>
+        /// Handles the Click event of the Calendario control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Calendario_Click(
             object sender,
             RoutedEventArgs e)
@@ -148,6 +188,11 @@ namespace ClinicSyncDesktop.Views
         // =====================================
         // VALIDAR RANGO DE FECHA
         // =====================================
+        /// <summary>
+        /// Fechas the en rango.
+        /// </summary>
+        /// <param name="fecha">The fecha.</param>
+        /// <returns></returns>
         private bool FechaEnRango(DateTime fecha)
         {
             return fecha.Date <= DateTime.Today &&
@@ -157,6 +202,11 @@ namespace ClinicSyncDesktop.Views
         // =====================================
         // OBTENER FECHA ESCRITA
         // =====================================
+        /// <summary>
+        /// Tries the obtener fecha.
+        /// </summary>
+        /// <param name="fecha">The fecha.</param>
+        /// <returns></returns>
         private bool TryObtenerFecha(out DateTime fecha)
         {
             return DateTime.TryParseExact(
@@ -170,6 +220,10 @@ namespace ClinicSyncDesktop.Views
         // =====================================
         // ESTABLECER FECHA
         // =====================================
+        /// <summary>
+        /// Establecers the fecha.
+        /// </summary>
+        /// <param name="fecha">The fecha.</param>
         private void EstablecerFecha(DateTime fecha)
         {
             actualizandoFecha = true;
@@ -195,6 +249,11 @@ namespace ClinicSyncDesktop.Views
         // =====================================
         // FORMATO AUTOMÁTICO DE FECHA
         // =====================================
+        /// <summary>
+        /// Handles the TextChanged event of the txtFechaNacimiento control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void txtFechaNacimiento_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -265,6 +324,11 @@ namespace ClinicSyncDesktop.Views
         // =====================================
         // VALIDAR FECHA AL SALIR
         // =====================================
+        /// <summary>
+        /// Handles the LostFocus event of the txtFechaNacimiento control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void txtFechaNacimiento_LostFocus(
             object sender,
             RoutedEventArgs e)
@@ -305,6 +369,11 @@ namespace ClinicSyncDesktop.Views
         // =====================================
         // FECHA SELECCIONADA
         // =====================================
+        /// <summary>
+        /// Handles the SelectedDateChanged event of the dpNacimiento control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
         private void dpNacimiento_SelectedDateChanged(
             object sender,
             SelectionChangedEventArgs e)
@@ -332,6 +401,9 @@ namespace ClinicSyncDesktop.Views
         // =====================================
         // LIMPIAR ERROR
         // =====================================
+        /// <summary>
+        /// Limpiars the error.
+        /// </summary>
         private void LimpiarError()
         {
             txtError.Text = "";
@@ -343,6 +415,11 @@ namespace ClinicSyncDesktop.Views
         // =====================================
         // MOSTRAR ERROR EN EL FORMULARIO
         // =====================================
+        /// <summary>
+        /// Mostrars the error.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
+        /// <param name="campo">The campo.</param>
         private void MostrarError(
             string mensaje,
             Control? campo = null)
@@ -356,6 +433,11 @@ namespace ClinicSyncDesktop.Views
         // =====================================
         // CERRAR Y CONFIRMAR DESCARTE
         // =====================================
+        /// <summary>
+        /// Handles the Click event of the Cerrar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Cerrar_Click(
             object sender,
             RoutedEventArgs e)
@@ -379,6 +461,11 @@ namespace ClinicSyncDesktop.Views
         // =====================================
         // AGREGAR PACIENTE
         // =====================================
+        /// <summary>
+        /// Handles the Click event of the Agregar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Agregar_Click(
             object sender,
             RoutedEventArgs e)

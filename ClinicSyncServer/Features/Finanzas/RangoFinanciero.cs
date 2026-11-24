@@ -2,16 +2,40 @@
 
 namespace ClinicSyncServer.Features.Finanzas
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public enum Periodo { Hoy, Semana, Mes, Todos, Personalizado }
+    /// <summary>
+    /// 
+    /// </summary>
     public enum Agrupacion { Hora, Dia, Semana, Mes }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.IEquatable&lt;ClinicSyncServer.Features.Finanzas.RangoResuelto&gt;" />
     public record RangoResuelto(DateOnly? Desde, DateOnly? Hasta, Agrupacion Agrupacion);
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static class RangoFinanciero
     {
+        /// <summary>
+        /// The zona
+        /// </summary>
         private static readonly TimeZoneInfo Zona =
             TimeZoneInfo.FindSystemTimeZoneById("Central America Standard Time");
 
+        /// <summary>
+        /// Resolvers the specified periodo.
+        /// </summary>
+        /// <param name="periodo">The periodo.</param>
+        /// <param name="desde">The desde.</param>
+        /// <param name="hasta">The hasta.</param>
+        /// <param name="ahoraUtc">The ahora UTC.</param>
+        /// <returns></returns>
         public static RangoResuelto Resolver(Periodo periodo, DateOnly? desde, DateOnly? hasta, DateTime ahoraUtc)
         {
             var hoy = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(ahoraUtc, Zona));
@@ -34,6 +58,11 @@ namespace ClinicSyncServer.Features.Finanzas
             };
         }
 
+        /// <summary>
+        /// Semanas the specified hoy.
+        /// </summary>
+        /// <param name="hoy">The hoy.</param>
+        /// <returns></returns>
         private static RangoResuelto Semana(DateOnly hoy)
         {
             int diasDesdeLunes = ((int)hoy.DayOfWeek + 6) % 7;
@@ -41,6 +70,19 @@ namespace ClinicSyncServer.Features.Finanzas
             return new(lunes, lunes.AddDays(6), Agrupacion.Dia);
         }
 
+        /// <summary>
+        /// Personalizadoes the specified desde.
+        /// </summary>
+        /// <param name="desde">The desde.</param>
+        /// <param name="hasta">The hasta.</param>
+        /// <returns></returns>
+        /// <exception cref="ReglaNegocioException">
+        /// El rango personalizado requiere desde y hasta. - 50070
+        /// or
+        /// La fecha inicial no puede ser posterior a la final. - 50071
+        /// or
+        /// El rango no puede superar 366 días. - 50072
+        /// </exception>
         private static RangoResuelto Personalizado(DateOnly? desde, DateOnly? hasta)
         {
             if (desde is null || hasta is null)

@@ -11,12 +11,31 @@ using ClinicSyncDesktop.Views.Perfil._2FA;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Controls.UserControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class PerfilView : UserControl
     {
+        /// <summary>
+        /// The cargando perfil
+        /// </summary>
         private bool cargandoPerfil = false;
+        /// <summary>
+        /// The perfil actual
+        /// </summary>
         private PerfilActual? perfilActual;
+        /// <summary>
+        /// The dos fa configurado
+        /// </summary>
         private bool dosFAConfigurado = false;
 
+        /// <summary>
+        /// Mostrars the notificacion.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
+        /// <param name="exitoso">if set to <c>true</c> [exitoso].</param>
         private void MostrarNotificacion(string mensaje, bool exitoso)
         {
             PanelAvisos.Children.Clear();
@@ -28,8 +47,14 @@ namespace ClinicSyncDesktop.Views
         }
 
         // EVENTO PARA ABRIR EDICIÓN
+        /// <summary>
+        /// Occurs when [editar solicitado].
+        /// </summary>
         public event Action<PerfilActual>? EditarSolicitado;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PerfilView"/> class.
+        /// </summary>
         public PerfilView()
         {
             InitializeComponent();
@@ -40,6 +65,10 @@ namespace ClinicSyncDesktop.Views
         // NAVEGACIÓN INTERNA
         // ==========================================
 
+        /// <summary>
+        /// Mostrars the seccion.
+        /// </summary>
+        /// <param name="seccion">The seccion.</param>
         private void MostrarSeccion(string seccion)
         {
             PanelDatosPersonales.Visibility =
@@ -88,6 +117,11 @@ namespace ClinicSyncDesktop.Views
                 seccion == "acerca" ? activo : inactivo;
         }
 
+        /// <summary>
+        /// Handles the Click event of the DatosPersonales control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DatosPersonales_Click(
             object sender,
             RoutedEventArgs e)
@@ -95,6 +129,11 @@ namespace ClinicSyncDesktop.Views
             MostrarSeccion("datos");
         }
 
+        /// <summary>
+        /// Handles the Click event of the Seguridad control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Seguridad_Click(
             object sender,
             RoutedEventArgs e)
@@ -102,6 +141,11 @@ namespace ClinicSyncDesktop.Views
             MostrarSeccion("seguridad");
         }
 
+        /// <summary>
+        /// Handles the Click event of the AcercaDe control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void AcercaDe_Click(
             object sender,
             RoutedEventArgs e)
@@ -113,6 +157,11 @@ namespace ClinicSyncDesktop.Views
         // CAMBIAR CONTRASEÑA
         // ==========================================
 
+        /// <summary>
+        /// Handles the Click event of the CambiarPassword control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void CambiarPassword_Click(
             object sender,
             RoutedEventArgs e)
@@ -140,6 +189,11 @@ namespace ClinicSyncDesktop.Views
         // ACTIVAR / DESACTIVAR AUTENTICACIÓN 2FA
         // ==========================================
 
+        /// <summary>
+        /// Handles the Click event of the Configurar2FA control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Configurar2FA_Click(
             object sender,
             RoutedEventArgs e)
@@ -220,6 +274,9 @@ namespace ClinicSyncDesktop.Views
         // CARGAR ESTADO DE AUTENTICACIÓN 2FA
         // ==========================================
 
+        /// <summary>
+        /// Cargars the estado2 fa asynchronous.
+        /// </summary>
         private async Task CargarEstado2FAAsync()
         {
             try
@@ -250,6 +307,9 @@ namespace ClinicSyncDesktop.Views
         // ACTUALIZAR INTERRUPTOR VISUAL 2FA
         // ==========================================
 
+        /// <summary>
+        /// Actualizars the visual2 fa.
+        /// </summary>
         private void ActualizarVisual2FA()
         {
             if (dosFAConfigurado)
@@ -290,6 +350,11 @@ namespace ClinicSyncDesktop.Views
         // CARGAR PERFIL
         // ==========================================
 
+        /// <summary>
+        /// Handles the Loaded event of the PerfilView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void PerfilView_Loaded(
             object sender,
             RoutedEventArgs e)
@@ -351,6 +416,9 @@ namespace ClinicSyncDesktop.Views
         // CARGAR FOTOGRAFÍA
         // ==========================================
 
+        /// <summary>
+        /// Cargars the fotografia asynchronous.
+        /// </summary>
         private async Task CargarFotografiaAsync()
         {
             try
@@ -383,6 +451,9 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Mostrars the foto predeterminada.
+        /// </summary>
         private void MostrarFotoPredeterminada()
         {
             ImgPerfil.Source = new BitmapImage(
@@ -395,6 +466,11 @@ namespace ClinicSyncDesktop.Views
         // FORMATEAR ROL
         // ==========================================
 
+        /// <summary>
+        /// Formatears the rol.
+        /// </summary>
+        /// <param name="rol">The rol.</param>
+        /// <returns></returns>
         private string FormatearRol(string? rol)
         {
             if (string.IsNullOrWhiteSpace(rol))
@@ -421,6 +497,11 @@ namespace ClinicSyncDesktop.Views
         // FORMATEAR SEXO
         // ==========================================
 
+        /// <summary>
+        /// Formatears the sexo.
+        /// </summary>
+        /// <param name="genero">The genero.</param>
+        /// <returns></returns>
         private string FormatearSexo(string? genero)
         {
             if (string.IsNullOrWhiteSpace(genero))
@@ -443,6 +524,11 @@ namespace ClinicSyncDesktop.Views
         // ABRIR EDICIÓN
         // ==========================================
 
+        /// <summary>
+        /// Handles the Click event of the EditarFoto control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void EditarFoto_Click(
             object sender,
             RoutedEventArgs e)
@@ -453,6 +539,11 @@ namespace ClinicSyncDesktop.Views
             EditarSolicitado?.Invoke(perfilActual);
         }
 
+        /// <summary>
+        /// Handles the TextChanged event of the TxtNombres control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void TxtNombres_TextChanged(object sender, TextChangedEventArgs e)
         {
 

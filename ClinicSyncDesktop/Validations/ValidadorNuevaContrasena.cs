@@ -1,9 +1,21 @@
 namespace ClinicSyncDesktop.Validations;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.IEquatable&lt;ClinicSyncDesktop.Validations.EntradaNuevaContrasena&gt;" />
 public record EntradaNuevaContrasena(string Nueva, string Confirmacion);
 
+/// <summary>
+/// 
+/// </summary>
 public sealed class ValidadorNuevaContrasena
 {
+    /// <summary>
+    /// Validars the nueva.
+    /// </summary>
+    /// <param name="nueva">The nueva.</param>
+    /// <returns></returns>
     public ResultadoValidacion ValidarNueva(string nueva)
     {
         var resultado = new ResultadoValidacion();
@@ -19,6 +31,11 @@ public sealed class ValidadorNuevaContrasena
         return resultado;
     }
 
+    /// <summary>
+    /// Validars the confirmacion.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <returns></returns>
     public ResultadoValidacion ValidarConfirmacion(EntradaNuevaContrasena entrada)
     {
         var resultado = new ResultadoValidacion();

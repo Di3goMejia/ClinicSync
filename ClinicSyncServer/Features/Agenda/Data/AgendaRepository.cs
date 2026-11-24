@@ -8,17 +8,30 @@ using System.Data;
 
 namespace ClinicSyncServer.Features.Agenda.Data
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class AgendaRepository(SqlConnectionFactory factory)
     {
         // Convierte el error de SQL en una excepción propia.
         // 50009 (horario ocupado) y 50010 (paciente ocupado) son conflictos: HTTP 409.
         // Los demás errores de Agenda siguen el camino normal (HTTP 400).
+        /// <summary>
+        /// Traducirs the specified ex.
+        /// </summary>
+        /// <param name="ex">The ex.</param>
+        /// <returns></returns>
         private static Exception Traducir(SqlException ex) =>
             ex.Number is 50009 or 50010
                 ? new ConflictoException(ex.Message)
                 : SqlErrorTranslator.Traducir(ex);
 
         // Parámetros comunes de registrar y modificar una cita.
+        /// <summary>
+        /// Parametroses the cita.
+        /// </summary>
+        /// <param name="req">The req.</param>
+        /// <returns></returns>
         private static DynamicParameters ParametrosCita(CitaRequest req)
         {
             var p = new DynamicParameters();
@@ -36,6 +49,12 @@ namespace ClinicSyncServer.Features.Agenda.Data
         }
 
         // Convierte el usuario con sesión (sub del token) en su IdEmpleado.
+        /// <summary>
+        /// Obteners the identifier empleado asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<int?> ObtenerIdEmpleadoAsync(
             int idUsuario,
             CancellationToken ct = default)
@@ -52,6 +71,13 @@ namespace ClinicSyncServer.Features.Agenda.Data
             return await db.QuerySingleOrDefaultAsync<int?>(cmd);
         }
 
+        /// <summary>
+        /// Insertars the asynchronous.
+        /// </summary>
+        /// <param name="req">The req.</param>
+        /// <param name="idEmpleado">The identifier empleado.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<int> InsertarAsync(
             CitaRequest req,
             int idEmpleado,
@@ -79,8 +105,14 @@ namespace ClinicSyncServer.Features.Agenda.Data
             }
         }
 
-       
 
+
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<EventoAgendaResponse>> ListarAsync(
             ListarAgendaQuery query,
             CancellationToken ct = default)
@@ -110,6 +142,12 @@ namespace ClinicSyncServer.Features.Agenda.Data
             }
         }
 
+        /// <summary>
+        /// Proximases the asynchronous.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<ProximaCitaResponse>> ProximasAsync(
             ProximasCitasQuery query,
             CancellationToken ct = default)
@@ -138,6 +176,12 @@ namespace ClinicSyncServer.Features.Agenda.Data
             }
         }
 
+        /// <summary>
+        /// Obteners the por identifier asynchronous.
+        /// </summary>
+        /// <param name="idEvento">The identifier evento.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<EventoAgendaResponse?> ObtenerPorIdAsync(
             int idEvento,
             CancellationToken ct = default)
@@ -161,6 +205,13 @@ namespace ClinicSyncServer.Features.Agenda.Data
             }
         }
 
+        /// <summary>
+        /// Verificars the disponibilidad asynchronous.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="idEmpleado">The identifier empleado.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<DisponibilidadResponse> VerificarDisponibilidadAsync(
             DisponibilidadQuery query,
             int idEmpleado,
@@ -199,6 +250,12 @@ namespace ClinicSyncServer.Features.Agenda.Data
         }
 
         // MODIFICAR UNA CITA
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="idEvento">The identifier evento.</param>
+        /// <param name="req">The req.</param>
+        /// <param name="ct">The ct.</param>
         public async Task ModificarAsync(
             int idEvento,
             CitaRequest req,
@@ -228,6 +285,11 @@ namespace ClinicSyncServer.Features.Agenda.Data
         }
 
         // CANCELAR UNA CITA
+        /// <summary>
+        /// Cancelars the asynchronous.
+        /// </summary>
+        /// <param name="idEvento">The identifier evento.</param>
+        /// <param name="ct">The ct.</param>
         public async Task CancelarAsync(
             int idEvento,
             CancellationToken ct = default)

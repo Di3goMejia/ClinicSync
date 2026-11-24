@@ -8,28 +8,98 @@ using System.Windows.Input;
 
 namespace ClinicSyncDesktop.Views.Seguridad;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.Windows.Window" />
+/// <seealso cref="System.Windows.Markup.IComponentConnector" />
+/// <seealso cref="System.Windows.Markup.IStyleConnector" />
 public partial class EditarRolWindow : Window
 {
+    /// <summary>
+    /// The validador
+    /// </summary>
     private readonly ValidadorRol _validador = new();
+    /// <summary>
+    /// The controles
+    /// </summary>
     private readonly Dictionary<string, Control> _controles;
+    /// <summary>
+    /// The rol
+    /// </summary>
     private readonly Rol? _rol;
+    /// <summary>
+    /// The permisos
+    /// </summary>
     private readonly ObservableCollection<PermisoFilaDesktop> _permisos = [];
+    /// <summary>
+    /// The grupos visibles
+    /// </summary>
     private readonly ObservableCollection<PermisoGrupoDesktop> _gruposVisibles = [];
+    /// <summary>
+    /// The permisos service
+    /// </summary>
     private readonly PermisosApiService _permisosService = new();
+    /// <summary>
+    /// The roles service
+    /// </summary>
     private readonly RolesApiService _rolesService = new();
+    /// <summary>
+    /// The rol protegido
+    /// </summary>
     private bool _rolProtegido;
+    /// <summary>
+    /// Gets a value indicating whether [es edicion].
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if [es edicion]; otherwise, <c>false</c>.
+    /// </value>
     public bool EsEdicion => _rol is not null;
+    /// <summary>
+    /// Gets the nombre.
+    /// </summary>
+    /// <value>
+    /// The nombre.
+    /// </value>
     public string Nombre => 
         TxtNombre.Text.Trim();
+    /// <summary>
+    /// Gets the descripcion.
+    /// </summary>
+    /// <value>
+    /// The descripcion.
+    /// </value>
     public string? Descripcion => 
         string.IsNullOrWhiteSpace(TxtDescripcion.Text) ? null : TxtDescripcion.Text.Trim();
+    /// <summary>
+    /// Gets a value indicating whether this <see cref="EditarRolWindow"/> is activo.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if activo; otherwise, <c>false</c>.
+    /// </value>
     public bool Activo => 
         ChkActivo.IsChecked == true;
+    /// <summary>
+    /// Gets the permisos.
+    /// </summary>
+    /// <value>
+    /// The permisos.
+    /// </value>
     public IReadOnlyList<string> Permisos => 
         _permisos.Where(p => p.Seleccionado).Select(p => p.Codigo).ToList();
-    
+
+    /// <summary>
+    /// Gets the identifier rol base.
+    /// </summary>
+    /// <value>
+    /// The identifier rol base.
+    /// </value>
     public int? IdRolBase => (CmbRolBase.SelectedItem as Rol)?.IdRol;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EditarRolWindow"/> class.
+    /// </summary>
+    /// <param name="rol">The rol.</param>
     public EditarRolWindow(Rol? rol = null)
     {
         InitializeComponent();
@@ -54,6 +124,9 @@ public partial class EditarRolWindow : Window
         Loaded += async (_, _) => await CargarAsync();
     }
 
+    /// <summary>
+    /// Cargars the asynchronous.
+    /// </summary>
     private async Task CargarAsync()
     {
         try
@@ -97,22 +170,45 @@ public partial class EditarRolWindow : Window
         catch (Exception ex) { MostrarError(ex.Message); }
     }
 
+    /// <summary>
+    /// Handles the Click event of the Info control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void Info_Click(object sender, RoutedEventArgs e) 
     { 
         PanelInfo.Visibility = Visibility.Visible; 
         PanelPermisos.Visibility = Visibility.Collapsed; 
     }
-    
+
+    /// <summary>
+    /// Handles the Click event of the Permisos control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void Permisos_Click(object sender, RoutedEventArgs e) 
     { 
         PanelInfo.Visibility = Visibility.Collapsed; 
         PanelPermisos.Visibility = Visibility.Visible; 
         TxtMensajePermisos.Text = $"Selecciona los permisos que desea asignar al rol {Nombre}"; 
     }
-    
+
+    /// <summary>
+    /// Handles the TextChanged event of the FiltroPermisos control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
     private void FiltroPermisos_TextChanged(object sender, TextChangedEventArgs e) => FiltrarPermisos();
+    /// <summary>
+    /// Handles the Changed event of the FiltroPermisos control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
     private void FiltroPermisos_Changed(object sender, SelectionChangedEventArgs e) => FiltrarPermisos();
-    
+
+    /// <summary>
+    /// Filtrars the permisos.
+    /// </summary>
     private void FiltrarPermisos()
     {
         var texto = TxtBuscarPermiso.Text.Trim();
@@ -128,6 +224,11 @@ public partial class EditarRolWindow : Window
             _gruposVisibles.Add(new PermisoGrupoDesktop(grupo.Key, grupo));
     }
 
+    /// <summary>
+    /// Handles the Click event of the GrupoSeleccionado control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void GrupoSeleccionado_Click(object sender, RoutedEventArgs e)
     {
         if (_rolProtegido || sender is not CheckBox checkBox || checkBox.DataContext is not PermisoGrupoDesktop grupo)

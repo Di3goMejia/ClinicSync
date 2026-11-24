@@ -12,6 +12,10 @@ using Microsoft.Extensions.Configuration;
 
 namespace ClinicSyncServer.Features.Auth
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="ClinicSyncServer.Features.Auth.IAuthService" />
     public class AuthService(
         CredencialesRepository credenciales,
         TokensUsuarioRepository tokens,
@@ -23,15 +27,44 @@ namespace ClinicSyncServer.Features.Auth
         IEmailSender correo,
         IConfiguration config) : IAuthService
     {
+        /// <summary>
+        /// The dias refresh
+        /// </summary>
         private const int DiasRefresh = 30;
+        /// <summary>
+        /// The minutos restablecimiento
+        /// </summary>
         private const int MinutosRestablecimiento = 30;
+        /// <summary>
+        /// The minimum longitud password
+        /// </summary>
         private const int MinLongitudPassword = 8;
+        /// <summary>
+        /// The codigo politica
+        /// </summary>
         private const int CodigoPolitica = 50012;
+        /// <summary>
+        /// The codigo enlace
+        /// </summary>
         private const int CodigoEnlace = 50011;
 
+        /// <summary>
+        /// The mensaje generico
+        /// </summary>
         private const string MensajeGenerico = "Usuario o contraseña incorrectos.";
+        /// <summary>
+        /// The sesion no valida
+        /// </summary>
         private const string SesionNoValida = "La sesión no es válida o expiró.";
 
+        /// <summary>
+        /// Logins the asynchronous.
+        /// </summary>
+        /// <param name="req">The req.</param>
+        /// <param name="cliente">The cliente.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="NoAutorizadoException"></exception>
         public async Task<LoginResponse> LoginAsync(LoginRequest req, DatosCliente cliente, CancellationToken ct = default)
         {
             var u = await credenciales.ObtenerParaLoginAsync(Normalizar(req.Identificador));
@@ -57,6 +90,18 @@ namespace ClinicSyncServer.Features.Auth
             return await EmitirSesionAsync(u.IdUsuario, cliente);
         }
 
+        /// <summary>
+        /// Verificars the segundo factor asynchronous.
+        /// </summary>
+        /// <param name="req">The req.</param>
+        /// <param name="cliente">The cliente.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="NoAutorizadoException">
+        /// El desafío no es válido o expiró.
+        /// or
+        /// La verificación no es válida.
+        /// </exception>
         public async Task<LoginResponse> VerificarSegundoFactorAsync(
             VerificarSegundoFactorRequest req, DatosCliente cliente, CancellationToken ct = default)
         {
@@ -71,6 +116,13 @@ namespace ClinicSyncServer.Features.Auth
             return await EmitirSesionAsync(idUsuario, cliente);
         }
 
+        /// <summary>
+        /// Renovars the asynchronous.
+        /// </summary>
+        /// <param name="refreshToken">The refresh token.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="NoAutorizadoException"></exception>
         public async Task<LoginResponse> RenovarAsync(string refreshToken, CancellationToken ct = default)
         {
             var hashActual = tokenService.HashRefreshToken(refreshToken)
@@ -89,9 +141,24 @@ namespace ClinicSyncServer.Features.Auth
             return new LoginResponse(false, null, acceso, nuevo.Token);
         }
 
+        /// <summary>
+        /// Cerrars the sesion asynchronous.
+        /// </summary>
+        /// <param name="idSesion">The identifier sesion.</param>
+        /// <returns></returns>
         public Task CerrarSesionAsync(Guid idSesion) =>
             sesiones.CerrarAsync(idSesion, "LOGOUT");
 
+        /// <summary>
+        /// Validars the token activacion asynchronous.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="ReglaNegocioException">
+        /// Ingrese el código o token de activación. - 50011
+        /// or
+        /// El código es incorrecto o ha caducado. - 50011
+        /// </exception>
         public async Task ValidarTokenActivacionAsync(string token, CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(token))
@@ -104,6 +171,17 @@ namespace ClinicSyncServer.Features.Auth
                 throw new ReglaNegocioException("El código es incorrecto o ha caducado.", 50011);
         }
 
+        /// <summary>
+        /// Activars the cuenta asynchronous.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <param name="nuevaPassword">The nueva password.</param>
+        /// <param name="confirmarPassword">The confirmar password.</param>
+        /// <exception cref="ReglaNegocioException">
+        /// Ingrese el código o token de activación. - 50011
+        /// or
+        /// Las contraseñas no coinciden. - 50011
+        /// </exception>
         public async Task ActivarCuentaAsync(string token, string nuevaPassword, string? confirmarPassword = null)
         {
             if (string.IsNullOrWhiteSpace(token))
@@ -115,6 +193,28 @@ namespace ClinicSyncServer.Features.Auth
             await UsarTokenAsync(token.Trim(), "PRIMER_LOGIN", nuevaPassword);
         }
 
+        /// <summary>
+        /// Restablecers the contrasena asynchronous.
+        /// </summary>
+        /// <param name="identificador">The identificador.</param>
+        /// <param name="codigo">The codigo.</param>
+        /// <param name="nuevaPassword">The nueva password.</param>
+        /// <param name="confirmarPassword">The confirmar password.</param>
+        /// <exception cref="ReglaNegocioException">
+        /// Ingrese su correo electrónico. - 50012
+        /// or
+        /// Ingrese el código de recuperación. - 50011
+        /// or
+        /// El código debe contener exactamente 6 dígitos. - 50011
+        /// or
+        /// Ingrese la nueva contraseña. - 50011
+        /// or
+        /// La contraseña debe tener al menos 8 caracteres. - 50011
+        /// or
+        /// Las contraseñas no coinciden. - 50011
+        /// or
+        /// El código es incorrecto o ha caducado. - 50012
+        /// </exception>
         public async Task RestablecerContrasenaAsync(
     string identificador,
     string codigo,
@@ -167,6 +267,12 @@ namespace ClinicSyncServer.Features.Auth
                 hasher.Hash(nuevaPassword));
         }
 
+        /// <summary>
+        /// Solicitars the restablecimiento asynchronous.
+        /// </summary>
+        /// <param name="identificador">The identificador.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="ReglaNegocioException">Ingrese su correo electrónico. - 50012</exception>
         public async Task SolicitarRestablecimientoAsync(
     string identificador,
     CancellationToken ct = default)
@@ -212,6 +318,11 @@ namespace ClinicSyncServer.Features.Auth
                 ct);
         }
 
+        /// <summary>
+        /// Obteners the hash token activacion.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
         private static byte[] ObtenerHashTokenActivacion(string token)
         {
             token = token.Trim();
@@ -233,6 +344,12 @@ namespace ClinicSyncServer.Features.Auth
             return SHA256.HashData(Encoding.UTF8.GetBytes(token));
         }
 
+        /// <summary>
+        /// Usars the token asynchronous.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <param name="proposito">The proposito.</param>
+        /// <param name="nuevaPassword">The nueva password.</param>
         private async Task UsarTokenAsync(string token, string proposito, string nuevaPassword)
         {
             ValidarPolitica(nuevaPassword);
@@ -243,6 +360,13 @@ namespace ClinicSyncServer.Features.Auth
             await credenciales.EstablecerPasswordAsync(hash, proposito, hasher.Hash(nuevaPassword));
         }
 
+        /// <summary>
+        /// Emitirs the sesion asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="cliente">The cliente.</param>
+        /// <returns></returns>
+        /// <exception cref="NoAutorizadoException"></exception>
         private async Task<LoginResponse> EmitirSesionAsync(int idUsuario, DatosCliente cliente)
         {
             // Sin permisos ni rol válido, no hay acceso
@@ -259,6 +383,11 @@ namespace ClinicSyncServer.Features.Auth
             return new LoginResponse(false, null, acceso, refresh.Token);
         }
 
+        /// <summary>
+        /// Validars the politica.
+        /// </summary>
+        /// <param name="password">The password.</param>
+        /// <exception cref="ReglaNegocioException">La contraseña debe tener al menos {MinLongitudPassword} caracteres, con letras y números.</exception>
         private static void ValidarPolitica(string password)
         {
             if (password.Length < MinLongitudPassword || !password.Any(char.IsDigit) || !password.Any(char.IsLetter))
@@ -267,6 +396,17 @@ namespace ClinicSyncServer.Features.Auth
                     CodigoPolitica);
         }
 
+        /// <summary>
+        /// Obteners the hash codigo.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="codigo">The codigo.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">
+        /// No se configuró la clave de recuperación.
+        /// or
+        /// La clave de recuperación es demasiado corta.
+        /// </exception>
         private byte[] ObtenerHashCodigo(
         int idUsuario,
         string codigo)
@@ -288,9 +428,37 @@ namespace ClinicSyncServer.Features.Auth
                 Encoding.UTF8.GetBytes(datos));
         }
 
+        /// <summary>
+        /// Normalizars the specified valor.
+        /// </summary>
+        /// <param name="valor">The valor.</param>
+        /// <returns></returns>
         private static string Normalizar(string valor) => valor.Trim().ToLowerInvariant();
 
         // CAMBIAR CONTRASEÑA DESDE PERFIL
+        /// <summary>
+        /// Cambiars the mi contrasena asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="idSesionActual">The identifier sesion actual.</param>
+        /// <param name="actual">The actual.</param>
+        /// <param name="nueva">The nueva.</param>
+        /// <param name="confirmacion">The confirmacion.</param>
+        /// <exception cref="ReglaNegocioException">
+        /// Ingrese su contraseña actual. - 50012
+        /// or
+        /// Ingrese la nueva contraseña. - 50012
+        /// or
+        /// Las contraseñas no coinciden. - 50012
+        /// or
+        /// La nueva contraseña debe ser diferente a la actual. - 50012
+        /// or
+        /// La nueva contraseña debe contener al menos " +
+        ///                     "8 caracteres, una mayúscula, una minúscula, " +
+        ///                     "un número y un carácter especial. - 50012
+        /// or
+        /// La contraseña actual es incorrecta. - 50012
+        /// </exception>
         public async Task CambiarMiContrasenaAsync(
             int idUsuario,
             Guid idSesionActual,

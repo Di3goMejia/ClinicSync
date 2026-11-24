@@ -12,9 +12,19 @@ using System.Threading.Tasks;
 
 namespace ClinicSyncDesktop.Services
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class InventarioApiService
     {
         // LISTAR MATERIALES
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <param name="buscar">The buscar.</param>
+        /// <param name="activo">The activo.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<List<Material>> ListarAsync(
             string? buscar = null,
             bool? activo = null,
@@ -48,6 +58,12 @@ namespace ClinicSyncDesktop.Services
         }
 
         // OBTENER MATERIAL POR ID
+        /// <summary>
+        /// Obteners the por identifier asynchronous.
+        /// </summary>
+        /// <param name="idMaterial">The identifier material.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<Material> ObtenerPorIdAsync(
             int idMaterial,
             CancellationToken ct = default)
@@ -59,6 +75,22 @@ namespace ClinicSyncDesktop.Services
         }
 
         // REGISTRAR MATERIAL
+        /// <summary>
+        /// Registrars the asynchronous.
+        /// </summary>
+        /// <param name="codigo">The codigo.</param>
+        /// <param name="nombre">The nombre.</param>
+        /// <param name="unidadMedida">The unidad medida.</param>
+        /// <param name="stockMinimo">The stock minimo.</param>
+        /// <param name="cantidadInicial">The cantidad inicial.</param>
+        /// <param name="precioCompra">The precio compra.</param>
+        /// <param name="imagen">The imagen.</param>
+        /// <param name="descripcion">The descripcion.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="HttpRequestException">
+        /// La API no devolvió el identificador del material.
+        /// </exception>
         public async Task<int> RegistrarAsync(
             string codigo,
             string nombre,
@@ -116,6 +148,25 @@ namespace ClinicSyncDesktop.Services
         }
 
         // MODIFICAR MATERIAL, INCLUYENDO EL STOCK
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="idMaterial">The identifier material.</param>
+        /// <param name="codigo">The codigo.</param>
+        /// <param name="nombre">The nombre.</param>
+        /// <param name="unidadMedida">The unidad medida.</param>
+        /// <param name="stockMinimo">The stock minimo.</param>
+        /// <param name="precioCompra">The precio compra.</param>
+        /// <param name="imagen">The imagen.</param>
+        /// <param name="descripcion">The descripcion.</param>
+        /// <param name="stockActual">The stock actual.</param>
+        /// <param name="stockEsperado">The stock esperado.</param>
+        /// <param name="motivo">The motivo.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="HttpRequestException">
+        /// La API no devolvió el material actualizado.
+        /// </exception>
         public async Task<Material> ModificarAsync(
             int idMaterial,
             string codigo,
@@ -180,6 +231,15 @@ namespace ClinicSyncDesktop.Services
         }
 
         // RESOLVER LA IMAGEN DEL MATERIAL
+        /// <summary>
+        /// Resolvers the imagen asynchronous.
+        /// </summary>
+        /// <param name="imagen">The imagen.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException">No se encontró la imagen seleccionada. " +
+        ///                     "Selecciona nuevamente el archivo.</exception>
+        /// <exception cref="HttpRequestException">La API no devolvió una referencia válida para la imagen.</exception>
         private static async Task<string?> ResolverImagenAsync(
             string? imagen,
             CancellationToken ct = default)
@@ -235,6 +295,13 @@ namespace ClinicSyncDesktop.Services
         }
 
         // CAMBIAR ESTADO DEL MATERIAL
+        /// <summary>
+        /// Cambiars the estado asynchronous.
+        /// </summary>
+        /// <param name="idMaterial">The identifier material.</param>
+        /// <param name="activo">if set to <c>true</c> [activo].</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="HttpRequestException"></exception>
         public async Task CambiarEstadoAsync(
             int idMaterial,
             bool activo,
@@ -260,6 +327,13 @@ namespace ClinicSyncDesktop.Services
         }
 
         // LEER MENSAJE DE ERROR DE LA API
+        /// <summary>
+        /// Obteners the mensaje error asynchronous.
+        /// </summary>
+        /// <param name="respuesta">The respuesta.</param>
+        /// <param name="mensajePredeterminado">The mensaje predeterminado.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         private static async Task<string> ObtenerMensajeErrorAsync(
             HttpResponseMessage respuesta,
             string mensajePredeterminado,
@@ -303,8 +377,17 @@ namespace ClinicSyncDesktop.Services
         }
 
         // RESPUESTA DEL REGISTRO
+        /// <summary>
+        /// 
+        /// </summary>
         private sealed class RespuestaRegistro
         {
+            /// <summary>
+            /// Gets or sets the identifier material.
+            /// </summary>
+            /// <value>
+            /// The identifier material.
+            /// </value>
             public int IdMaterial { get; set; }
         }
     }

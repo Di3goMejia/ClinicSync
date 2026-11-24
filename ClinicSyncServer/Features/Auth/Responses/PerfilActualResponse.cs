@@ -1,6 +1,10 @@
 ﻿
 namespace ClinicSyncServer.Features.Auth.Responses
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.IEquatable&lt;ClinicSyncServer.Features.Auth.Responses.PerfilActualResponse&gt;" />
     public record PerfilActualResponse(
         string NombreUsuario,
         string Rol,

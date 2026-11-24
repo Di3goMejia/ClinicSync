@@ -8,9 +8,21 @@ using ClinicSyncDesktop.Models;
 
 namespace ClinicSyncDesktop.Services;
 
+/// <summary>
+/// 
+/// </summary>
 public sealed class NotificacionesApiService
 {
     // CONSULTAR NOTIFICACIONES
+    /// <summary>
+    /// Listars the asynchronous.
+    /// </summary>
+    /// <param name="tipo">The tipo.</param>
+    /// <param name="estado">The estado.</param>
+    /// <param name="desde">The desde.</param>
+    /// <param name="hasta">The hasta.</param>
+    /// <param name="buscar">The buscar.</param>
+    /// <returns></returns>
     public async Task<Notificacion[]> ListarAsync(
         string? tipo = null,
         string? estado = null,
@@ -45,6 +57,10 @@ public sealed class NotificacionesApiService
     }
 
     // MARCAR UNA COMO LEÍDA
+    /// <summary>
+    /// Marcars the leida asynchronous.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
     public async Task MarcarLeidaAsync(long id)
     {
         using var respuesta =
@@ -56,6 +72,9 @@ public sealed class NotificacionesApiService
     }
 
     // MARCAR TODAS COMO LEÍDAS
+    /// <summary>
+    /// Marcars the todas asynchronous.
+    /// </summary>
     public async Task MarcarTodasAsync()
     {
         using var respuesta =
@@ -67,6 +86,10 @@ public sealed class NotificacionesApiService
     }
 
     // ARCHIVAR
+    /// <summary>
+    /// Archivars the asynchronous.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
     public async Task ArchivarAsync(long id)
     {
         using var respuesta =

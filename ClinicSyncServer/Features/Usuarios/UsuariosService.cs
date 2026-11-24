@@ -13,6 +13,10 @@ using System.Text;
 
 namespace ClinicSyncServer.Features.Usuarios
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="ClinicSyncServer.Features.Usuarios.IUsuariosService" />
     public class UsuariosService(
         UsuariosRepository repo,
         IEmailSender correo,
@@ -21,9 +25,21 @@ namespace ClinicSyncServer.Features.Usuarios
         TokensUsuarioRepository tokens,
         IAuthService auth) : IUsuariosService
     {
-        private static readonly TimeSpan VigenciaActivacion = TimeSpan.FromHours(24); 
+        /// <summary>
+        /// The vigencia activacion
+        /// </summary>
+        private static readonly TimeSpan VigenciaActivacion = TimeSpan.FromHours(24);
+        /// <summary>
+        /// The proposito activacion
+        /// </summary>
         private const string PropositoActivacion = "PRIMER_LOGIN";
 
+        /// <summary>
+        /// Crears the asynchronous.
+        /// </summary>
+        /// <param name="req">The req.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<CrearUsuarioResponse> CrearAsync(CrearUsuarioRequest req, CancellationToken ct = default)
         {
             // Generar el token de activación de 6 dígitos.
@@ -38,6 +54,11 @@ namespace ClinicSyncServer.Features.Usuarios
             return resp;
         }
 
+        /// <summary>
+        /// Eliminars the imagen perfil asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="ct">The ct.</param>
         public async Task EliminarImagenPerfilAsync(
             int idUsuario,
             CancellationToken ct = default)
@@ -47,6 +68,14 @@ namespace ClinicSyncServer.Features.Usuarios
             await repo.EliminarImagenPerfilAsync(idUsuario, ct);
         }
 
+        /// <summary>
+        /// Obteners the asynchronous.
+        /// </summary>
+        /// <param name="idSolicitado">The identifier solicitado.</param>
+        /// <param name="idSolicitante">The identifier solicitante.</param>
+        /// <param name="puedeVerTodos">if set to <c>true</c> [puede ver todos].</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<UsuarioDetalleResponse?> ObtenerAsync(int idSolicitado, int idSolicitante, bool puedeVerTodos, CancellationToken ct = default)
         {
             // Una persona sin el permiso de leer usuarios solo puede consultar la información de su
@@ -63,11 +92,23 @@ namespace ClinicSyncServer.Features.Usuarios
                 u.IdRol, u.Estado, u.FechaRegistro);
         }
 
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IEnumerable<UsuarioListado>> ListarAsync()
         {
             return await repo.ListarAsync();
         }
 
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="req">The req.</param>
+        /// <param name="idSolicitante">The identifier solicitante.</param>
+        /// <param name="puedeEditarTodos">if set to <c>true</c> [puede editar todos].</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="KeyNotFoundException">El usuario no existe.</exception>
         public async Task ModificarAsync(ModificarUsuarioRequest req, int idSolicitante, bool puedeEditarTodos, CancellationToken ct = default)
         {
             // Una persona sin el permiso de editar usuarios solo puede editar la información de su propio usuario.
@@ -77,6 +118,13 @@ namespace ClinicSyncServer.Features.Usuarios
             await repo.ModificarAsync(req);
         }
 
+        /// <summary>
+        /// Modificars the rol asynchronous.
+        /// </summary>
+        /// <param name="req">The req.</param>
+        /// <param name="idSolicitante">The identifier solicitante.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="ReglaNegocioException">No se puede modificar el rol del usuario activo. - 0</exception>
         public async Task ModificarRolAsync(ModificarRolUsuarioRequest req, int idSolicitante, CancellationToken ct = default)
         {
             if (req.IdUsuario == idSolicitante)
@@ -85,6 +133,17 @@ namespace ClinicSyncServer.Features.Usuarios
             await repo.ModificarRolAsync(req);
         }
 
+        /// <summary>
+        /// Subirs the imagen perfil asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="archivo">The archivo.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="ReglaNegocioException">
+        /// La imagen debe tener contenido y no superar los 5 MB. - 0
+        /// or
+        /// El contenido no corresponde al tipo de imagen. - 0
+        /// </exception>
         public async Task SubirImagenPerfilAsync(int idUsuario, IFormFile archivo, CancellationToken ct = default)
         {
             const long tamanoMaximo = 5 * 1024 * 1024;
@@ -125,6 +184,12 @@ namespace ClinicSyncServer.Features.Usuarios
 
         }
 
+        /// <summary>
+        /// Obteners the imagen perfil asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<ContenidoAlmacenado?> ObtenerImagenPerfilAsync(int idUsuario, CancellationToken ct = default)
         {
             var clave = await repo.ObtenerImagenPerfilAsync(idUsuario);
@@ -133,6 +198,12 @@ namespace ClinicSyncServer.Features.Usuarios
                 : await almacen.AbrirAsync(clave, ct);
         }
 
+        /// <summary>
+        /// Tipoes the imagen valido.
+        /// </summary>
+        /// <param name="contenido">The contenido.</param>
+        /// <param name="extension">The extension.</param>
+        /// <returns></returns>
         private static bool TipoImagenValido(byte[] contenido, string extension)
         {
             byte[] firma = extension switch
@@ -145,6 +216,11 @@ namespace ClinicSyncServer.Features.Usuarios
             return contenido.Length >= firma.Length && contenido.AsSpan(0, firma.Length).SequenceEqual(firma);
         }
 
+        /// <summary>
+        /// Generars the token activacion asynchronous.
+        /// </summary>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         private async Task<(string Token, byte[] TokenHash)> GenerarTokenActivacionAsync(CancellationToken ct = default)
         {
             string token;
@@ -158,6 +234,13 @@ namespace ClinicSyncServer.Features.Usuarios
             return (token, tokenHash);
         }
 
+        /// <summary>
+        /// Reenviars the activacion asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="KeyNotFoundException">El usuario no existe.</exception>
+        /// <exception cref="ReglaNegocioException">Solo se puede reenviar la activación a cuentas pendientes. - 0</exception>
         public async Task ReenviarActivacionAsync(int idUsuario, CancellationToken ct = default)
         {
             var usuario = await repo.ObtenerPorIdAsync(idUsuario)
@@ -173,6 +256,15 @@ namespace ClinicSyncServer.Features.Usuarios
             await correo.EnviarActivacionAsync(usuario.CorreoLogin, usuario.Nombres, token, ct);
         }
 
+        /// <summary>
+        /// Desactivars the asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="idAdministrador">The identifier administrador.</param>
+        /// <param name="password">The password.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="ReglaNegocioException">No se puede desactivar el usuario de la sesión actual. - 0</exception>
+        /// <exception cref="KeyNotFoundException">El usuario no existe.</exception>
         public async Task DesactivarAsync(int idUsuario, int idAdministrador, string password, CancellationToken ct = default)
         {
             if (idUsuario == idAdministrador)
@@ -188,6 +280,14 @@ namespace ClinicSyncServer.Features.Usuarios
             await correo.EnviarDesactivacionAsync(usuario.CorreoLogin, usuario.Nombres, ct);
         }
 
+        /// <summary>
+        /// Reactivars the asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="idAdministrador">The identifier administrador.</param>
+        /// <param name="password">The password.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="KeyNotFoundException">El usuario no existe.</exception>
         public async Task ReactivarAsync(int idUsuario, int idAdministrador, string password, CancellationToken ct = default)
         {
             await VerificarAdministradorAsync(idAdministrador, password, ct);
@@ -197,6 +297,14 @@ namespace ClinicSyncServer.Features.Usuarios
             await correo.EnviarReactivacionAsync(usuario.CorreoLogin, usuario.Nombres, ct);
         }
 
+        /// <summary>
+        /// Restablecers the password asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="idAdministrador">The identifier administrador.</param>
+        /// <param name="password">The password.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="KeyNotFoundException">El usuario no existe.</exception>
         public async Task RestablecerPasswordAsync(int idUsuario, int idAdministrador, string password, CancellationToken ct = default)
         {
             await VerificarAdministradorAsync(idAdministrador, password, ct);
@@ -205,6 +313,17 @@ namespace ClinicSyncServer.Features.Usuarios
             await auth.SolicitarRestablecimientoAsync(usuario.CorreoLogin, ct);
         }
 
+        /// <summary>
+        /// Verificars the administrador asynchronous.
+        /// </summary>
+        /// <param name="idAdministrador">The identifier administrador.</param>
+        /// <param name="password">The password.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="NoAutorizadoException">
+        /// La contraseña del administrador es obligatoria.
+        /// or
+        /// La contraseña del administrador no es válida.
+        /// </exception>
         private async Task VerificarAdministradorAsync(int idAdministrador, string password, CancellationToken ct)
         {
             if (string.IsNullOrWhiteSpace(password))

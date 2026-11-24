@@ -8,8 +8,16 @@ using ClinicSyncServer.Infrastructure.Facial;
 
 namespace ClinicSyncServer.Features.Auth
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class AuthModule
     {
+        /// <summary>
+        /// Adds the authentication.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <returns></returns>
         public static IServiceCollection AddAuth(
             this IServiceCollection services)
         {
@@ -26,6 +34,11 @@ namespace ClinicSyncServer.Features.Auth
             return services;
         }
 
+        /// <summary>
+        /// Maps the authentication.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <returns></returns>
         public static WebApplication MapAuth(this WebApplication app)
         {
             app.MapAuthEndpoints();
