@@ -79,7 +79,12 @@ namespace ClinicSyncDesktop.Views.Citas
                     (Color)ColorConverter.ConvertFromString(Paleta[indiceColor]));
 
                 dpInicio.SelectedDate = cita.FechaInicio.Date;
-                dpFin.SelectedDate = cita.FechaFinal.Date;
+
+                // En citas de todo el día la base guarda el fin como el día siguiente a las 00:00.
+                // Se resta un día para mostrar el último día real de la cita.
+                dpFin.SelectedDate = cita.TodoElDia
+                    ? cita.FechaFinal.Date.AddDays(-1)
+                    : cita.FechaFinal.Date;
 
                 cmbHoraInicio.SelectedItem = cita.FechaInicio.ToString("HH:mm");
                 cmbHoraFin.SelectedItem = cita.FechaFinal.ToString("HH:mm");
@@ -328,8 +333,38 @@ namespace ClinicSyncDesktop.Views.Citas
                 return;
             }
 
-            DateTime inicio = resultado.Inicio;
-            DateTime fin = resultado.Fin;
+            DateTime inicio = dpInicio.SelectedDate.Value.Date;
+            DateTime fin = dpFin.SelectedDate.Value.Date;
+
+            // AGREGAR HORAS SI NO ES TODO EL DÍA
+            if (!todoElDia)
+            {
+                if (cmbHoraInicio.SelectedItem == null ||
+                    cmbHoraFin.SelectedItem == null)
+                {
+                    MostrarError(
+                        "Debe seleccionar la hora de inicio y finalización.");
+                    return;
+                }
+
+                inicio = inicio.Add(
+                    TimeSpan.Parse(cmbHoraInicio.SelectedItem.ToString()!));
+
+                fin = fin.Add(
+                    TimeSpan.Parse(cmbHoraFin.SelectedItem.ToString()!));
+            }
+
+            // VALIDAR ORDEN DE FECHAS
+            bool ordenInvalido = todoElDia
+                ? fin < inicio
+                : fin <= inicio;
+
+            if (ordenInvalido)
+            {
+                MostrarError(
+                    "La fecha y hora final deben ser posteriores al inicio.");
+                return;
+            }
 
             guardando = true;
 
