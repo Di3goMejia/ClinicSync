@@ -7,6 +7,9 @@ using PermisosSeguridad = ClinicSyncServer.Common.Seguridad.Permisos;
 
 namespace ClinicSyncServer.Features.Expedientes
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class VisitasEndpoints
     {
         public static void MapVisitasEndpoints(

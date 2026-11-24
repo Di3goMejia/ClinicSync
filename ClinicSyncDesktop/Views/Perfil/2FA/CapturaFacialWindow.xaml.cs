@@ -13,28 +13,69 @@ using Emgu.CV;
 
 namespace ClinicSyncDesktop.Views.Perfil._2FA
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class CapturaFacialWindow : Window
     {
         // SERVICIOS
+        /// <summary>
+        /// The servicio camara
+        /// </summary>
         private readonly ServicioCamara _servicioCamara = new();
+        /// <summary>
+        /// The servicio reconocimiento
+        /// </summary>
         private ServicioReconocimientoFacial? _servicioReconocimiento;
+        /// <summary>
+        /// The facial API
+        /// </summary>
         private readonly FacialApiService _facialApi = new();
         // CÁMARA Y TEMPORIZADOR
+        /// <summary>
+        /// The temporizador
+        /// </summary>
         private DispatcherTimer? _temporizador;
         // IMÁGENES ORIGINALES PARA ENVIAR A LA API
+        /// <summary>
+        /// The muestras originales
+        /// </summary>
         private readonly List<string> _muestrasOriginales = new();
+        /// <summary>
+        /// The rostros actuales
+        /// </summary>
         private Rectangle[] _rostrosActuales =
             Array.Empty<Rectangle>();
+        /// <summary>
+        /// The ultima imagen
+        /// </summary>
         private BitmapSource? _ultimaImagen;
 
         // ESTADOS
+        /// <summary>
+        /// The cerrando
+        /// </summary>
         private bool _cerrando;
+        /// <summary>
+        /// The captura preparada
+        /// </summary>
         private bool _capturaPreparada;
+        /// <summary>
+        /// The captura confirmada
+        /// </summary>
         private bool _capturaConfirmada;
 
+        /// <summary>
+        /// The total muestras
+        /// </summary>
         private const int TotalMuestras = 10;
 
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CapturaFacialWindow"/> class.
+        /// </summary>
         public CapturaFacialWindow()
         {
             InitializeComponent();
@@ -43,6 +84,11 @@ namespace ClinicSyncDesktop.Views.Perfil._2FA
             Closed += CapturaFacialWindow_Closed;
         }
 
+        /// <summary>
+        /// Deletes the object.
+        /// </summary>
+        /// <param name="hObject">The h object.</param>
+        /// <returns></returns>
         [DllImport("gdi32.dll")]
         private static extern bool DeleteObject(IntPtr hObject);
 
@@ -51,6 +97,11 @@ namespace ClinicSyncDesktop.Views.Perfil._2FA
         // INICIALIZAR CÁMARA
         // ==========================================
 
+        /// <summary>
+        /// Handles the Loaded event of the CapturaFacialWindow control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void CapturaFacialWindow_Loaded(
             object sender,
             RoutedEventArgs e)
@@ -58,6 +109,9 @@ namespace ClinicSyncDesktop.Views.Perfil._2FA
             IniciarCamara();
         }
 
+        /// <summary>
+        /// Iniciars the camara.
+        /// </summary>
         private void IniciarCamara()
         {
             try

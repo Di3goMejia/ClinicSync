@@ -10,16 +10,29 @@ using System.Text;
 
 namespace ClinicSyncServer.Features.Expedientes
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="ClinicSyncServer.Features.Expedientes.IArchivosExpedienteService" />
     public class ArchivosExpedienteService(
         ArchivosExpedienteRepository repo,
         IVisitasService visitas,
         IExpedientesService expedientes,
         IStorageService almacen) : IArchivosExpedienteService
     {
+        /// <summary>
+        /// The tamano maximo
+        /// </summary>
         private const long TamanoMaximo = 10 * 1024 * 1024; // 10 MiB
+        /// <summary>
+        /// The extensiones permitidas
+        /// </summary>
         private readonly IReadOnlyList<string> ExtensionesPermitidas = [
             ".png", ".jpg", ".jpeg", ".pdf"
         ];
+        /// <summary>
+        /// The mimes extension
+        /// </summary>
         private readonly Dictionary<string, string> MimesExtension = new Dictionary<string, string>
         {
             {".png", "image/png" },
@@ -28,6 +41,12 @@ namespace ClinicSyncServer.Features.Expedientes
             {".jpeg", "image/jpeg" }
         };
 
+        /// <summary>
+        /// Tipoes the valido.
+        /// </summary>
+        /// <param name="datos">The datos.</param>
+        /// <param name="extension">The extension.</param>
+        /// <returns></returns>
         private static bool TipoValido(
             byte[] datos,
             string extension)
@@ -43,6 +62,11 @@ namespace ClinicSyncServer.Features.Expedientes
             return datos.Length >= firma.Length && datos.Take(firma.Length).SequenceEqual(firma);
         }
 
+        /// <summary>
+        /// Calculars the hash.
+        /// </summary>
+        /// <param name="contenido">The contenido.</param>
+        /// <returns></returns>
         private static string CalcularHash(byte[] contenido)
         {
             byte[] hashBinary = SHA256.HashData(contenido);
@@ -54,6 +78,16 @@ namespace ClinicSyncServer.Features.Expedientes
             return resultado.ToString();
         }
 
+        /// <summary>
+        /// Subirs the asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="idVisita">The identifier visita.</param>
+        /// <param name="archivo">The archivo.</param>
+        /// <param name="descripcion">The descripcion.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="ReglaNegocioException">La visita no existe. - 0</exception>
         public async Task<ArchivoRespuesta?> SubirAsync(int idUsuario, int idVisita, IFormFile archivo,
             string? descripcion = null,
             CancellationToken ct = default)
@@ -70,6 +104,16 @@ namespace ClinicSyncServer.Features.Expedientes
                 ct);
         }
 
+        /// <summary>
+        /// Subirs the expediente asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="idExpediente">The identifier expediente.</param>
+        /// <param name="archivo">The archivo.</param>
+        /// <param name="descripcion">The descripcion.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="ReglaNegocioException">El expediente no existe. - 0</exception>
         public async Task<ArchivoRespuesta?> SubirExpedienteAsync(
             int idUsuario,
             int idExpediente,
@@ -92,6 +136,25 @@ namespace ClinicSyncServer.Features.Expedientes
                 ct);
         }
 
+        /// <summary>
+        /// Subirs the interno asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="idExpediente">The identifier expediente.</param>
+        /// <param name="idVisita">The identifier visita.</param>
+        /// <param name="archivo">The archivo.</param>
+        /// <param name="descripcion">The descripcion.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="ReglaNegocioException">
+        /// El expediente no existe. - 0
+        /// or
+        /// El archivo supera el máximo permitido (10 MiB). - 0
+        /// or
+        /// Extensión no permitida. Se permiten .jpg, .jpeg, .png y .pdf. - 0
+        /// or
+        /// El contenido no corresponde al tipo de archivo - 0
+        /// </exception>
         private async Task<ArchivoRespuesta?> SubirInternoAsync(
             int idUsuario,
             int idExpediente,
@@ -170,9 +233,21 @@ namespace ClinicSyncServer.Features.Expedientes
             return null;
         }
 
+        /// <summary>
+        /// Obteners the por identifier asynchronous.
+        /// </summary>
+        /// <param name="idArchivo">The identifier archivo.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<ArchivoExpediente?> ObtenerPorIdAsync(Guid idArchivo, CancellationToken ct = default) =>
             await repo.ObtenerPorIdAsync(idArchivo, ct);
 
+        /// <summary>
+        /// Abrirs the contenido asynchronous.
+        /// </summary>
+        /// <param name="idArchivo">The identifier archivo.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<ContenidoAlmacenado?> AbrirContenidoAsync(Guid idArchivo, CancellationToken ct = default)
         {
             var fila = await repo.ObtenerPorIdAsync(idArchivo, ct);
@@ -189,16 +264,36 @@ namespace ClinicSyncServer.Features.Expedientes
             }
 
             return await almacen.AbrirAsync(fila.ClaveAlmacen, ct);
-        }   
+        }
 
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <param name="idPaciente">The identifier paciente.</param>
+        /// <param name="idVisita">The identifier visita.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<ArchivoExpediente>> ListarAsync(
             int idPaciente, int? idVisita = null, CancellationToken ct = default) =>
                 await repo.ListarAsync(idPaciente, idVisita, ct);
 
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="idArchivo">The identifier archivo.</param>
+        /// <param name="nombre">The nombre.</param>
+        /// <param name="descripcion">The descripcion.</param>
+        /// <param name="ct">The ct.</param>
         public async Task ModificarAsync(Guid idArchivo, string nombre,
             string? descripcion = null, CancellationToken ct = default) =>
                 await repo.ModificarAsync(idArchivo, nombre, descripcion, ct);
 
+        /// <summary>
+        /// Cambiars the estado asynchronous.
+        /// </summary>
+        /// <param name="idArchivo">The identifier archivo.</param>
+        /// <param name="activo">if set to <c>true</c> [activo].</param>
+        /// <param name="ct">The ct.</param>
         public async Task CambiarEstadoAsync(Guid idArchivo, bool activo,
             CancellationToken ct = default) =>
                 await repo.CambiarEstadoAsync(idArchivo, activo, ct);

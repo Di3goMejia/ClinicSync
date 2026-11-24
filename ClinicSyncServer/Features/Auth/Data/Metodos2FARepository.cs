@@ -5,6 +5,9 @@ using Microsoft.Data.SqlClient;
 
 namespace ClinicSyncServer.Features.Auth.Data
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class Metodos2FARepository(
         SqlConnectionFactory factory,
         ProtectorCredencialFacial protector)
@@ -19,6 +22,9 @@ namespace ClinicSyncServer.Features.Auth.Data
             byte[]? credencialProtegida =
                 await db.QuerySingleOrDefaultAsync<byte[]>(
                     new CommandDefinition(
+                        /// <summary>
+                        /// Initializes a new instance of the <see cref=".$Program"/> class.
+                        /// </summary>
                         """
                         SELECT TOP (1) Credencial
                         FROM Metodos2FA

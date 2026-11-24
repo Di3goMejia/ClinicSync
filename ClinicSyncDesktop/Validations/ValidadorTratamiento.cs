@@ -1,14 +1,37 @@
 ﻿namespace ClinicSyncDesktop.Validations;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.IEquatable&lt;ClinicSyncDesktop.Validations.EntradaTratamiento&gt;" />
 public record EntradaTratamiento(string Nombre, string TextoPrecio, string? Descripcion);
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.ResultadoValidacion" />
 public class ResultadoValidacionTratamiento : ResultadoValidacion
 {
+    /// <summary>
+    /// Gets or sets the precio normalizado.
+    /// </summary>
+    /// <value>
+    /// The precio normalizado.
+    /// </value>
     public decimal PrecioNormalizado { get; set; }
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.IValidador&lt;ClinicSyncDesktop.Validations.EntradaTratamiento, ClinicSyncDesktop.Validations.ResultadoValidacionTratamiento&gt;" />
 public class ValidadorTratamiento : IValidador<EntradaTratamiento, ResultadoValidacionTratamiento>
 {
+    /// <summary>
+    /// Validars the specified entrada.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <returns></returns>
     public ResultadoValidacionTratamiento Validar(EntradaTratamiento entrada)
     {
         var resultado = new ResultadoValidacionTratamiento();

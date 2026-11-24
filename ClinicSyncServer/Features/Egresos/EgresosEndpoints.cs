@@ -7,6 +7,9 @@ using PermisosSeguridad = ClinicSyncServer.Common.Seguridad.Permisos;
 
 namespace ClinicSyncServer.Features.Egresos
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class EgresosEndpoints
     {
         public static void MapEgresosEndpoints(this WebApplication app)

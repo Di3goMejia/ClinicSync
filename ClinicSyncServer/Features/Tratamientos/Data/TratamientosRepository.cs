@@ -6,8 +6,17 @@ using System.Data;
 
 namespace ClinicSyncServer.Features.Tratamientos.Data
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class TratamientosRepository(SqlConnectionFactory factory)
     {
+        /// <summary>
+        /// Insertars the asynchronous.
+        /// </summary>
+        /// <param name="req">The req.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<int> InsertarAsync(RegistrarTratamientoRequest req,
             CancellationToken ct = default)
         {
@@ -36,6 +45,12 @@ namespace ClinicSyncServer.Features.Tratamientos.Data
             }
         }
 
+        /// <summary>
+        /// Obteners the por identifier asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<Tratamiento?> ObtenerPorIdAsync(int id, CancellationToken ct = default)
         {
             await using var db = factory.Crear();
@@ -58,6 +73,12 @@ namespace ClinicSyncServer.Features.Tratamientos.Data
             }
         }
 
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<Tratamiento>> ListarAsync(ListarTratamientoQuery query,
             CancellationToken ct = default)
         {
@@ -85,6 +106,12 @@ namespace ClinicSyncServer.Features.Tratamientos.Data
             }
         }
 
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="req">The req.</param>
+        /// <param name="ct">The ct.</param>
         public async Task ModificarAsync(int id, RegistrarTratamientoRequest req, 
             CancellationToken ct = default)
         {
@@ -114,6 +141,12 @@ namespace ClinicSyncServer.Features.Tratamientos.Data
             }
         }
 
+        /// <summary>
+        /// Cambiars the estado asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="activo">if set to <c>true</c> [activo].</param>
+        /// <param name="ct">The ct.</param>
         public async Task CambiarEstadoAsync(int id, bool activo, CancellationToken ct = default)
         {
             await using var db = factory.Crear();

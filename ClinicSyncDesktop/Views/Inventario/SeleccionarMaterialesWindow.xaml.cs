@@ -14,15 +14,58 @@ using System.Windows.Input;
 namespace ClinicSyncDesktop.Views
 {
     // MATERIAL QUE SE PUEDE ELEGIR EN UN EGRESO
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
     public class MaterialParaEgreso : INotifyPropertyChanged
     {
+        /// <summary>
+        /// Gets or sets the identifier material.
+        /// </summary>
+        /// <value>
+        /// The identifier material.
+        /// </value>
         public int IdMaterial { get; set; }
+        /// <summary>
+        /// Gets or sets the nombre.
+        /// </summary>
+        /// <value>
+        /// The nombre.
+        /// </value>
         public string Nombre { get; set; } = string.Empty;
+        /// <summary>
+        /// Gets or sets the unidad medida.
+        /// </summary>
+        /// <value>
+        /// The unidad medida.
+        /// </value>
         public string UnidadMedida { get; set; } = string.Empty;
+        /// <summary>
+        /// Gets or sets the stock actual.
+        /// </summary>
+        /// <value>
+        /// The stock actual.
+        /// </value>
         public decimal? StockActual { get; set; }
+        /// <summary>
+        /// Gets or sets the limite disponible.
+        /// </summary>
+        /// <value>
+        /// The limite disponible.
+        /// </value>
         public decimal? LimiteDisponible { get; set; }
 
+        /// <summary>
+        /// The seleccionado
+        /// </summary>
         private bool _seleccionado;
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="MaterialParaEgreso"/> is seleccionado.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if seleccionado; otherwise, <c>false</c>.
+        /// </value>
         public bool Seleccionado
         {
             get => _seleccionado;
@@ -34,7 +77,16 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// The cantidad
+        /// </summary>
         private decimal _cantidad = 1;
+        /// <summary>
+        /// Gets or sets the cantidad.
+        /// </summary>
+        /// <value>
+        /// The cantidad.
+        /// </value>
         public decimal Cantidad
         {
             get => _cantidad;
@@ -46,20 +98,52 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        /// <summary>
+        /// Notificars the specified nombre.
+        /// </summary>
+        /// <param name="nombre">The nombre.</param>
         private void Notificar([CallerMemberName] string? nombre = null) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nombre));
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
+    /// <seealso cref="System.Windows.Markup.IStyleConnector" />
     public partial class SeleccionarMaterialesWindow : Window
     {
+        /// <summary>
+        /// The previos
+        /// </summary>
         private readonly List<MaterialParaEgreso> _previos;
+        /// <summary>
+        /// The todos
+        /// </summary>
         private readonly ObservableCollection<MaterialParaEgreso> _todos = new();
+        /// <summary>
+        /// The vista
+        /// </summary>
         private ICollectionView? _vista;
 
+        /// <summary>
+        /// Gets the seleccionados.
+        /// </summary>
+        /// <value>
+        /// The seleccionados.
+        /// </value>
         public List<MaterialParaEgreso> Seleccionados { get; private set; } = new();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SeleccionarMaterialesWindow"/> class.
+        /// </summary>
+        /// <param name="previos">The previos.</param>
         public SeleccionarMaterialesWindow(
             IEnumerable<MaterialParaEgreso>? previos = null)
         {
@@ -69,6 +153,12 @@ namespace ClinicSyncDesktop.Views
             Loaded += Ventana_Loaded;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SeleccionarMaterialesWindow"/> class.
+        /// </summary>
+        /// <param name="catalogo">The catalogo.</param>
+        /// <param name="seleccionados">The seleccionados.</param>
+        /// <param name="stockInventario">The stock inventario.</param>
         public SeleccionarMaterialesWindow(
             IEnumerable<MaterialIngreso> catalogo,
             IEnumerable<MaterialConsumido> seleccionados,
@@ -97,6 +187,14 @@ namespace ClinicSyncDesktop.Views
             MostrarCatalogo();
         }
 
+        /// <summary>
+        /// Elegirs the para ingreso.
+        /// </summary>
+        /// <param name="propietario">The propietario.</param>
+        /// <param name="catalogo">The catalogo.</param>
+        /// <param name="seleccionados">The seleccionados.</param>
+        /// <param name="stockInventario">The stock inventario.</param>
+        /// <returns></returns>
         public static List<MaterialConsumido>? ElegirParaIngreso(
             Window propietario,
             IEnumerable<MaterialIngreso> catalogo,
@@ -118,6 +216,11 @@ namespace ClinicSyncDesktop.Views
                 : null;
         }
 
+        /// <summary>
+        /// Handles the MouseLeftButtonDown event of the Encabezado control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
         private void Encabezado_MouseLeftButtonDown(
             object sender,
             MouseButtonEventArgs e)
@@ -127,6 +230,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CARGAR SOLO MATERIALES ACTIVOS
+        /// <summary>
+        /// Handles the Loaded event of the Ventana control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Ventana_Loaded(
             object sender,
             RoutedEventArgs e)
@@ -178,6 +286,9 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Mostrars the catalogo.
+        /// </summary>
         private void MostrarCatalogo()
         {
             _vista = CollectionViewSource.GetDefaultView(_todos);
@@ -185,6 +296,11 @@ namespace ClinicSyncDesktop.Views
             listaMateriales.ItemsSource = _vista;
         }
 
+        /// <summary>
+        /// Filtrars the specified object.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns></returns>
         private bool Filtrar(object obj)
         {
             if (obj is not MaterialParaEgreso material)
@@ -198,6 +314,11 @@ namespace ClinicSyncDesktop.Views
                        StringComparison.OrdinalIgnoreCase);
         }
 
+        /// <summary>
+        /// Handles the TextChanged event of the txtBuscar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void txtBuscar_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -205,6 +326,11 @@ namespace ClinicSyncDesktop.Views
             _vista?.Refresh();
         }
 
+        /// <summary>
+        /// Handles the Click event of the Menos control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Menos_Click(object sender, RoutedEventArgs e)
         {
             if ((sender as FrameworkElement)?.DataContext is MaterialParaEgreso m &&
@@ -214,6 +340,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the Mas control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Mas_Click(object sender, RoutedEventArgs e)
         {
             if ((sender as FrameworkElement)?.DataContext is MaterialParaEgreso m)
@@ -224,11 +355,21 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the Cerrar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Cerrar_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
         }
 
+        /// <summary>
+        /// Handles the Click event of the Ok control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Ok_Click(object sender, RoutedEventArgs e)
         {
             var seleccion = _todos.Where(m => m.Seleccionado).ToList();

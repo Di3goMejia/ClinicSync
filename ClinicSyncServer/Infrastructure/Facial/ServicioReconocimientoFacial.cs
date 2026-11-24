@@ -7,17 +7,46 @@ using Emgu.CV.Util;
 
 namespace ClinicSyncServer.Infrastructure.Facial
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.IDisposable" />
     public sealed class ServicioReconocimientoFacial : IDisposable
     {
+        /// <summary>
+        /// The clasificador
+        /// </summary>
         private readonly CascadeClassifier _clasificador;
+        /// <summary>
+        /// The reconocedor
+        /// </summary>
         private LBPHFaceRecognizer? _reconocedor;
+        /// <summary>
+        /// The liberado
+        /// </summary>
         private bool _liberado;
 
+        /// <summary>
+        /// The ancho rostro
+        /// </summary>
         private const int AnchoRostro = 100;
+        /// <summary>
+        /// The alto rostro
+        /// </summary>
         private const int AltoRostro = 100;
+        /// <summary>
+        /// The maximo bytes imagen
+        /// </summary>
         private const int MaximoBytesImagen = 5 * 1024 * 1024;
+        /// <summary>
+        /// The maximo bytes modelo
+        /// </summary>
         private const int MaximoBytesModelo = 20 * 1024 * 1024;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServicioReconocimientoFacial"/> class.
+        /// </summary>
+        /// <exception cref="FileNotFoundException">No se encontró el clasificador facial.</exception>
         public ServicioReconocimientoFacial()
         {
             string rutaClasificador = Path.Combine(
@@ -35,6 +64,21 @@ namespace ClinicSyncServer.Infrastructure.Facial
             _clasificador = new CascadeClassifier(rutaClasificador);
         }
 
+        /// <summary>
+        /// Detectars the y preparar rostro.
+        /// </summary>
+        /// <param name="imagenBytes">The imagen bytes.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">
+        /// La imagen está vacía. - imagenBytes
+        /// or
+        /// La imagen supera el tamaño máximo permitido. - imagenBytes
+        /// or
+        /// No se pudo procesar la imagen recibida.
+        /// or
+        /// La resolución de la imagen no está permitida.
+        /// or
+        /// </exception>
         public Mat DetectarYPrepararRostro(byte[] imagenBytes)
         {
             ComprobarNoLiberado();
@@ -135,6 +179,15 @@ namespace ClinicSyncServer.Infrastructure.Facial
             }
         }
 
+        /// <summary>
+        /// Entrenars the specified muestras.
+        /// </summary>
+        /// <param name="muestras">The muestras.</param>
+        /// <exception cref="ArgumentException">
+        /// Se necesitan al menos cinco muestras faciales. - muestras
+        /// or
+        /// Las muestras deben ser imágenes grises de 100 x 100.
+        /// </exception>
         public void Entrenar(IList<Mat> muestras)
         {
             ComprobarNoLiberado();
@@ -197,6 +250,11 @@ namespace ClinicSyncServer.Infrastructure.Facial
             }
         }
 
+        /// <summary>
+        /// Exportars the modelo bytes.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">El modelo facial tiene un tamaño no permitido.</exception>
         public byte[] ExportarModeloBytes()
         {
             ComprobarNoLiberado();
@@ -225,6 +283,11 @@ namespace ClinicSyncServer.Infrastructure.Facial
             }
         }
 
+        /// <summary>
+        /// Cargars the modelo desde bytes.
+        /// </summary>
+        /// <param name="datosModelo">The datos modelo.</param>
+        /// <exception cref="ArgumentException">Los datos del modelo facial son inválidos. - datosModelo</exception>
         public void CargarModeloDesdeBytes(byte[] datosModelo)
         {
             ComprobarNoLiberado();
@@ -269,6 +332,11 @@ namespace ClinicSyncServer.Infrastructure.Facial
             }
         }
 
+        /// <summary>
+        /// Predecirs the specified imagen bytes.
+        /// </summary>
+        /// <param name="imagenBytes">The imagen bytes.</param>
+        /// <returns></returns>
         public (int Etiqueta, double Distancia) Predecir(
             byte[] imagenBytes)
         {
@@ -286,6 +354,10 @@ namespace ClinicSyncServer.Infrastructure.Facial
             );
         }
 
+        /// <summary>
+        /// Crears the ruta temporal.
+        /// </summary>
+        /// <returns></returns>
         private static string CrearRutaTemporal()
         {
             return Path.Combine(
@@ -293,6 +365,10 @@ namespace ClinicSyncServer.Infrastructure.Facial
                 $"ClinicSync_{Guid.NewGuid():N}.yml");
         }
 
+        /// <summary>
+        /// Eliminars the archivo temporal.
+        /// </summary>
+        /// <param name="ruta">The ruta.</param>
         private static void EliminarArchivoTemporal(string ruta)
         {
             try
@@ -312,6 +388,10 @@ namespace ClinicSyncServer.Infrastructure.Facial
             }
         }
 
+        /// <summary>
+        /// Comprobars the reconocedor.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Primero debes entrenar o cargar un modelo facial.</exception>
         private void ComprobarReconocedor()
         {
             if (_reconocedor == null)
@@ -321,6 +401,10 @@ namespace ClinicSyncServer.Infrastructure.Facial
             }
         }
 
+        /// <summary>
+        /// Comprobars the no liberado.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">ServicioReconocimientoFacial</exception>
         private void ComprobarNoLiberado()
         {
             if (_liberado)
@@ -330,6 +414,9 @@ namespace ClinicSyncServer.Infrastructure.Facial
             }
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             if (_liberado)

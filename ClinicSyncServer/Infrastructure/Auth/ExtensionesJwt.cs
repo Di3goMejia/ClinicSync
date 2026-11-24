@@ -9,8 +9,17 @@ using System.Text;
 
 namespace ClinicSyncServer.Infrastructure.Auth
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class ParametrosJwt
     {
+        /// <summary>
+        /// Crears the clave.
+        /// </summary>
+        /// <param name="jwt">The JWT.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">La clave JWT debe tener al menos 32 bytes. Revise que se haya registrado la clave.</exception>
         public static SymmetricSecurityKey CrearClave(OpcionesJwt jwt)
         {
             var bytes = Encoding.UTF8.GetBytes(jwt.Key ?? string.Empty);
@@ -23,6 +32,12 @@ namespace ClinicSyncServer.Infrastructure.Auth
             return new SymmetricSecurityKey(bytes);
         }
 
+        /// <summary>
+        /// Crears the specified JWT.
+        /// </summary>
+        /// <param name="jwt">The JWT.</param>
+        /// <param name="audiencia">The audiencia.</param>
+        /// <returns></returns>
         public static TokenValidationParameters Crear(OpcionesJwt jwt, string audiencia) => new()
         {
             ValidateIssuer = true,
@@ -40,8 +55,18 @@ namespace ClinicSyncServer.Infrastructure.Auth
         };
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static class ExtensionesJwt
     {
+        /// <summary>
+        /// Adds the JWT authentication.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="config">The configuration.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">Falta la sección Jwt.</exception>
         public static IServiceCollection AddJwtAuth(
             this IServiceCollection services, IConfiguration config)
         {

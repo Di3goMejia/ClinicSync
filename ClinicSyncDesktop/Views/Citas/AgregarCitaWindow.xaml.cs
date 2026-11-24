@@ -13,24 +13,59 @@ using ClinicSyncDesktop.Validations;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class AgregarCitaWindow : Window
     {
+        /// <summary>
+        /// The paleta
+        /// </summary>
         private static readonly string[] Paleta =
         {
             "#8BC34A", "#E91E63", "#FF9800", "#3F51B5",
             "#009688", "#9C27B0", "#F44336", "#00BCD4"
         };
 
+        /// <summary>
+        /// The servicio
+        /// </summary>
         private readonly AgendaApiService servicio = new();
 
+        /// <summary>
+        /// The paciente seleccionado
+        /// </summary>
         private PacienteOpcion? pacienteSeleccionado;
+        /// <summary>
+        /// The popup calendario
+        /// </summary>
         private Popup? popupCalendario;
+        /// <summary>
+        /// The indice color
+        /// </summary>
         private int indiceColor;
+        /// <summary>
+        /// The guardando
+        /// </summary>
         private bool guardando;
+        /// <summary>
+        /// The cerrada
+        /// </summary>
         private bool cerrada;
 
+        /// <summary>
+        /// Gets the identifier cita creada.
+        /// </summary>
+        /// <value>
+        /// The identifier cita creada.
+        /// </value>
         public int IdCitaCreada { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AgregarCitaWindow"/> class.
+        /// </summary>
         public AgregarCitaWindow()
         {
             InitializeComponent();
@@ -52,6 +87,11 @@ namespace ClinicSyncDesktop.Views
             Closed += (_, _) => cerrada = true;
         }
 
+        /// <summary>
+        /// Handles the Click event of the SeleccionarPaciente control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void SeleccionarPaciente_Click(object sender, RoutedEventArgs e)
         {
             if (guardando || !btnSeleccionarPaciente.IsEnabled)
@@ -115,6 +155,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the Color control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Color_Click(object sender, RoutedEventArgs e)
         {
             indiceColor = (indiceColor + 1) % Paleta.Length;
@@ -123,6 +168,11 @@ namespace ClinicSyncDesktop.Views
                 (Color)ColorConverter.ConvertFromString(Paleta[indiceColor]));
         }
 
+        /// <summary>
+        /// Mostrars the fecha.
+        /// </summary>
+        /// <param name="texto">The texto.</param>
+        /// <param name="fecha">The fecha.</param>
         private static void MostrarFecha(TextBlock texto, DateTime? fecha)
         {
             if (fecha is null)
@@ -137,6 +187,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the SelectedDateChanged event of the dpInicio control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
         private void dpInicio_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             MostrarFecha(txtFechaInicio, dpInicio.SelectedDate);
@@ -149,11 +204,21 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the SelectedDateChanged event of the dpFin control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
         private void dpFin_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             MostrarFecha(txtFechaFin, dpFin.SelectedDate);
         }
 
+        /// <summary>
+        /// Handles the Click event of the Fecha control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Fecha_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button boton)
@@ -217,6 +282,11 @@ namespace ClinicSyncDesktop.Views
             popupCalendario.IsOpen = true;
         }
 
+        /// <summary>
+        /// Handles the Click event of the TodoElDia control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void TodoElDia_Click(object sender, RoutedEventArgs e)
         {
             bool todoElDia = chkTodoElDia.IsChecked == true;
@@ -224,6 +294,11 @@ namespace ClinicSyncDesktop.Views
             cmbHoraFin.IsEnabled = !todoElDia;
         }
 
+        /// <summary>
+        /// Handles the Click event of the Cerrar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Cerrar_Click(object sender, RoutedEventArgs e)
         {
             if (guardando)
@@ -239,6 +314,11 @@ namespace ClinicSyncDesktop.Views
                 DialogResult = false;
         }
 
+        /// <summary>
+        /// Handles the Click event of the Agregar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Agregar_Click(object sender, RoutedEventArgs e)
         {
             if (guardando)
@@ -330,12 +410,19 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Mostrars the error.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
         private void MostrarError(string mensaje)
         {
             txtError.Text = mensaje;
             txtError.Visibility = Visibility.Visible;
         }
 
+        /// <summary>
+        /// Limpiars the error.
+        /// </summary>
         private void LimpiarError()
         {
             txtError.Text = string.Empty;

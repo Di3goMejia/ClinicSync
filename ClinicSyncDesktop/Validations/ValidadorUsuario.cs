@@ -1,12 +1,25 @@
 namespace ClinicSyncDesktop.Validations;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.IEquatable&lt;ClinicSyncDesktop.Validations.EntradaUsuario&gt;" />
 public record EntradaUsuario(
     string Identidad, string Nombres, string Apellidos, string Telefono,
     DateTime? FechaNacimiento, object? Genero, object? Rol,
     string NombreUsuario, string Correo);
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.IValidador&lt;ClinicSyncDesktop.Validations.EntradaUsuario, ClinicSyncDesktop.Validations.ResultadoValidacion&gt;" />
 public class ValidadorUsuario : IValidador<EntradaUsuario, ResultadoValidacion>
 {
+    /// <summary>
+    /// Validars the specified entrada.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <returns></returns>
     public ResultadoValidacion Validar(EntradaUsuario entrada)
     {
         var resultado = new ResultadoValidacion();
@@ -15,6 +28,11 @@ public class ValidadorUsuario : IValidador<EntradaUsuario, ResultadoValidacion>
         return resultado;
     }
 
+    /// <summary>
+    /// Validars the datos personales.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <returns></returns>
     public ResultadoValidacion ValidarDatosPersonales(EntradaUsuario entrada)
     {
         var resultado = new ResultadoValidacion();
@@ -22,6 +40,11 @@ public class ValidadorUsuario : IValidador<EntradaUsuario, ResultadoValidacion>
         return resultado;
     }
 
+    /// <summary>
+    /// Validars the credenciales.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <returns></returns>
     public ResultadoValidacion ValidarCredenciales(EntradaUsuario entrada)
     {
         var resultado = new ResultadoValidacion();
@@ -29,6 +52,11 @@ public class ValidadorUsuario : IValidador<EntradaUsuario, ResultadoValidacion>
         return resultado;
     }
 
+    /// <summary>
+    /// Validars the datos personales.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <param name="resultado">The resultado.</param>
     private static void ValidarDatosPersonales(EntradaUsuario entrada, ResultadoValidacion resultado)
     {
         resultado.Campo<string?>(nameof(entrada.Identidad), entrada.Identidad).Requerido("Ingresa la identidad.");
@@ -44,6 +72,11 @@ public class ValidadorUsuario : IValidador<EntradaUsuario, ResultadoValidacion>
         ValidarFecha(entrada, resultado);
     }
 
+    /// <summary>
+    /// Validars the credenciales.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <param name="resultado">The resultado.</param>
     private static void ValidarCredenciales(EntradaUsuario entrada, ResultadoValidacion resultado)
     {
         resultado.Campo<string?>(nameof(entrada.NombreUsuario), entrada.NombreUsuario).Requerido("Indica un nombre de usuario.");
@@ -52,6 +85,11 @@ public class ValidadorUsuario : IValidador<EntradaUsuario, ResultadoValidacion>
             .CorreoValido("Indica un correo válido.");
     }
 
+    /// <summary>
+    /// Validars the fecha.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <param name="resultado">The resultado.</param>
     private static void ValidarFecha(EntradaUsuario entrada, ResultadoValidacion resultado)
     {
         if (entrada.FechaNacimiento is DateTime fecha)

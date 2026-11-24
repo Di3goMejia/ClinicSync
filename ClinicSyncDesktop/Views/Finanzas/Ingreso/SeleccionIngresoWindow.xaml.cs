@@ -11,48 +11,161 @@ using System.Windows.Data;
 namespace ClinicSyncDesktop.Views
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class TratamientoFila
     {
+        /// <summary>
+        /// Gets or sets the tratamiento.
+        /// </summary>
+        /// <value>
+        /// The tratamiento.
+        /// </value>
         public TratamientoIngreso Tratamiento { get; set; } = new();
+        /// <summary>
+        /// Gets the identifier tratamiento visita.
+        /// </summary>
+        /// <value>
+        /// The identifier tratamiento visita.
+        /// </value>
         public int IdTratamientoVisita =>
             Tratamiento.IdTratamientoVisita;
+        /// <summary>
+        /// Gets the nombre.
+        /// </summary>
+        /// <value>
+        /// The nombre.
+        /// </value>
         public string Nombre => Tratamiento.Nombre;
+        /// <summary>
+        /// Gets the precio.
+        /// </summary>
+        /// <value>
+        /// The precio.
+        /// </value>
         public decimal Precio => Tratamiento.Precio;
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="TratamientoFila"/> is seleccionado.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if seleccionado; otherwise, <c>false</c>.
+        /// </value>
         public bool Seleccionado { get; set; }
     }
 
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class MaterialFila
     {
+        /// <summary>
+        /// Gets or sets the identifier material.
+        /// </summary>
+        /// <value>
+        /// The identifier material.
+        /// </value>
         public int IdMaterial { get; set; }
+        /// <summary>
+        /// Gets or sets the nombre.
+        /// </summary>
+        /// <value>
+        /// The nombre.
+        /// </value>
         public string Nombre { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the stock actual.
+        /// </summary>
+        /// <value>
+        /// The stock actual.
+        /// </value>
         public decimal StockActual { get; set; }
+        /// <summary>
+        /// Gets or sets the cantidad texto.
+        /// </summary>
+        /// <value>
+        /// The cantidad texto.
+        /// </value>
         public string CantidadTexto { get; set; } = "0";
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
+    /// <seealso cref="System.Windows.Markup.IStyleConnector" />
     public partial class SeleccionIngresoWindow : Window
     {
+        /// <summary>
+        /// 
+        /// </summary>
         private enum TipoSeleccion
         {
+            /// <summary>
+            /// The pacientes
+            /// </summary>
             Pacientes,
+            /// <summary>
+            /// The tratamientos
+            /// </summary>
             Tratamientos,
+            /// <summary>
+            /// The materiales
+            /// </summary>
             Materiales
         }
 
+        /// <summary>
+        /// The tipo
+        /// </summary>
         private readonly TipoSeleccion tipo;
+        /// <summary>
+        /// The pacientes
+        /// </summary>
         private readonly List<PacienteIngreso> pacientes = new();
+        /// <summary>
+        /// The tratamientos
+        /// </summary>
         private readonly List<TratamientoFila> tratamientos = new();
+        /// <summary>
+        /// The materiales
+        /// </summary>
         private readonly ObservableCollection<MaterialFila> materiales = new();
 
+        /// <summary>
+        /// Gets the paciente elegido.
+        /// </summary>
+        /// <value>
+        /// The paciente elegido.
+        /// </value>
         public PacienteIngreso? PacienteElegido { get; private set; }
 
+        /// <summary>
+        /// Gets the tratamientos elegidos.
+        /// </summary>
+        /// <value>
+        /// The tratamientos elegidos.
+        /// </value>
         public List<TratamientoIngreso> TratamientosElegidos
         { get; private set; } = new();
 
+        /// <summary>
+        /// Gets the materiales elegidos.
+        /// </summary>
+        /// <value>
+        /// The materiales elegidos.
+        /// </value>
         public List<MaterialConsumido> MaterialesElegidos
         { get; private set; } = new();
 
         // CONSTRUCTOR PARA PACIENTES
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SeleccionIngresoWindow"/> class.
+        /// </summary>
+        /// <param name="catalogo">The catalogo.</param>
+        /// <param name="seleccionado">The seleccionado.</param>
         public SeleccionIngresoWindow(
             IEnumerable<PacienteIngreso> catalogo,
             PacienteIngreso? seleccionado)
@@ -76,6 +189,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CONSTRUCTOR PARA TRATAMIENTOS
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SeleccionIngresoWindow"/> class.
+        /// </summary>
+        /// <param name="catalogo">The catalogo.</param>
+        /// <param name="seleccionados">The seleccionados.</param>
         public SeleccionIngresoWindow(
             IEnumerable<TratamientoIngreso> catalogo,
             IEnumerable<TratamientoIngreso> seleccionados)
@@ -105,6 +223,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CONSTRUCTOR PARA MATERIALES
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SeleccionIngresoWindow"/> class.
+        /// </summary>
+        /// <param name="catalogo">The catalogo.</param>
+        /// <param name="seleccionados">The seleccionados.</param>
         public SeleccionIngresoWindow(
             IEnumerable<MaterialIngreso> catalogo,
             IEnumerable<MaterialConsumido> seleccionados)
@@ -135,6 +258,11 @@ namespace ClinicSyncDesktop.Views
             DgMateriales.ItemsSource = materiales;
         }
 
+        /// <summary>
+        /// Claves the tratamiento.
+        /// </summary>
+        /// <param name="tratamiento">The tratamiento.</param>
+        /// <returns></returns>
         private static (bool EsDeVisita, int Id) ClaveTratamiento(TratamientoIngreso tratamiento)
         {
             return tratamiento.IdTratamientoVisita > 0

@@ -9,23 +9,49 @@ using System.Linq;
 
 namespace ClinicSyncDesktop.Services
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class ReporteFinancieroPdfService
     {
+        /// <summary>
+        /// The color principal
+        /// </summary>
         private static readonly XColor ColorPrincipal =
             XColor.FromArgb(22, 143, 167);
 
+        /// <summary>
+        /// The color texto
+        /// </summary>
         private static readonly XColor ColorTexto =
             XColor.FromArgb(23, 70, 90);
 
+        /// <summary>
+        /// The color fondo
+        /// </summary>
         private static readonly XColor ColorFondo =
             XColor.FromArgb(235, 243, 242);
 
+        /// <summary>
+        /// The color ingreso
+        /// </summary>
         private static readonly XColor ColorIngreso =
             XColor.FromArgb(24, 122, 61);
 
+        /// <summary>
+        /// The color egreso
+        /// </summary>
         private static readonly XColor ColorEgreso =
             XColor.FromArgb(179, 38, 30);
 
+        /// <summary>
+        /// Generars the reporte.
+        /// </summary>
+        /// <param name="rutaArchivo">The ruta archivo.</param>
+        /// <param name="movimientos">The movimientos.</param>
+        /// <param name="periodo">The periodo.</param>
+        /// <exception cref="ArgumentException">La ruta del archivo no es válida.</exception>
+        /// <exception cref="ArgumentNullException">movimientos</exception>
         public void GenerarReporte(
             string rutaArchivo,
             IReadOnlyList<MovimientoResumen> movimientos,
@@ -367,6 +393,19 @@ namespace ClinicSyncDesktop.Services
             documento.Save(rutaArchivo);
         }
 
+        /// <summary>
+        /// Dibujars the tarjeta.
+        /// </summary>
+        /// <param name="gfx">The GFX.</param>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="ancho">The ancho.</param>
+        /// <param name="alto">The alto.</param>
+        /// <param name="titulo">The titulo.</param>
+        /// <param name="monto">The monto.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="fuenteTitulo">The fuente titulo.</param>
+        /// <param name="fuenteMonto">The fuente monto.</param>
         private static void DibujarTarjeta(
             XGraphics gfx,
             double x,
@@ -400,6 +439,14 @@ namespace ClinicSyncDesktop.Services
                 XStringFormats.CenterLeft);
         }
 
+        /// <summary>
+        /// Ajustars the texto.
+        /// </summary>
+        /// <param name="texto">The texto.</param>
+        /// <param name="fuente">The fuente.</param>
+        /// <param name="gfx">The GFX.</param>
+        /// <param name="anchoMaximo">The ancho maximo.</param>
+        /// <returns></returns>
         private static string AjustarTexto(
             string texto,
             XFont fuente,

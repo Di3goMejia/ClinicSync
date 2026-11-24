@@ -1,9 +1,22 @@
 ﻿namespace ClinicSyncDesktop.Validations;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.IEquatable&lt;ClinicSyncDesktop.Validations.EntradaRol&gt;" />
 public record EntradaRol(string Nombre, string? Descripcion);
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.IValidador&lt;ClinicSyncDesktop.Validations.EntradaRol, ClinicSyncDesktop.Validations.ResultadoValidacion&gt;" />
 public class ValidadorRol: IValidador<EntradaRol, ResultadoValidacion>
 {
+    /// <summary>
+    /// Validars the specified entrada.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <returns></returns>
     public ResultadoValidacion Validar(EntradaRol entrada)
     {
         var resultado = new ResultadoValidacion();
@@ -17,6 +30,11 @@ public class ValidadorRol: IValidador<EntradaRol, ResultadoValidacion>
         return resultado;
     }
 
+    /// <summary>
+    /// Eses the administrador.
+    /// </summary>
+    /// <param name="rol">The rol.</param>
+    /// <returns></returns>
     public static bool EsAdministrador(string? rol)
     {
         return string.Equals(

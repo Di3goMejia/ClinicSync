@@ -13,24 +13,53 @@ using ClinicSyncDesktop.Views.Citas;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Controls.UserControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class AgendaView : UserControl
     {
+        /// <summary>
+        /// The agenda service
+        /// </summary>
         private readonly AgendaApiService agendaService = new();
 
         // Cantidad de próximas citas que se muestran (Ver más la aumenta).
+        /// <summary>
+        /// The cantidad proximas
+        /// </summary>
         private int cantidadProximas = 4;
+        /// <summary>
+        /// 
+        /// </summary>
         private enum VistaCalendario { Dia, Semana, Mes }
 
+        /// <summary>
+        /// The vista actual
+        /// </summary>
         private VistaCalendario vistaActual = VistaCalendario.Mes;
 
         // Fecha que se está mostrando (el día, o algún día de la semana/mes).
+        /// <summary>
+        /// The fecha referencia
+        /// </summary>
         private DateTime fechaReferencia = DateTime.Today;
 
+        /// <summary>
+        /// The es
+        /// </summary>
         private static readonly CultureInfo Es = new("es-ES");
 
         // Citas del rango que se está mostrando.
+        /// <summary>
+        /// The eventos
+        /// </summary>
         private List<EventoAgenda> eventos = new();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AgendaView"/> class.
+        /// </summary>
         public AgendaView()
         {
             InitializeComponent();
@@ -39,6 +68,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // MOSTRAR NOTIFICACIONES
+        /// <summary>
+        /// Mostrars the notificacion.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
+        /// <param name="exitoso">if set to <c>true</c> [exitoso].</param>
         private void MostrarNotificacion(string mensaje, bool exitoso)
         {
             AvisoNotificacion aviso =
@@ -49,6 +83,11 @@ namespace ClinicSyncDesktop.Views
             PanelAvisos.Children.Add(aviso);
         }
 
+        /// <summary>
+        /// Handles the Loaded event of the AgendaView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void AgendaView_Loaded(
          object sender,
          RoutedEventArgs e)
@@ -59,6 +98,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CARGAR PRÓXIMAS CITAS
+        /// <summary>
+        /// Cargars the proximas asynchronous.
+        /// </summary>
         private async Task CargarProximasAsync()
         {
             try
@@ -75,6 +117,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // + AGREGAR NUEVA CITA
+        /// <summary>
+        /// Handles the Click event of the btnAgregarCita control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void btnAgregarCita_Click(
             object sender,
             RoutedEventArgs e)
@@ -94,6 +141,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // PONER EL TÍTULO Y RESALTAR EL BOTÓN ACTIVO
+        /// <summary>
+        /// Actualizars the encabezado.
+        /// </summary>
         private void ActualizarEncabezado()
         {
             switch (vistaActual)
@@ -128,11 +178,21 @@ namespace ClinicSyncDesktop.Views
             
         }
 
+        /// <summary>
+        /// Mayusculas the specified texto.
+        /// </summary>
+        /// <param name="texto">The texto.</param>
+        /// <returns></returns>
         private static string Mayuscula(string texto) =>
             string.IsNullOrEmpty(texto)
                 ? texto
                 : char.ToUpper(texto[0], Es) + texto.Substring(1);
 
+        /// <summary>
+        /// Resaltars the specified boton.
+        /// </summary>
+        /// <param name="boton">The boton.</param>
+        /// <param name="activo">if set to <c>true</c> [activo].</param>
         private static void Resaltar(Button boton, bool activo)
         {
             boton.Background = activo
@@ -145,6 +205,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CAMBIAR ENTRE DÍA / SEMANA / MES
+        /// <summary>
+        /// Handles the Click event of the Vista control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Vista_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button boton)
@@ -162,12 +227,26 @@ namespace ClinicSyncDesktop.Views
         }
 
         // ANTERIOR / SIGUIENTE
-         private async void Anterior_Click(object sender, RoutedEventArgs e) =>
+        /// <summary>
+        /// Handles the Click event of the Anterior control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private async void Anterior_Click(object sender, RoutedEventArgs e) =>
             await Mover(-1);
 
-         private async void Siguiente_Click(object sender, RoutedEventArgs e) =>
+        /// <summary>
+        /// Handles the Click event of the Siguiente control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private async void Siguiente_Click(object sender, RoutedEventArgs e) =>
                 await Mover(1);
 
+        /// <summary>
+        /// Movers the specified paso.
+        /// </summary>
+        /// <param name="paso">The paso.</param>
         private async Task Mover(int paso)
             {
                 fechaReferencia = vistaActual switch
@@ -182,6 +261,9 @@ namespace ClinicSyncDesktop.Views
             }
 
         // DIBUJAR EL CALENDARIO SEGÚN LA VISTA
+        /// <summary>
+        /// Dibujars the calendario.
+        /// </summary>
         private void DibujarCalendario()
         {
             areaCalendario.ClipToBounds = true;
@@ -203,6 +285,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CUADRÍCULA DEL MES (semana de lunes a domingo)
+        /// <summary>
+        /// Dibujars the mes.
+        /// </summary>
         private void DibujarMes()
         {
             DateTime primero = new DateTime(
@@ -360,6 +445,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // VISTA SEMANA (7 columnas, de lunes a domingo)
+        /// <summary>
+        /// Dibujars the semana.
+        /// </summary>
         private void DibujarSemana()
         {
             int dif = ((int)fechaReferencia.DayOfWeek + 6) % 7;
@@ -464,6 +552,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // VISTA DÍA (un solo día con sus citas)
+        /// <summary>
+        /// Dibujars the dia.
+        /// </summary>
         private void DibujarDia()
         {
             DateTime dia = fechaReferencia.Date;
@@ -504,6 +595,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // FILA GRANDE DE UNA CITA PARA LA VISTA DÍA
+        /// <summary>
+        /// Crears the fila dia.
+        /// </summary>
+        /// <param name="ev">The ev.</param>
+        /// <returns></returns>
         private Border CrearFilaDia(EventoAgenda ev)
         {
             Color color = Color.FromRgb(50, 165, 171);
@@ -583,6 +679,10 @@ namespace ClinicSyncDesktop.Views
 
 
         // RANGO DE FECHAS QUE NECESITA LA VISTA ACTUAL (hasta = límite exclusivo)
+        /// <summary>
+        /// Obteners the rango.
+        /// </summary>
+        /// <returns></returns>
         private (DateTime desde, DateTime hasta) ObtenerRango()
         {
             switch (vistaActual)
@@ -607,6 +707,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // PEDIR LAS CITAS A LA API Y REDIBUJAR
+        /// <summary>
+        /// Cargars the eventos asynchronous.
+        /// </summary>
         private async Task CargarEventosAsync()
         {
             try
@@ -623,6 +726,11 @@ namespace ClinicSyncDesktop.Views
 
         // MENÚ DE OPCIONES DE UNA CITA
         // MENÚ PERSONALIZADO DE OPCIONES DE UNA CITA
+        /// <summary>
+        /// Eventoes the click.
+        /// </summary>
+        /// <param name="evento">The evento.</param>
+        /// <param name="elemento">The elemento.</param>
         private void Evento_Click(
             EventoAgenda evento,
             FrameworkElement elemento)
@@ -789,6 +897,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CITAS QUE CAEN EN UN DÍA (incluye las de varios días)
+        /// <summary>
+        /// Eventoses the delete dia.
+        /// </summary>
+        /// <param name="dia">The dia.</param>
+        /// <returns></returns>
         private List<EventoAgenda> EventosDelDia(DateTime dia)
         {
             DateTime ini = dia.Date;
@@ -803,6 +916,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // BARRITA DE COLOR DE UNA CITA
+        /// <summary>
+        /// Crears the barra cita.
+        /// </summary>
+        /// <param name="ev">The ev.</param>
+        /// <returns></returns>
         private Border CrearBarraCita(EventoAgenda ev)
         {
             Color color = Color.FromRgb(50, 165, 171);
@@ -846,6 +964,11 @@ namespace ClinicSyncDesktop.Views
             return barra;
         }
         // VER MÁS...
+        /// <summary>
+        /// Handles the Click event of the btnVerMas control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void btnVerMas_Click(
             object sender,
             RoutedEventArgs e)

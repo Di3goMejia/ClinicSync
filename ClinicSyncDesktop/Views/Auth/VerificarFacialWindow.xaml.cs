@@ -11,20 +11,52 @@ using Emgu.CV;
 
 namespace ClinicSyncDesktop.Views.Auth
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class VerificarFacialWindow : Window
     {
+        /// <summary>
+        /// The servicio camara
+        /// </summary>
         private readonly ServicioCamara _servicioCamara = new();
+        /// <summary>
+        /// The servicio reconocimiento
+        /// </summary>
         private ServicioReconocimientoFacial? _servicioReconocimiento;
 
+        /// <summary>
+        /// The temporizador
+        /// </summary>
         private DispatcherTimer? _temporizador;
 
+        /// <summary>
+        /// The cerrando
+        /// </summary>
         private bool _cerrando;
+        /// <summary>
+        /// The procesando
+        /// </summary>
         private bool _procesando;
 
+        /// <summary>
+        /// The maximo bytes imagen
+        /// </summary>
         private const int MaximoBytesImagen = 5 * 1024 * 1024;
 
+        /// <summary>
+        /// Gets the imagen base64.
+        /// </summary>
+        /// <value>
+        /// The imagen base64.
+        /// </value>
         public string? ImagenBase64 { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VerificarFacialWindow"/> class.
+        /// </summary>
         public VerificarFacialWindow()
         {
             InitializeComponent();
@@ -37,6 +69,11 @@ namespace ClinicSyncDesktop.Views.Auth
         // INICIALIZAR CÁMARA
         // ==========================================
 
+        /// <summary>
+        /// Handles the Loaded event of the VerificarFacialWindow control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void VerificarFacialWindow_Loaded(
             object sender,
             RoutedEventArgs e)
@@ -44,6 +81,9 @@ namespace ClinicSyncDesktop.Views.Auth
             IniciarCamara();
         }
 
+        /// <summary>
+        /// Iniciars the camara.
+        /// </summary>
         private void IniciarCamara()
         {
             try

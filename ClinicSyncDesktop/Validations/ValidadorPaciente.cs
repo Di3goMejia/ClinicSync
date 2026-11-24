@@ -3,6 +3,10 @@ using System.Text.RegularExpressions;
 
 namespace ClinicSyncDesktop.Validations;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.IEquatable&lt;ClinicSyncDesktop.Validations.EntradaPaciente&gt;" />
 public record EntradaPaciente(
     string Identidad,
     string Nombres,
@@ -11,21 +15,73 @@ public record EntradaPaciente(
     string? Sexo,
     string Telefono);
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.ResultadoValidacion" />
 public sealed class ResultadoValidacionPaciente : ResultadoValidacion
 {
+    /// <summary>
+    /// Gets or sets the identidad normalizada.
+    /// </summary>
+    /// <value>
+    /// The identidad normalizada.
+    /// </value>
     public string IdentidadNormalizada { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the nombres normalizados.
+    /// </summary>
+    /// <value>
+    /// The nombres normalizados.
+    /// </value>
     public string NombresNormalizados { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the apellidos normalizados.
+    /// </summary>
+    /// <value>
+    /// The apellidos normalizados.
+    /// </value>
     public string ApellidosNormalizados { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the telefono normalizado.
+    /// </summary>
+    /// <value>
+    /// The telefono normalizado.
+    /// </value>
     public string TelefonoNormalizado { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the fecha nacimiento.
+    /// </summary>
+    /// <value>
+    /// The fecha nacimiento.
+    /// </value>
     public DateTime FechaNacimiento { get; set; }
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncDesktop.Validations.IValidador&lt;ClinicSyncDesktop.Validations.EntradaPaciente, ClinicSyncDesktop.Validations.ResultadoValidacionPaciente&gt;" />
 public sealed class ValidadorPaciente : IValidador<EntradaPaciente, ResultadoValidacionPaciente>
 {
+    /// <summary>
+    /// The patron nombre
+    /// </summary>
     private const string PatronNombre = @"^[\p{L}]+(?:[ '\-][\p{L}]+)*$";
+    /// <summary>
+    /// The patron identidad
+    /// </summary>
     private const string PatronIdentidad = @"^(\d{13}|\d{4}-\d{4}-\d{5}|\d{4} \d{4} \d{5})$";
+    /// <summary>
+    /// The patron telefono
+    /// </summary>
     private const string PatronTelefono = @"^(\d{8}|\d{4}-\d{4})$";
 
+    /// <summary>
+    /// Validars the specified entrada.
+    /// </summary>
+    /// <param name="entrada">The entrada.</param>
+    /// <returns></returns>
     public ResultadoValidacionPaciente Validar(EntradaPaciente entrada)
     {
         var resultado = new ResultadoValidacionPaciente
@@ -71,6 +127,14 @@ public sealed class ValidadorPaciente : IValidador<EntradaPaciente, ResultadoVal
         return resultado;
     }
 
+    /// <summary>
+    /// Validars the nombre.
+    /// </summary>
+    /// <param name="resultado">The resultado.</param>
+    /// <param name="campo">The campo.</param>
+    /// <param name="valor">The valor.</param>
+    /// <param name="requerido">The requerido.</param>
+    /// <param name="invalido">The invalido.</param>
     private static void ValidarNombre(ResultadoValidacion resultado, string campo,
         string valor, string requerido, string invalido)
     {
@@ -80,6 +144,11 @@ public sealed class ValidadorPaciente : IValidador<EntradaPaciente, ResultadoVal
             resultado.RegistrarError(campo, invalido);
     }
 
+    /// <summary>
+    /// Normalizars the texto.
+    /// </summary>
+    /// <param name="valor">The valor.</param>
+    /// <returns></returns>
     private static string NormalizarTexto(string valor) =>
         Regex.Replace(valor.Trim(), @"\s+", " ");
 }

@@ -5,6 +5,9 @@ using PermisosSeguridad = ClinicSyncServer.Common.Seguridad.Permisos;
 
 namespace ClinicSyncServer.Features.Agenda
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class AgendaEndpoints
     {
         public static void MapAgendaEndpoints(this WebApplication app)

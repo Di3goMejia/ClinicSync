@@ -5,6 +5,9 @@ using PermisosSeguridad = ClinicSyncServer.Common.Seguridad.Permisos;
 
 namespace ClinicSyncServer.Features.Tratamientos
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class TratamientosEndpoints
     {
         public static void MapTratamientosEndpoints(this WebApplication app)

@@ -11,29 +11,89 @@ using System.Windows.Controls;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class EditarIngresoWindow : Window
     {
+        /// <summary>
+        /// The formato fecha
+        /// </summary>
         private const string FormatoFecha = "yyyy'/'MM'/'dd";
 
+        /// <summary>
+        /// The identifier ingreso
+        /// </summary>
         private readonly int idIngreso;
+        /// <summary>
+        /// The servicio
+        /// </summary>
         private readonly IngresosApiService servicio = new();
 
+        /// <summary>
+        /// The tratamientos originales
+        /// </summary>
         private List<TratamientoIngreso> tratamientosOriginales = new();
+        /// <summary>
+        /// The tratamientos elegidos
+        /// </summary>
         private List<TratamientoIngreso> tratamientosElegidos = new();
+        /// <summary>
+        /// The materiales originales
+        /// </summary>
         private List<MaterialConsumido> materialesOriginales = new();
+        /// <summary>
+        /// The materiales elegidos
+        /// </summary>
         private List<MaterialConsumido> materialesElegidos = new();
 
+        /// <summary>
+        /// The identifier paciente original
+        /// </summary>
         private int idPacienteOriginal;
+        /// <summary>
+        /// The identifier paciente seleccionado
+        /// </summary>
         private int idPacienteSeleccionado;
+        /// <summary>
+        /// The fecha original
+        /// </summary>
         private DateTime fechaOriginal;
+        /// <summary>
+        /// The fecha seleccionada
+        /// </summary>
         private DateTime? fechaSeleccionada;
+        /// <summary>
+        /// The ingreso de visita
+        /// </summary>
         private bool ingresoDeVisita;
+        /// <summary>
+        /// The ingreso estaba activo
+        /// </summary>
         private bool ingresoEstabaActivo;
+        /// <summary>
+        /// The datos cargados
+        /// </summary>
         private bool datosCargados;
+        /// <summary>
+        /// The sincronizando fecha
+        /// </summary>
         private bool sincronizandoFecha;
+        /// <summary>
+        /// The guardando
+        /// </summary>
         private bool guardando;
+        /// <summary>
+        /// The abriendo selector
+        /// </summary>
         private bool abriendoSelector;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditarIngresoWindow"/> class.
+        /// </summary>
+        /// <param name="idIngreso">The identifier ingreso.</param>
         public EditarIngresoWindow(int idIngreso)
         {
             this.idIngreso = idIngreso;
@@ -41,6 +101,11 @@ namespace ClinicSyncDesktop.Views
             Loaded += EditarIngresoWindow_Loaded;
         }
 
+        /// <summary>
+        /// Handles the Loaded event of the EditarIngresoWindow control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void EditarIngresoWindow_Loaded(object sender, RoutedEventArgs e)
         {
             Loaded -= EditarIngresoWindow_Loaded;
@@ -86,11 +151,21 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Obteners the ingreso por identifier asynchronous.
+        /// </summary>
+        /// <param name="idIngreso">The identifier ingreso.</param>
+        /// <returns></returns>
         public Task<EditarIngresoDetalle> ObtenerIngresoPorIdAsync(int idIngreso)
         {
             return servicio.ObtenerIngresoPorIdAsync(idIngreso);
         }
 
+        /// <summary>
+        /// Handles the Click event of the SeleccionarPaciente control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void SeleccionarPaciente_Click(object sender, RoutedEventArgs e)
         {
             if (!datosCargados || guardando || abriendoSelector)
@@ -140,6 +215,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the SeleccionarTratamientos control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void SeleccionarTratamientos_Click(object sender, RoutedEventArgs e)
         {
             if (!datosCargados || guardando || abriendoSelector)
@@ -213,6 +293,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the SeleccionarMateriales control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void SeleccionarMateriales_Click(object sender, RoutedEventArgs e)
         {
             if (!datosCargados || guardando || abriendoSelector)
@@ -272,6 +357,9 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Mostrars the tratamientos.
+        /// </summary>
         private void MostrarTratamientos()
         {
             TxtTratamientos.Text = tratamientosElegidos.Count == 0
@@ -281,6 +369,9 @@ namespace ClinicSyncDesktop.Views
             TxtTratamientos.ToolTip = TxtTratamientos.Text;
         }
 
+        /// <summary>
+        /// Mostrars the materiales.
+        /// </summary>
         private void MostrarMateriales()
         {
             TxtMateriales.Text = materialesElegidos.Count == 0
@@ -291,12 +382,22 @@ namespace ClinicSyncDesktop.Views
             TxtMateriales.ToolTip = TxtMateriales.Text;
         }
 
+        /// <summary>
+        /// Handles the Click event of the CalendarioIngreso control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void CalendarioIngreso_Click(object sender, RoutedEventArgs e)
         {
             if (datosCargados && !guardando)
                 DpFecha.IsDropDownOpen = true;
         }
 
+        /// <summary>
+        /// Handles the SelectedDateChanged event of the DpFecha control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
         private void DpFecha_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (datosCargados && !sincronizandoFecha &&
@@ -306,6 +407,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the TextChanged event of the TxtFechaIngreso control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void TxtFechaIngreso_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!datosCargados || sincronizandoFecha)
@@ -317,12 +423,22 @@ namespace ClinicSyncDesktop.Views
                 EstablecerFecha(fecha);
         }
 
+        /// <summary>
+        /// Handles the LostFocus event of the TxtFechaIngreso control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void TxtFechaIngreso_LostFocus(object sender, RoutedEventArgs e)
         {
             if (datosCargados && TxtFechaIngreso.Text.Trim().Length > 0)
                 ValidarFechaEscrita(out _);
         }
 
+        /// <summary>
+        /// Tries the leer fecha.
+        /// </summary>
+        /// <param name="fecha">The fecha.</param>
+        /// <returns></returns>
         private bool TryLeerFecha(out DateTime fecha)
         {
             return DateTime.TryParseExact(
@@ -333,6 +449,11 @@ namespace ClinicSyncDesktop.Views
                 out fecha);
         }
 
+        /// <summary>
+        /// Validars the fecha escrita.
+        /// </summary>
+        /// <param name="fecha">The fecha.</param>
+        /// <returns></returns>
         private bool ValidarFechaEscrita(out DateTime fecha)
         {
             if (!TryLeerFecha(out fecha))
@@ -351,6 +472,10 @@ namespace ClinicSyncDesktop.Views
             return true;
         }
 
+        /// <summary>
+        /// Establecers the fecha.
+        /// </summary>
+        /// <param name="fecha">The fecha.</param>
         private void EstablecerFecha(DateTime fecha)
         {
             fecha = fecha.Date;
@@ -378,6 +503,9 @@ namespace ClinicSyncDesktop.Views
                 LimpiarTratamientosSeleccionados();
         }
 
+        /// <summary>
+        /// Limpiars the tratamientos seleccionados.
+        /// </summary>
         private void LimpiarTratamientosSeleccionados()
         {
             tratamientosElegidos.Clear();
@@ -387,12 +515,20 @@ namespace ClinicSyncDesktop.Views
             ErrorDescuento.Text = "";
         }
 
+        /// <summary>
+        /// Handles the Click event of the Recalcular control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void Recalcular_Click(object sender, TextChangedEventArgs e)
         {
             if (datosCargados)
                 RecalcularDescuento();
         }
 
+        /// <summary>
+        /// Recalculars the descuento.
+        /// </summary>
         private void RecalcularDescuento()
         {
             ErrorDescuento.Text = "";
@@ -415,6 +551,11 @@ namespace ClinicSyncDesktop.Views
             ActualizarTotales(subtotal, descuento);
         }
 
+        /// <summary>
+        /// Leers the descuento.
+        /// </summary>
+        /// <param name="descuento">The descuento.</param>
+        /// <returns></returns>
         private bool LeerDescuento(out decimal descuento)
         {
             return decimal.TryParse(
@@ -429,12 +570,22 @@ namespace ClinicSyncDesktop.Views
                        out descuento);
         }
 
+        /// <summary>
+        /// Actualizars the totales.
+        /// </summary>
+        /// <param name="subtotal">The subtotal.</param>
+        /// <param name="descuento">The descuento.</param>
         private void ActualizarTotales(decimal subtotal, decimal descuento)
         {
             TxtSubtotal.Text = $"L {subtotal:N2}";
             TxtTotal.Text = $"L {subtotal - descuento:N2}";
         }
 
+        /// <summary>
+        /// Validars the formulario.
+        /// </summary>
+        /// <param name="fecha">The fecha.</param>
+        /// <returns></returns>
         private bool ValidarFormulario(out DateTime fecha)
         {
             ErrorPaciente.Text = "";
@@ -480,6 +631,11 @@ namespace ClinicSyncDesktop.Views
             return resultado.EsValido;
         }
 
+        /// <summary>
+        /// Handles the Click event of the GuardarCambios control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void GuardarCambios_Click(object sender, RoutedEventArgs e)
         {
             if (guardando || abriendoSelector || !datosCargados ||
@@ -524,6 +680,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the Cerrar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Cerrar_Click(object sender, RoutedEventArgs e)
         {
             if (guardando || abriendoSelector)

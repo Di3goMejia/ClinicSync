@@ -6,11 +6,25 @@ using System.Data;
 
 namespace ClinicSyncServer.Features.Expedientes.Data
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ExpedientesRepository(SqlConnectionFactory factory)
     {
+        /// <summary>
+        /// The factory
+        /// </summary>
         private readonly SqlConnectionFactory _factory = factory;
 
         // OBTENER EXPEDIENTE
+        /// <summary>
+        /// Obteners the por identifier asynchronous.
+        /// </summary>
+        /// <param name="idExpediente">The identifier expediente.</param>
+        /// <param name="idPaciente">The identifier paciente.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">Debe especificar un ID de expediente o un ID de paciente.</exception>
         public async Task<ExpedienteDetalle?> ObtenerPorIdAsync(
             int? idExpediente = null, int? idPaciente = null,
             CancellationToken ct = default)
@@ -31,6 +45,12 @@ namespace ClinicSyncServer.Features.Expedientes.Data
         }
 
         // MODIFICAR EXPEDIENTE
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="idPaciente">The identifier paciente.</param>
+        /// <param name="notas">The notas.</param>
+        /// <param name="ct">The ct.</param>
         public async Task ModificarAsync(int idPaciente, string? notas = null,
             CancellationToken ct = default)
         {

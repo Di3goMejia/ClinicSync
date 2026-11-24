@@ -7,6 +7,9 @@ using ClaimsPersonalizados = ClinicSyncServer.Common.Seguridad.ClaimsPersonaliza
 
 namespace ClinicSyncServer.Features.Usuarios
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class UsuariosEndpoints
     {   
         public static void MapUsuariosEndpoints(this WebApplication app)

@@ -2,8 +2,15 @@
 
 namespace ClinicSyncServer.Common
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ExceptionMiddleware(RequestDelegate siguiente, ILogger<ExceptionMiddleware> log)
     {
+        /// <summary>
+        /// Invokes the asynchronous.
+        /// </summary>
+        /// <param name="ctx">The CTX.</param>
         public async Task InvokeAsync(HttpContext ctx)
         {
             try
@@ -51,6 +58,14 @@ namespace ClinicSyncServer.Common
             }
         }
 
+        /// <summary>
+        /// Escribirs the problema asynchronous.
+        /// </summary>
+        /// <param name="ctx">The CTX.</param>
+        /// <param name="estado">The estado.</param>
+        /// <param name="titulo">The titulo.</param>
+        /// <param name="detalle">The detalle.</param>
+        /// <param name="extras">The extras.</param>
         private static async Task EscribirProblemaAsync(
             HttpContext ctx, int estado, string titulo, string? detalle,
             Dictionary<string, object?>? extras = null)

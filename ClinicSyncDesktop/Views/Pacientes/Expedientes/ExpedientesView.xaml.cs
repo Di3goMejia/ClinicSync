@@ -13,14 +13,39 @@ using System.Windows.Media.Imaging;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Controls.UserControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
+    /// <seealso cref="System.Windows.Markup.IStyleConnector" />
     public partial class ExpedientesView : UserControl
     {
+        /// <summary>
+        /// The identifier paciente
+        /// </summary>
         private readonly int idPaciente;
+        /// <summary>
+        /// The cargando expediente
+        /// </summary>
         private bool cargandoExpediente = false;
+        /// <summary>
+        /// The identifier expediente
+        /// </summary>
         private int idExpediente;
+        /// <summary>
+        /// The editando notas
+        /// </summary>
         private bool editandoNotas;
+        /// <summary>
+        /// The paciente activo
+        /// </summary>
         private bool pacienteActivo = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExpedientesView"/> class.
+        /// </summary>
+        /// <param name="idPaciente">The identifier paciente.</param>
         public ExpedientesView(int idPaciente)
         {
             InitializeComponent();
@@ -31,32 +56,118 @@ namespace ClinicSyncDesktop.Views
         }
 
         // MODELO DEL EXPEDIENTE
+        /// <summary>
+        /// 
+        /// </summary>
         public class ExpedienteApi
         {
+            /// <summary>
+            /// Gets or sets the identifier expediente.
+            /// </summary>
+            /// <value>
+            /// The identifier expediente.
+            /// </value>
             public int IdExpediente { get; set; }
+            /// <summary>
+            /// Gets or sets the identifier paciente.
+            /// </summary>
+            /// <value>
+            /// The identifier paciente.
+            /// </value>
             public int IdPaciente { get; set; }
+            /// <summary>
+            /// Gets or sets the notas.
+            /// </summary>
+            /// <value>
+            /// The notas.
+            /// </value>
             public string? Notas { get; set; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public class ArchivoExpedienteApi
         {
+            /// <summary>
+            /// Gets or sets the identifier archivo.
+            /// </summary>
+            /// <value>
+            /// The identifier archivo.
+            /// </value>
             public Guid IdArchivo { get; set; }
+            /// <summary>
+            /// Gets or sets the nombre archivo.
+            /// </summary>
+            /// <value>
+            /// The nombre archivo.
+            /// </value>
             public string NombreArchivo { get; set; } = "";
+            /// <summary>
+            /// Gets or sets the fecha subida.
+            /// </summary>
+            /// <value>
+            /// The fecha subida.
+            /// </value>
             public DateTime FechaSubida { get; set; }
         }
 
         // MODELO DE LAS VISITAS
+        /// <summary>
+        /// 
+        /// </summary>
         public class VisitaApi
         {
+            /// <summary>
+            /// Gets or sets the identifier visita.
+            /// </summary>
+            /// <value>
+            /// The identifier visita.
+            /// </value>
             public int IdVisita { get; set; }
+            /// <summary>
+            /// Gets or sets the identifier paciente.
+            /// </summary>
+            /// <value>
+            /// The identifier paciente.
+            /// </value>
             public int IdPaciente { get; set; }
+            /// <summary>
+            /// Gets or sets the identifier empleado.
+            /// </summary>
+            /// <value>
+            /// The identifier empleado.
+            /// </value>
             public int IdEmpleado { get; set; }
+            /// <summary>
+            /// Gets or sets the fecha.
+            /// </summary>
+            /// <value>
+            /// The fecha.
+            /// </value>
             public DateTime Fecha { get; set; }
+            /// <summary>
+            /// Gets or sets the motivo.
+            /// </summary>
+            /// <value>
+            /// The motivo.
+            /// </value>
             public string Motivo { get; set; } = "";
+            /// <summary>
+            /// Gets or sets the notas.
+            /// </summary>
+            /// <value>
+            /// The notas.
+            /// </value>
             public string? Notas { get; set; }
         }
 
         // MOSTRAR AVISOS DE ÉXITO Y ERROR
+        /// <summary>
+        /// Mostrars the aviso.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
+        /// <param name="exitoso">if set to <c>true</c> [exitoso].</param>
         private void MostrarAviso(
             string mensaje,
             bool exitoso)
@@ -71,6 +182,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CARGAR EXPEDIENTE AL ABRIR LA VISTA
+        /// <summary>
+        /// Handles the Loaded event of the ExpedientesView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void ExpedientesView_Loaded(
             object sender,
             RoutedEventArgs e)
@@ -96,6 +212,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CONSULTAR DATOS DEL PACIENTE Y EXPEDIENTE
+        /// <summary>
+        /// Cargars the expediente asynchronous.
+        /// </summary>
         private async Task CargarExpedienteAsync()
         {
             if (cargandoExpediente)
@@ -216,6 +335,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the EditarNotas control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void EditarNotas_Click(
             object sender,
             RoutedEventArgs e)
@@ -229,6 +353,11 @@ namespace ClinicSyncDesktop.Views
                 txtNotasExpediente.Text.Length;
         }
 
+        /// <summary>
+        /// Handles the Click event of the GuardarNotas control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void GuardarNotas_Click(
             object sender,
             RoutedEventArgs e)
@@ -263,6 +392,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // VOLVER AL MÓDULO PACIENTES
+        /// <summary>
+        /// Handles the Click event of the Volver control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Volver_Click(
             object sender,
             RoutedEventArgs e)
@@ -275,6 +409,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // AGREGAR NUEVA VISITA
+        /// <summary>
+        /// Handles the Click event of the AgregarVisita control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void AgregarVisita_Click(
             object sender,
             RoutedEventArgs e)
@@ -306,6 +445,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // EDITAR VISITA EXISTENTE
+        /// <summary>
+        /// Handles the Click event of the VisualizarVisita control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void VisualizarVisita_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button boton || boton.DataContext is not VisitaApi visita)
@@ -337,6 +481,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // SUBIR ARCHIVO
+        /// <summary>
+        /// Handles the Click event of the SubirArchivo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void SubirArchivo_Click(
             object sender,
             RoutedEventArgs e)
@@ -382,6 +531,9 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Cargars the archivos expediente asynchronous.
+        /// </summary>
         private async Task CargarArchivosExpedienteAsync()
         {
             ArchivoExpedienteApi[] archivos =
@@ -400,6 +552,10 @@ namespace ClinicSyncDesktop.Views
                 AgregarArchivoVisual(archivo);
         }
 
+        /// <summary>
+        /// Mostrars the estado archivos.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
         private void MostrarEstadoArchivos(string mensaje)
         {
             PanelArchivos.Children.Clear();
@@ -412,6 +568,10 @@ namespace ClinicSyncDesktop.Views
             });
         }
 
+        /// <summary>
+        /// Agregars the archivo visual.
+        /// </summary>
+        /// <param name="archivo">The archivo.</param>
         private void AgregarArchivoVisual(ArchivoExpedienteApi archivo)
         {
             StackPanel fila = new()
@@ -465,6 +625,11 @@ namespace ClinicSyncDesktop.Views
             PanelArchivos.Children.Add(fila);
         }
 
+        /// <summary>
+        /// Handles the Click event of the DescargarArchivo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void DescargarArchivo_Click(
             object sender,
             RoutedEventArgs e)
@@ -499,6 +664,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the BorrarArchivo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void BorrarArchivo_Click(
             object sender,
             RoutedEventArgs e)

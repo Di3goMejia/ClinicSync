@@ -19,6 +19,9 @@ using ClinicSyncServer.Features.Notificaciones;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
+/// <summary>
+/// Initializes a new instance of the <see cref=".$Program"/> class.
+/// </summary>
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAntiforgery();

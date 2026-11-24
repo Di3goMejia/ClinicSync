@@ -11,19 +11,74 @@ using ClinicSyncDesktop.Data;
 namespace ClinicSyncDesktop.Views
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
     public class PacienteVista : INotifyPropertyChanged
     {
+        /// <summary>
+        /// Gets or sets the identifier paciente.
+        /// </summary>
+        /// <value>
+        /// The identifier paciente.
+        /// </value>
         public int IdPaciente { get; set; }
 
+        /// <summary>
+        /// Gets or sets the identidad.
+        /// </summary>
+        /// <value>
+        /// The identidad.
+        /// </value>
         public string Identidad { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the nombres.
+        /// </summary>
+        /// <value>
+        /// The nombres.
+        /// </value>
         public string Nombres { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the apellidos.
+        /// </summary>
+        /// <value>
+        /// The apellidos.
+        /// </value>
         public string Apellidos { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the sexo.
+        /// </summary>
+        /// <value>
+        /// The sexo.
+        /// </value>
         public string Sexo { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the fecha nacimiento.
+        /// </summary>
+        /// <value>
+        /// The fecha nacimiento.
+        /// </value>
         public DateTime FechaNacimiento { get; set; }
+        /// <summary>
+        /// Gets or sets the telefono.
+        /// </summary>
+        /// <value>
+        /// The telefono.
+        /// </value>
         public string Telefono { get; set; } = "";
 
+        /// <summary>
+        /// The activo
+        /// </summary>
         private bool activo = true;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="PacienteVista"/> is activo.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if activo; otherwise, <c>false</c>.
+        /// </value>
         public bool Activo
         {
             get => activo;
@@ -40,8 +95,20 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Gets the nombre completo.
+        /// </summary>
+        /// <value>
+        /// The nombre completo.
+        /// </value>
         public string NombreCompleto => Nombres + " " + Apellidos;
 
+        /// <summary>
+        /// Gets the edad.
+        /// </summary>
+        /// <value>
+        /// The edad.
+        /// </value>
         public int Edad
         {
             get
@@ -56,30 +123,111 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class PacienteApi
     {
+        /// <summary>
+        /// Gets or sets the identifier paciente.
+        /// </summary>
+        /// <value>
+        /// The identifier paciente.
+        /// </value>
         public int IdPaciente { get; set; }
+        /// <summary>
+        /// Gets or sets the identidad.
+        /// </summary>
+        /// <value>
+        /// The identidad.
+        /// </value>
         public string Identidad { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the nombres.
+        /// </summary>
+        /// <value>
+        /// The nombres.
+        /// </value>
         public string Nombres { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the apellidos.
+        /// </summary>
+        /// <value>
+        /// The apellidos.
+        /// </value>
         public string Apellidos { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the genero.
+        /// </summary>
+        /// <value>
+        /// The genero.
+        /// </value>
         public string Genero { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the fecha nacimiento.
+        /// </summary>
+        /// <value>
+        /// The fecha nacimiento.
+        /// </value>
         public DateTime FechaNacimiento { get; set; }
+        /// <summary>
+        /// Gets or sets the telefono.
+        /// </summary>
+        /// <value>
+        /// The telefono.
+        /// </value>
         public string Telefono { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the fecha registro.
+        /// </summary>
+        /// <value>
+        /// The fecha registro.
+        /// </value>
         public DateTime FechaRegistro { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="PacienteApi"/> is activo.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if activo; otherwise, <c>false</c>.
+        /// </value>
         public bool Activo { get; set; }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Controls.UserControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
+    /// <seealso cref="System.Windows.Markup.IStyleConnector" />
     public partial class PacientesView : UserControl
     {
+        /// <summary>
+        /// The pacientes
+        /// </summary>
         private readonly ObservableCollection<PacienteVista> pacientes = new();
+        /// <summary>
+        /// The vista pacientes
+        /// </summary>
         private readonly ICollectionView vistaPacientes;
 
+        /// <summary>
+        /// The cargando pacientes
+        /// </summary>
         private bool cargandoPacientes = false;
+        /// <summary>
+        /// The cambiando estado
+        /// </summary>
         private bool cambiandoEstado = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PacientesView"/> class.
+        /// </summary>
         public PacientesView()
         {
             InitializeComponent();
@@ -95,6 +243,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // MOSTRAR NOTIFICACIÓN PERSONALIZADA
+        /// <summary>
+        /// Mostrars the aviso.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
+        /// <param name="exitoso">if set to <c>true</c> [exitoso].</param>
         private void MostrarAviso(
             string mensaje,
             bool exitoso)
@@ -108,6 +261,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CARGAR PACIENTES
+        /// <summary>
+        /// Handles the Loaded event of the PacientesView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void PacientesView_Loaded(
             object sender,
             RoutedEventArgs e)
@@ -131,6 +289,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CONSULTAR SQL SERVER
+        /// <summary>
+        /// Cargars the pacientes asynchronous.
+        /// </summary>
         private async Task CargarPacientesAsync()
         {
             if (cargandoPacientes)
@@ -172,6 +333,11 @@ namespace ClinicSyncDesktop.Views
 
         // BUSCAR PACIENTES
 
+        /// <summary>
+        /// Filtrars the paciente.
+        /// </summary>
+        /// <param name="objeto">The objeto.</param>
+        /// <returns></returns>
         private bool FiltrarPaciente(object objeto)
         {
             if (objeto is not PacienteVista paciente)
@@ -190,6 +356,11 @@ namespace ClinicSyncDesktop.Views
                 StringComparison.OrdinalIgnoreCase);
         }
 
+        /// <summary>
+        /// Handles the TextChanged event of the txtBuscar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void txtBuscar_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -200,6 +371,11 @@ namespace ClinicSyncDesktop.Views
 
 
         // AGREGAR PACIENTE
+        /// <summary>
+        /// Handles the Click event of the btnAgregar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void btnAgregar_Click(
             object sender,
             RoutedEventArgs e)
@@ -249,6 +425,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CAMBIAR ESTADO
+        /// <summary>
+        /// Handles the Click event of the Estado control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Estado_Click(
             object sender,
             RoutedEventArgs e)
@@ -295,6 +476,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // ABRIR EXPEDIENTE DEL PACIENTE
+        /// <summary>
+        /// Handles the Click event of the Expediente control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Expediente_Click(
             object sender,
             RoutedEventArgs e)
@@ -310,6 +496,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // EDITAR PACIENTE
+        /// <summary>
+        /// Handles the Click event of the Editar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Editar_Click(
             object sender,
             RoutedEventArgs e)

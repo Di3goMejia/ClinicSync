@@ -5,34 +5,134 @@ using System.Text.RegularExpressions;
 
 namespace ClinicSyncServer.Features.Pacientes
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class RegistrarPacienteRequest
     {
+        /// <summary>
+        /// Gets or sets the identidad.
+        /// </summary>
+        /// <value>
+        /// The identidad.
+        /// </value>
         public string Identidad { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the nombres.
+        /// </summary>
+        /// <value>
+        /// The nombres.
+        /// </value>
         public string Nombres { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the apellidos.
+        /// </summary>
+        /// <value>
+        /// The apellidos.
+        /// </value>
         public string Apellidos { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the fecha nacimiento.
+        /// </summary>
+        /// <value>
+        /// The fecha nacimiento.
+        /// </value>
         public DateTime FechaNacimiento { get; set; }
+        /// <summary>
+        /// Gets or sets the genero.
+        /// </summary>
+        /// <value>
+        /// The genero.
+        /// </value>
         public string Genero { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the telefono.
+        /// </summary>
+        /// <value>
+        /// The telefono.
+        /// </value>
         public string Telefono { get; set; } = "";
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class ModificarPacienteRequest
     {
+        /// <summary>
+        /// Gets or sets the identidad.
+        /// </summary>
+        /// <value>
+        /// The identidad.
+        /// </value>
         public string Identidad { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the nombres.
+        /// </summary>
+        /// <value>
+        /// The nombres.
+        /// </value>
         public string Nombres { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the apellidos.
+        /// </summary>
+        /// <value>
+        /// The apellidos.
+        /// </value>
         public string Apellidos { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the fecha nacimiento.
+        /// </summary>
+        /// <value>
+        /// The fecha nacimiento.
+        /// </value>
         public DateTime FechaNacimiento { get; set; }
+        /// <summary>
+        /// Gets or sets the genero.
+        /// </summary>
+        /// <value>
+        /// The genero.
+        /// </value>
         public string Genero { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the telefono.
+        /// </summary>
+        /// <value>
+        /// The telefono.
+        /// </value>
         public string Telefono { get; set; } = "";
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class CambiarEstadoPacienteRequest
     {
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="CambiarEstadoPacienteRequest"/> is activo.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if activo; otherwise, <c>false</c>.
+        /// </value>
         public bool Activo { get; set; }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static class PacientesEndpoints
     {
         // VALIDACIONES COMPARTIDAS
+        /// <summary>
+        /// Datoses the validos.
+        /// </summary>
+        /// <param name="identidad">The identidad.</param>
+        /// <param name="nombres">The nombres.</param>
+        /// <param name="apellidos">The apellidos.</param>
+        /// <param name="fechaNacimiento">The fecha nacimiento.</param>
+        /// <param name="genero">The genero.</param>
+        /// <param name="telefono">The telefono.</param>
+        /// <returns></returns>
         private static bool DatosValidos(
             string identidad,
             string nombres,

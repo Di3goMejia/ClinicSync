@@ -8,6 +8,9 @@ using System.Text.Json;
 
 namespace ClinicSyncServer.Features.Egresos.Data
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class EgresosRepository(SqlConnectionFactory factory)
     {
         // REGISTRAR EGRESO

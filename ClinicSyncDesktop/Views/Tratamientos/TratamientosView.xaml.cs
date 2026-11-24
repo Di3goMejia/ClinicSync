@@ -10,16 +10,35 @@ using System.Windows.Data;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Controls.UserControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
+    /// <seealso cref="System.Windows.Markup.IStyleConnector" />
     public partial class TratamientosView : UserControl
     {
+        /// <summary>
+        /// The tratamientos service
+        /// </summary>
         private readonly TratamientosApiService? _tratamientosService;
+        /// <summary>
+        /// The vista
+        /// </summary>
         private ICollectionView? _vista;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TratamientosView"/> class.
+        /// </summary>
         public TratamientosView()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TratamientosView"/> class.
+        /// </summary>
+        /// <param name="tratamientosService">The tratamientos service.</param>
         public TratamientosView(
             TratamientosApiService tratamientosService)
             : this()
@@ -29,6 +48,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // Mostrar notificaciones.
+        /// <summary>
+        /// Mostrars the aviso.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
+        /// <param name="exitoso">if set to <c>true</c> [exitoso].</param>
         private void MostrarAviso(string mensaje, bool exitoso)
         {
             PanelAvisos.Children.Clear();
@@ -40,6 +64,11 @@ namespace ClinicSyncDesktop.Views
             PanelAvisos.Children.Add(aviso);
         }
 
+        /// <summary>
+        /// Handles the Loaded event of the TratamientosView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void TratamientosView_Loaded(
             object sender,
             RoutedEventArgs e)
@@ -47,6 +76,9 @@ namespace ClinicSyncDesktop.Views
             await CargarTratamientosAsync();
         }
 
+        /// <summary>
+        /// Cargars the tratamientos asynchronous.
+        /// </summary>
         private async Task CargarTratamientosAsync()
         {
             if (_tratamientosService is null)
@@ -81,6 +113,11 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the BtnAgregar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void BtnAgregar_Click(
             object sender,
             RoutedEventArgs e)
@@ -118,8 +155,16 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Occurs when [volver al menu solicitado].
+        /// </summary>
         public event EventHandler? VolverAlMenuSolicitado;
 
+        /// <summary>
+        /// Handles the Click event of the BtnVolver control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void BtnVolver_Click(
             object sender,
             RoutedEventArgs e)
@@ -129,6 +174,11 @@ namespace ClinicSyncDesktop.Views
                 EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Filtrars the tratamiento.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns></returns>
         private bool FiltrarTratamiento(object obj)
         {
             if (obj is not Tratamiento tratamiento)
@@ -144,6 +194,11 @@ namespace ClinicSyncDesktop.Views
                 StringComparison.OrdinalIgnoreCase);
         }
 
+        /// <summary>
+        /// Handles the TextChanged event of the TxtBuscar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void TxtBuscar_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -151,6 +206,11 @@ namespace ClinicSyncDesktop.Views
             _vista?.Refresh();
         }
 
+        /// <summary>
+        /// Handles the Click event of the BtnOpciones control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void BtnOpciones_Click(
             object sender,
             RoutedEventArgs e)

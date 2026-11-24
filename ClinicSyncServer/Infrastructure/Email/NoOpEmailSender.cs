@@ -9,6 +9,14 @@ namespace ClinicSyncServer.Infrastructure.Email
     /// <seealso cref="ClinicSyncServer.Common.Abstracciones.IEmailSender" />
     public class NoOpEmailSender : IEmailSender
     {
+        /// <summary>
+        /// Enviars the activacion asynchronous.
+        /// </summary>
+        /// <param name="correo">The correo.</param>
+        /// <param name="nombre">The nombre.</param>
+        /// <param name="token">The token.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public Task EnviarActivacionAsync(
             string correo,
             string nombre,
@@ -18,13 +26,34 @@ namespace ClinicSyncServer.Infrastructure.Email
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Enviars the desactivacion asynchronous.
+        /// </summary>
+        /// <param name="correo">The correo.</param>
+        /// <param name="nombre">The nombre.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public Task EnviarDesactivacionAsync(
             string correo,
             string nombre,
             CancellationToken ct = default) => Task.CompletedTask;
 
+        /// <summary>
+        /// Enviars the reactivacion asynchronous.
+        /// </summary>
+        /// <param name="correo">The correo.</param>
+        /// <param name="nombre">The nombre.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public Task EnviarReactivacionAsync(string correo, string nombre, CancellationToken ct = default) => Task.CompletedTask;
 
+        /// <summary>
+        /// Enviars the restablecimiento asynchronous.
+        /// </summary>
+        /// <param name="correo">The correo.</param>
+        /// <param name="token">The token.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public Task EnviarRestablecimientoAsync(
             string correo,
             string token,

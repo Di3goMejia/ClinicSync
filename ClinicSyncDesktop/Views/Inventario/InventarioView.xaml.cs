@@ -13,16 +13,34 @@ using System.Windows.Media.Imaging;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Controls.UserControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
+    /// <seealso cref="System.Windows.Markup.IStyleConnector" />
     public partial class InventarioView : UserControl
     {
+        /// <summary>
+        /// The inventario service
+        /// </summary>
         private readonly InventarioApiService inventarioService = new();
 
+        /// <summary>
+        /// The materiales
+        /// </summary>
         private List<Material> materiales = new();
 
         // Evita descargar repetidamente las mismas imágenes.
+        /// <summary>
+        /// The imagenes cache
+        /// </summary>
         private readonly Dictionary<string, BitmapImage> imagenesCache =
             new(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InventarioView"/> class.
+        /// </summary>
         public InventarioView()
         {
             InitializeComponent();
@@ -31,6 +49,11 @@ namespace ClinicSyncDesktop.Views
             Loaded += InventarioView_Loaded;
         }
 
+        /// <summary>
+        /// Handles the Loaded event of the InventarioView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void InventarioView_Loaded(
             object sender,
             RoutedEventArgs e)
@@ -40,6 +63,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // MOSTRAR AVISOS
+        /// <summary>
+        /// Mostrars the aviso.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
+        /// <param name="exitoso">if set to <c>true</c> [exitoso].</param>
         private void MostrarAviso(string mensaje, bool exitoso)
         {
             PanelAvisos.Children.Add(
@@ -49,6 +77,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CARGAR MATERIALES
+        /// <summary>
+        /// Cargars the materiales asynchronous.
+        /// </summary>
         private async Task CargarMaterialesAsync()
         {
             try
@@ -65,6 +96,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // BUSCAR MATERIAL
+        /// <summary>
+        /// Handles the TextChanged event of the txtBuscar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void txtBuscar_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -72,6 +108,9 @@ namespace ClinicSyncDesktop.Views
             AplicarBusqueda();
         }
 
+        /// <summary>
+        /// Aplicars the busqueda.
+        /// </summary>
         private void AplicarBusqueda()
         {
             if (dgMateriales == null)
@@ -94,6 +133,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // ABRIR VENTANA PARA AGREGAR
+        /// <summary>
+        /// Handles the Click event of the btnAgregar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void btnAgregar_Click(
             object sender,
             RoutedEventArgs e)
@@ -114,6 +158,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CARGAR MINIATURA DESDE LA API
+        /// <summary>
+        /// Handles the Loaded event of the ImagenMaterial control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void ImagenMaterial_Loaded(
             object sender,
             RoutedEventArgs e)
@@ -172,6 +221,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CREAR IMAGEN DESDE BYTES
+        /// <summary>
+        /// Crears the bitmap.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <returns></returns>
         private static BitmapImage CrearBitmap(byte[] bytes)
         {
             using var flujo = new MemoryStream(bytes);
@@ -188,6 +242,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // AMPLIAR IMAGEN
+        /// <summary>
+        /// Handles the Click event of the VerImagen control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void VerImagen_Click(
             object sender,
             RoutedEventArgs e)
@@ -246,6 +305,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // ABRIR VENTANA PARA EDITAR
+        /// <summary>
+        /// Handles the Click event of the Editar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Editar_Click(
             object sender,
             RoutedEventArgs e)

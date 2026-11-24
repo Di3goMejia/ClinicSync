@@ -9,13 +9,34 @@ using System.Windows.Media.Imaging;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class AgregarMaterialWindow : Window
     {
+        /// <summary>
+        /// The inventario service
+        /// </summary>
         private readonly InventarioApiService inventarioService;
+        /// <summary>
+        /// The ruta imagen
+        /// </summary>
         private string? rutaImagen;
+        /// <summary>
+        /// The validador
+        /// </summary>
         private readonly ValidadorMaterial validador = new();
+        /// <summary>
+        /// The controles
+        /// </summary>
         private readonly Dictionary<string, Control> controles;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AgregarMaterialWindow"/> class.
+        /// </summary>
+        /// <param name="servicio">The servicio.</param>
         public AgregarMaterialWindow(InventarioApiService servicio)
         {
             InitializeComponent();
@@ -32,6 +53,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // SELECCIONAR IMAGEN
+        /// <summary>
+        /// Handles the Click event of the SeleccionarImagen control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void SeleccionarImagen_Click(
             object sender,
             RoutedEventArgs e)
@@ -77,6 +103,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // QUITAR IMAGEN
+        /// <summary>
+        /// Handles the Click event of the QuitarImagen control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void QuitarImagen_Click(
             object sender,
             RoutedEventArgs e)
@@ -91,6 +122,10 @@ namespace ClinicSyncDesktop.Views
         }
 
         // MOSTRAR ERROR DE VALIDACIÓN
+        /// <summary>
+        /// Mostrars the error validacion.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
         private void MostrarErrorValidacion(string mensaje)
         {
             txtAvisoValidacion.Text = mensaje;
@@ -98,6 +133,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // OCULTAR ERROR DE VALIDACIÓN
+        /// <summary>
+        /// Limpiars the error validacion.
+        /// </summary>
         private void LimpiarErrorValidacion()
         {
             txtAvisoValidacion.Text = "";
@@ -105,6 +143,10 @@ namespace ClinicSyncDesktop.Views
         }
 
         // COMPROBAR SI EL FORMULARIO TIENE CAMBIOS
+        /// <summary>
+        /// Tienes the cambios.
+        /// </summary>
+        /// <returns></returns>
         private bool TieneCambios()
         {
             return
@@ -118,6 +160,11 @@ namespace ClinicSyncDesktop.Views
                 !EsCero(txtPrecioCompra.Text);
         }
 
+        /// <summary>
+        /// Eses the cero.
+        /// </summary>
+        /// <param name="texto">The texto.</param>
+        /// <returns></returns>
         private static bool EsCero(string texto)
         {
             if (decimal.TryParse(
@@ -142,6 +189,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CERRAR CON LA X
+        /// <summary>
+        /// Handles the Click event of the Cancelar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Cancelar_Click(
             object sender,
             RoutedEventArgs e)
@@ -164,6 +216,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // REGISTRAR MATERIAL
+        /// <summary>
+        /// Handles the Click event of the Guardar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Guardar_Click(
             object sender,
             RoutedEventArgs e)
@@ -234,6 +291,12 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CONVERTIR TEXTO A DECIMAL
+        /// <summary>
+        /// Tries the leer decimal.
+        /// </summary>
+        /// <param name="texto">The texto.</param>
+        /// <param name="valor">The valor.</param>
+        /// <returns></returns>
         private static bool TryLeerDecimal(
             string texto,
             out decimal valor)

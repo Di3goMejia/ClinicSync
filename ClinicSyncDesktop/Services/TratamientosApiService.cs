@@ -10,8 +10,16 @@ using System.Diagnostics;
 
 namespace ClinicSyncDesktop.Services
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class TratamientosApiService
     {
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<List<Tratamiento>> ListarAsync(
             CancellationToken ct = default)
         {
@@ -21,6 +29,20 @@ namespace ClinicSyncDesktop.Services
                 List<Tratamiento>>("api/tratamientos/");
         }
 
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="idTratamiento">The identifier tratamiento.</param>
+        /// <param name="nombre">The nombre.</param>
+        /// <param name="precio">The precio.</param>
+        /// <param name="descripcion">The descripcion.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="HttpRequestException">
+        /// null
+        /// or
+        /// La API no devolvió el nuevo tratamiento.
+        /// </exception>
         public async Task<Tratamiento> ModificarAsync(int idTratamiento,
             string nombre,
             decimal precio,
@@ -71,6 +93,13 @@ namespace ClinicSyncDesktop.Services
                 "La API no devolvió el nuevo tratamiento.");
         }
 
+        /// <summary>
+        /// Cambiars the estado asynchronous.
+        /// </summary>
+        /// <param name="idTratamiento">The identifier tratamiento.</param>
+        /// <param name="activo">if set to <c>true</c> [activo].</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="HttpRequestException">null</exception>
         public async Task CambiarEstadoAsync(int idTratamiento,
             bool activo,
             CancellationToken ct = default)
@@ -113,6 +142,19 @@ namespace ClinicSyncDesktop.Services
             }
         }
 
+        /// <summary>
+        /// Registrars the asynchronous.
+        /// </summary>
+        /// <param name="nombre">The nombre.</param>
+        /// <param name="precio">The precio.</param>
+        /// <param name="descripcion">The descripcion.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="HttpRequestException">
+        /// null
+        /// or
+        /// La API no devolvió el identificador del tratamiento.
+        /// </exception>
         public async Task<int> RegistrarAsync(
             string nombre,
             decimal precio,
@@ -170,8 +212,17 @@ namespace ClinicSyncDesktop.Services
                     "La API no devolvió el identificador del tratamiento.");
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private sealed class RegistroTratamientoRespuesta
         {
+            /// <summary>
+            /// Gets or sets the identifier tratamiento.
+            /// </summary>
+            /// <value>
+            /// The identifier tratamiento.
+            /// </value>
             public int IdTratamiento { get; set; }
         }
     }

@@ -7,8 +7,18 @@ using System.Threading.Tasks;
 
 namespace ClinicSyncDesktop.Services
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class ResumenFinanzasApiService
     {
+        /// <summary>
+        /// Obteners the resumen asynchronous.
+        /// </summary>
+        /// <param name="periodo">The periodo.</param>
+        /// <param name="desde">The desde.</param>
+        /// <param name="hasta">The hasta.</param>
+        /// <returns></returns>
         public async Task<IReadOnlyList<MovimientoResumen>> ObtenerResumenAsync(
             string periodo,
             DateOnly? desde = null,

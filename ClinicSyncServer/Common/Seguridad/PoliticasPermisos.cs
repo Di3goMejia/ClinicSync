@@ -2,8 +2,16 @@
 
 namespace ClinicSyncServer.Common.Seguridad
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class PoliticasPermisos
     {
+        /// <summary>
+        /// Adds the politicas permisos.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <returns></returns>
         public static IServiceCollection AddPoliticasPermisos(this IServiceCollection services)
         {
             services.AddAuthorization(opciones =>

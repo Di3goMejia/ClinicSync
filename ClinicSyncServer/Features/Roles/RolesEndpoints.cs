@@ -4,6 +4,9 @@ using PermisosSeguridad = ClinicSyncServer.Common.Seguridad.Permisos;
 
 namespace ClinicSyncServer.Features.Roles;
 
+/// <summary>
+/// 
+/// </summary>
 public static class RolesEndpoints
 {
     public static void MapRolesEndpoints(this WebApplication app)

@@ -12,18 +12,56 @@ using System.Windows.Media.Imaging;
 
 namespace ClinicSyncDesktop.Views.Seguridad;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="System.Windows.Window" />
+/// <seealso cref="System.Windows.Markup.IComponentConnector" />
 public partial class AgregarUsuarioWindow : Window
 {
+    /// <summary>
+    /// The usuarios service
+    /// </summary>
     private readonly UsuariosApiService? _usuariosService;
+    /// <summary>
+    /// The roles service
+    /// </summary>
     private readonly RolesApiService? _rolesService;
+    /// <summary>
+    /// The credenciales
+    /// </summary>
     private bool _credenciales;
+    /// <summary>
+    /// The ruta imagen
+    /// </summary>
     private string? _rutaImagen;
+    /// <summary>
+    /// The validador
+    /// </summary>
     private readonly ValidadorUsuario _validador = new();
+    /// <summary>
+    /// The controles
+    /// </summary>
     private readonly Dictionary<string, Control> _controles;
 
+    /// <summary>
+    /// Gets a value indicating whether [error al registrar].
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if [error al registrar]; otherwise, <c>false</c>.
+    /// </value>
     public bool ErrorAlRegistrar { get; private set; }
+    /// <summary>
+    /// Gets the mensaje error.
+    /// </summary>
+    /// <value>
+    /// The mensaje error.
+    /// </value>
     public string MensajeError { get; private set; } = string.Empty;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AgregarUsuarioWindow"/> class.
+    /// </summary>
     public AgregarUsuarioWindow()
     {
         InitializeComponent();
@@ -51,6 +89,11 @@ public partial class AgregarUsuarioWindow : Window
         TxtCorreo.TextChanged += (_, _) => LimpiarError();
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AgregarUsuarioWindow"/> class.
+    /// </summary>
+    /// <param name="usuariosService">The usuarios service.</param>
+    /// <param name="rolesService">The roles service.</param>
     public AgregarUsuarioWindow(UsuariosApiService usuariosService, RolesApiService rolesService) : this()
     {
         _usuariosService = usuariosService;
@@ -58,6 +101,11 @@ public partial class AgregarUsuarioWindow : Window
         Loaded += AgregarUsuarioWindow_Loaded;
     }
 
+    /// <summary>
+    /// Handles the Loaded event of the AgregarUsuarioWindow control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private async void AgregarUsuarioWindow_Loaded(object sender, RoutedEventArgs e)
     {
         try
@@ -74,6 +122,11 @@ public partial class AgregarUsuarioWindow : Window
         }
     }
 
+    /// <summary>
+    /// Handles the Click event of the Siguiente control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void Siguiente_Click(object sender, RoutedEventArgs e)
     {
         if (!ValidarDatosPersonales())
@@ -89,6 +142,11 @@ public partial class AgregarUsuarioWindow : Window
         BtnRegresar.Visibility = Visibility.Visible;
     }
 
+    /// <summary>
+    /// Handles the Click event of the Regresar control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void Regresar_Click(object sender, RoutedEventArgs e)
     {
         _credenciales = false;
@@ -101,6 +159,11 @@ public partial class AgregarUsuarioWindow : Window
         LimpiarError();
     }
 
+    /// <summary>
+    /// Handles the Click event of the Guardar control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private async void Guardar_Click(object sender, RoutedEventArgs e)
     {
         if (_usuariosService is null || !_credenciales || !ValidarCredenciales())
@@ -128,6 +191,10 @@ public partial class AgregarUsuarioWindow : Window
         }
     }
 
+    /// <summary>
+    /// Validars the datos personales.
+    /// </summary>
+    /// <returns></returns>
     private bool ValidarDatosPersonales()
     {
         var resultado = _validador.ValidarDatosPersonales(CrearEntrada());
@@ -135,6 +202,10 @@ public partial class AgregarUsuarioWindow : Window
             mensaje => MostrarError(mensaje), LimpiarError);
     }
 
+    /// <summary>
+    /// Validars the credenciales.
+    /// </summary>
+    /// <returns></returns>
     private bool ValidarCredenciales()
     {
         var resultado = _validador.ValidarCredenciales(CrearEntrada());
@@ -142,11 +213,20 @@ public partial class AgregarUsuarioWindow : Window
             mensaje => MostrarError(mensaje, true), LimpiarError);
     }
 
+    /// <summary>
+    /// Crears the entrada.
+    /// </summary>
+    /// <returns></returns>
     private EntradaUsuario CrearEntrada() => new(
         TxtIdentidad.Text.Trim(), TxtNombres.Text.Trim(), TxtApellidos.Text.Trim(),
         TxtTelefono.Text.Trim(), DpFechaNacimiento.SelectedDate, CmbGenero.SelectedItem,
         CmbRol.SelectedItem, TxtNombreUsuario.Text.Trim(), TxtCorreo.Text.Trim());
 
+    /// <summary>
+    /// Handles the Click event of the SeleccionarImagen control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void SeleccionarImagen_Click(object sender, RoutedEventArgs e)
     {
         var dialogo = new OpenFileDialog
@@ -170,6 +250,11 @@ public partial class AgregarUsuarioWindow : Window
         BtnQuitarImagen.Visibility = Visibility.Visible;
     }
 
+    /// <summary>
+    /// Handles the Click event of the QuitarImagen control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void QuitarImagen_Click(object sender, RoutedEventArgs e)
     {
         TxtImagen.Clear();
@@ -178,6 +263,11 @@ public partial class AgregarUsuarioWindow : Window
         BtnQuitarImagen.Visibility = Visibility.Collapsed;
     }
 
+    /// <summary>
+    /// Handles the Click event of the Cancelar control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void Cancelar_Click(object sender, RoutedEventArgs e)
     {
         bool hayDatos = !string.IsNullOrWhiteSpace(TxtIdentidad.Text) ||
@@ -198,12 +288,22 @@ public partial class AgregarUsuarioWindow : Window
         Close();
     }
 
+    /// <summary>
+    /// Handles the MouseLeftButtonDown event of the Encabezado control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
     private void Encabezado_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (e.LeftButton == MouseButtonState.Pressed)
             DragMove();
     }
 
+    /// <summary>
+    /// Mostrars the error.
+    /// </summary>
+    /// <param name="mensaje">The mensaje.</param>
+    /// <param name="credenciales">if set to <c>true</c> [credenciales].</param>
     private void MostrarError(string mensaje, bool credenciales = false)
     {
         var control = credenciales ? TxtErrorCredenciales : TxtError;
@@ -211,6 +311,9 @@ public partial class AgregarUsuarioWindow : Window
         control.Visibility = Visibility.Visible;
     }
 
+    /// <summary>
+    /// Limpiars the error.
+    /// </summary>
     private void LimpiarError()
     {
         TxtError.Visibility = Visibility.Collapsed;

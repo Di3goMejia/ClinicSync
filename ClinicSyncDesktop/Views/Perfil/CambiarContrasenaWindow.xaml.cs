@@ -8,28 +8,63 @@ using System.Windows.Media;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class CambiarContrasenaWindow : Window
     {
+        /// <summary>
+        /// The sincronizando
+        /// </summary>
         private bool sincronizando;
+        /// <summary>
+        /// The guardando
+        /// </summary>
         private bool guardando;
 
+        /// <summary>
+        /// The verde
+        /// </summary>
         private static readonly Brush Verde =
             new SolidColorBrush(Color.FromRgb(32, 145, 70));
 
+        /// <summary>
+        /// The rojo
+        /// </summary>
         private static readonly Brush Rojo =
             new SolidColorBrush(Color.FromRgb(221, 53, 78));
 
+        /// <summary>
+        /// The gris
+        /// </summary>
         private static readonly Brush Gris =
             new SolidColorBrush(Color.FromRgb(145, 145, 145));
 
+        /// <summary>
+        /// Gets the error cambio.
+        /// </summary>
+        /// <value>
+        /// The error cambio.
+        /// </value>
         public string? ErrorCambio { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CambiarContrasenaWindow"/> class.
+        /// </summary>
         public CambiarContrasenaWindow()
         {
             InitializeComponent();
             Validar();
         }
 
+        /// <summary>
+        /// Reglas the specified control.
+        /// </summary>
+        /// <param name="control">The control.</param>
+        /// <param name="cumple">if set to <c>true</c> [cumple].</param>
+        /// <param name="texto">The texto.</param>
         private void Regla(
             TextBlock control,
             bool cumple,
@@ -40,6 +75,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // VALIDACIONES EN TIEMPO REAL
+        /// <summary>
+        /// Validars this instance.
+        /// </summary>
         private void Validar()
         {
             if (BtnGuardar == null)
@@ -103,6 +141,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // VALIDAR MIENTRAS ESCRIBE
+        /// <summary>
+        /// Handles the PasswordChanged event of the Campos control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Campos_PasswordChanged(
             object sender,
             RoutedEventArgs e)
@@ -120,6 +163,11 @@ namespace ClinicSyncDesktop.Views
             Validar();
         }
 
+        /// <summary>
+        /// Handles the TextChanged event of the Visible control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void Visible_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -138,6 +186,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // MOSTRAR U OCULTAR CONTRASEÑAS
+        /// <summary>
+        /// Handles the Click event of the AlternarVisibilidad control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void AlternarVisibilidad_Click(
             object sender,
             RoutedEventArgs e)
@@ -167,6 +220,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CERRAR VENTANA
+        /// <summary>
+        /// Handles the Click event of the Cerrar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Cerrar_Click(
             object sender,
             RoutedEventArgs e)
@@ -174,6 +232,9 @@ namespace ClinicSyncDesktop.Views
             SolicitarCerrar();
         }
 
+        /// <summary>
+        /// Solicitars the cerrar.
+        /// </summary>
         private void SolicitarCerrar()
         {
             if (guardando)
@@ -200,6 +261,10 @@ namespace ClinicSyncDesktop.Views
         }
 
 
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Window.Closing" /> event.
+        /// </summary>
+        /// <param name="e">A <see cref="T:System.ComponentModel.CancelEventArgs" /> that contains the event data.</param>
         protected override void OnClosing(
             System.ComponentModel.CancelEventArgs e)
         {
@@ -218,6 +283,11 @@ namespace ClinicSyncDesktop.Views
 
         // GUARDAR CAMBIO DE CONTRASEÑA
 
+        /// <summary>
+        /// Handles the Click event of the Guardar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Guardar_Click(
             object sender,
             RoutedEventArgs e)

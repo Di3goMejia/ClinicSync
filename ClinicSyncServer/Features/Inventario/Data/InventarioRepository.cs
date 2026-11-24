@@ -7,8 +7,18 @@ using System.Data;
 
 namespace ClinicSyncServer.Features.Inventario.Data
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class InventarioRepository(SqlConnectionFactory factory)
     {
+        /// <summary>
+        /// Insertars the asynchronous.
+        /// </summary>
+        /// <param name="req">The req.</param>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<int> InsertarAsync(
             RegistrarMaterialRequest req,
             int idUsuario,
@@ -46,6 +56,12 @@ namespace ClinicSyncServer.Features.Inventario.Data
             }
         }
 
+        /// <summary>
+        /// Listars the asynchronous.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<Material>> ListarAsync(
             ListarMaterialesQuery query,
             CancellationToken ct = default)
@@ -73,6 +89,12 @@ namespace ClinicSyncServer.Features.Inventario.Data
             }
         }
 
+        /// <summary>
+        /// Obteners the por identifier asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
         public async Task<Material?> ObtenerPorIdAsync(
             int id,
             CancellationToken ct = default)
@@ -96,6 +118,13 @@ namespace ClinicSyncServer.Features.Inventario.Data
             }
         }
 
+        /// <summary>
+        /// Modificars the asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="req">The req.</param>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="ct">The ct.</param>
         public async Task ModificarAsync(
             int id,
             MaterialRequest req,
@@ -150,6 +179,12 @@ namespace ClinicSyncServer.Features.Inventario.Data
             }
         }
 
+        /// <summary>
+        /// Cambiars the estado asynchronous.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="activo">if set to <c>true</c> [activo].</param>
+        /// <param name="ct">The ct.</param>
         public async Task CambiarEstadoAsync(
             int id,
             bool activo,

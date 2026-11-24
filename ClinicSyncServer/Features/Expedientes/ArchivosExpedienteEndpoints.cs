@@ -15,6 +15,9 @@ using PermisosSeguridad = ClinicSyncServer.Common.Seguridad.Permisos;
 
 namespace ClinicSyncServer.Features.Expedientes
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class ArchivosExpedienteEndpoints
     {
         public static void MapArchivosExpedienteEndpoints(

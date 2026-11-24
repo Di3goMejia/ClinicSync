@@ -2,6 +2,10 @@
 
 namespace ClinicSyncServer.Features.Usuarios.Requests
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.IEquatable&lt;ClinicSyncServer.Features.Usuarios.Requests.CrearUsuarioRequest&gt;" />
     public record CrearUsuarioRequest(
         [property: Required(ErrorMessage = "El número de identidad es obligatorio.")]
         string Identidad,

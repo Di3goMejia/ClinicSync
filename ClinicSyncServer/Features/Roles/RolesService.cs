@@ -9,13 +9,29 @@ using PermisosCatalogo = ClinicSyncServer.Common.Seguridad.Permisos;
 
 namespace ClinicSyncServer.Features.Roles;
 
+/// <summary>
+/// 
+/// </summary>
+/// <seealso cref="ClinicSyncServer.Features.Roles.IRolesService" />
 public sealed partial class RolesService(RolesRepository repo) : IRolesService
 {
+    /// <summary>
+    /// Listars the asynchronous.
+    /// </summary>
+    /// <param name="query">The query.</param>
+    /// <param name="ct">The ct.</param>
+    /// <returns></returns>
     public async Task<IEnumerable<RolListado>> ListarAsync(ListarRolesQuery query, CancellationToken ct = default)
     {
         return await repo.ListarAsync(query, ct);
     }
 
+    /// <summary>
+    /// Crears the asynchronous.
+    /// </summary>
+    /// <param name="request">The request.</param>
+    /// <param name="ct">The ct.</param>
+    /// <returns></returns>
     public async Task<CrearRolResponse> CrearAsync(CrearRolRequest request, CancellationToken ct = default)
     {
         var codigo = GenerarCodigo(request.Nombre);
@@ -26,11 +42,23 @@ public sealed partial class RolesService(RolesRepository repo) : IRolesService
         return respuesta;
     }
 
+    /// <summary>
+    /// Obteners the por identifier asynchronous.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="ct">The ct.</param>
+    /// <returns></returns>
     public async Task<RolDetalle?> ObtenerPorIdAsync(int id, CancellationToken ct = default)
     {
         return await repo.ObtenerPorIdAsync(id, ct);
     }
 
+    /// <summary>
+    /// Modificars the asynchronous.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="request">The request.</param>
+    /// <param name="ct">The ct.</param>
     public async Task ModificarAsync(int id, ModificarRolRequest request, CancellationToken ct = default)
     {
         await ValidarNoProtegidoAsync(id, ct);
@@ -47,6 +75,12 @@ public sealed partial class RolesService(RolesRepository repo) : IRolesService
         }
     }
 
+    /// <summary>
+    /// Validars the permisos asynchronous.
+    /// </summary>
+    /// <param name="codigos">The codigos.</param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException">Los permisos no son válidos: {string.Join(", ", desconocidos)}.</exception>
     private static Task ValidarPermisosAsync(IEnumerable<string> codigos)
     {
         var permitidos = PermisosCatalogo.Todos.ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -59,6 +93,13 @@ public sealed partial class RolesService(RolesRepository repo) : IRolesService
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Cambiars the estado asynchronous.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="request">The request.</param>
+    /// <param name="ct">The ct.</param>
+    /// <exception cref="InvalidOperationException">No se puede cambiar el estado de un rol que tiene usuarios asignados.</exception>
     public async Task CambiarEstadoAsync(int id, CambiarEstadoRolRequest request, CancellationToken ct = default)
     {
         await ValidarNoProtegidoAsync(id, ct);
@@ -67,12 +108,23 @@ public sealed partial class RolesService(RolesRepository repo) : IRolesService
         await repo.CambiarEstadoAsync(id, request.Activo!.Value, ct);
     }
 
+    /// <summary>
+    /// Validars the no protegido asynchronous.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="ct">The ct.</param>
+    /// <exception cref="InvalidOperationException">El rol está protegido y no puede modificarse.</exception>
     private async Task ValidarNoProtegidoAsync(int id, CancellationToken ct)
     {
         if (await repo.EsProtegidoAsync(id, ct))
             throw new InvalidOperationException("El rol está protegido y no puede modificarse.");
     }
 
+    /// <summary>
+    /// Generars the codigo.
+    /// </summary>
+    /// <param name="nombre">The nombre.</param>
+    /// <returns></returns>
     private static string GenerarCodigo(string nombre)
     {
         var normalizado = nombre.Trim().Normalize(NormalizationForm.FormD);

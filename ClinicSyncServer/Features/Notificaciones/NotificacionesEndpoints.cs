@@ -5,8 +5,15 @@ using Dapper;
 
 namespace ClinicSyncServer.Features.Notificaciones;
 
+/// <summary>
+/// 
+/// </summary>
 public static class NotificacionesEndpoints
 {
+    /// <summary>
+    /// Maps the notificaciones endpoints.
+    /// </summary>
+    /// <param name="app">The application.</param>
     public static void MapNotificacionesEndpoints(
         this WebApplication app)
     {
@@ -120,16 +127,79 @@ public static class NotificacionesEndpoints
     }
 }
 
+/// <summary>
+/// 
+/// </summary>
 public sealed class NotificacionDto
 {
+    /// <summary>
+    /// Gets or sets the identifier notificacion.
+    /// </summary>
+    /// <value>
+    /// The identifier notificacion.
+    /// </value>
     public long IdNotificacion { get; set; }
+    /// <summary>
+    /// Gets or sets the tipo.
+    /// </summary>
+    /// <value>
+    /// The tipo.
+    /// </value>
     public string Tipo { get; set; } = "";
+    /// <summary>
+    /// Gets or sets the identifier referencia.
+    /// </summary>
+    /// <value>
+    /// The identifier referencia.
+    /// </value>
     public int IdReferencia { get; set; }
+    /// <summary>
+    /// Gets or sets the titulo.
+    /// </summary>
+    /// <value>
+    /// The titulo.
+    /// </value>
     public string Titulo { get; set; } = "";
+    /// <summary>
+    /// Gets or sets the descripcion.
+    /// </summary>
+    /// <value>
+    /// The descripcion.
+    /// </value>
     public string Descripcion { get; set; } = "";
+    /// <summary>
+    /// Gets or sets the fecha evento.
+    /// </summary>
+    /// <value>
+    /// The fecha evento.
+    /// </value>
     public DateTime FechaEvento { get; set; }
+    /// <summary>
+    /// Gets or sets the fecha creacion.
+    /// </summary>
+    /// <value>
+    /// The fecha creacion.
+    /// </value>
     public DateTime FechaCreacion { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether this <see cref="NotificacionDto"/> is leida.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if leida; otherwise, <c>false</c>.
+    /// </value>
     public bool Leida { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether this <see cref="NotificacionDto"/> is vigente.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if vigente; otherwise, <c>false</c>.
+    /// </value>
     public bool Vigente { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether this <see cref="NotificacionDto"/> is archivada.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if archivada; otherwise, <c>false</c>.
+    /// </value>
     public bool Archivada { get; set; }
 }

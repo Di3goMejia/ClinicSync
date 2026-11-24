@@ -6,14 +6,44 @@ using ClinicSyncServer.Infrastructure.Facial;
 
 namespace ClinicSyncServer.Features.Auth.Services
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class RegistroCredencialFacialService(
         Metodos2FARepository metodos2FA,
         ServicioReconocimientoFacial reconocimiento)
     {
+        /// <summary>
+        /// The minimo muestras
+        /// </summary>
         private const int MinimoMuestras = 5;
+        /// <summary>
+        /// The maximo muestras
+        /// </summary>
         private const int MaximoMuestras = 10;
+        /// <summary>
+        /// The maximo bytes imagen
+        /// </summary>
         private const int MaximoBytesImagen = 5 * 1024 * 1024;
 
+        /// <summary>
+        /// Registrars the asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="muestras">The muestras.</param>
+        /// <param name="ct">The ct.</param>
+        /// <exception cref="ArgumentException">
+        /// El identificador del usuario no es válido.
+        /// or
+        /// Se necesitan entre 5 y 10 muestras faciales.
+        /// or
+        /// Una de las muestras está vacía.
+        /// or
+        /// Una imagen supera el tamaño permitido.
+        /// or
+        /// Una imagen tiene un tamaño no permitido.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">El usuario ya tiene un método facial activo.</exception>
         public async Task RegistrarAsync(
             int idUsuario,
             IList<string> muestras,

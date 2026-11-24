@@ -7,13 +7,29 @@ using System.Security.Cryptography;
 
 namespace ClinicSyncServer.Features.Auth.Factores
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="ClinicSyncServer.Features.Auth.Factores.IFactorSegundoService" />
     public sealed class FactorSegundoFacial(
         Metodos2FARepository metodos2FA,
         ServicioReconocimientoFacial reconocimiento,
         IConfiguration config) : IFactorSegundoService
     {
+        /// <summary>
+        /// The maximo bytes imagen
+        /// </summary>
         private const int MaximoBytesImagen = 5 * 1024 * 1024;
 
+        /// <summary>
+        /// Verificars the asynchronous.
+        /// </summary>
+        /// <param name="idUsuario">The identifier usuario.</param>
+        /// <param name="prueba">The prueba.</param>
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">El umbral de reconocimiento facial no está " +
+        ///                         "configurado correctamente.</exception>
         public async Task<bool> VerificarAsync(
             int idUsuario,
             string prueba,

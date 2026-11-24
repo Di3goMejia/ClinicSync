@@ -18,25 +18,53 @@ using System.Windows.Media;
 
 namespace ClinicSyncDesktop.Views
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
+    /// <seealso cref="System.Windows.Markup.IStyleConnector" />
     public partial class AgregarVisitaWindow : Window
     {
         // PACIENTE Y EMPLEADO
+        /// <summary>
+        /// The identifier paciente
+        /// </summary>
         private readonly int idPaciente;
+        /// <summary>
+        /// The identifier empleado actual
+        /// </summary>
         private int idEmpleadoActual = 0;
 
         // PASO ACTUAL
+        /// <summary>
+        /// The paso actual
+        /// </summary>
         private int pasoActual = 0;
 
         // TRATAMIENTOS
+        /// <summary>
+        /// The tratamientos
+        /// </summary>
         private readonly ObservableCollection<TratamientoOpcion>
             tratamientos = new();
 
+        /// <summary>
+        /// The vista tratamientos
+        /// </summary>
         private ICollectionView vistaTratamientos = null!;
 
+        /// <summary>
+        /// The archivos pendientes
+        /// </summary>
         private readonly ObservableCollection<string>
             archivosPendientes = new();
 
         // CONSTRUCTOR
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AgregarVisitaWindow"/> class.
+        /// </summary>
+        /// <param name="idPaciente">The identifier paciente.</param>
         public AgregarVisitaWindow(int idPaciente)
         {
             InitializeComponent();
@@ -68,15 +96,43 @@ namespace ClinicSyncDesktop.Views
         }
 
         // MODELO DE TRATAMIENTOS
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
         public class TratamientoOpcion : INotifyPropertyChanged
         {
+            /// <summary>
+            /// Gets or sets the identifier tratamiento.
+            /// </summary>
+            /// <value>
+            /// The identifier tratamiento.
+            /// </value>
             public int IdTratamiento { get; set; }
 
+            /// <summary>
+            /// Gets or sets the nombre.
+            /// </summary>
+            /// <value>
+            /// The nombre.
+            /// </value>
             public string Nombre { get; set; } = "";
 
+            /// <summary>
+            /// The seleccionado
+            /// </summary>
             private bool seleccionado;
+            /// <summary>
+            /// The cantidad
+            /// </summary>
             private int cantidad = 1;
 
+            /// <summary>
+            /// Gets or sets a value indicating whether this <see cref="TratamientoOpcion"/> is seleccionado.
+            /// </summary>
+            /// <value>
+            ///   <c>true</c> if seleccionado; otherwise, <c>false</c>.
+            /// </value>
             public bool Seleccionado
             {
                 get => seleccionado;
@@ -92,6 +148,12 @@ namespace ClinicSyncDesktop.Views
                 }
             }
 
+            /// <summary>
+            /// Gets or sets the cantidad.
+            /// </summary>
+            /// <value>
+            /// The cantidad.
+            /// </value>
             public int Cantidad
             {
                 get => cantidad;
@@ -107,21 +169,50 @@ namespace ClinicSyncDesktop.Views
                 }
             }
 
+            /// <summary>
+            /// Occurs when a property value changes.
+            /// </summary>
             public event PropertyChangedEventHandler?
                 PropertyChanged;
         }
 
         // MODELO DE RESPUESTA DE TRATAMIENTOS
+        /// <summary>
+        /// 
+        /// </summary>
         public class TratamientoApi
         {
+            /// <summary>
+            /// Gets or sets the identifier tratamiento.
+            /// </summary>
+            /// <value>
+            /// The identifier tratamiento.
+            /// </value>
             public int IdTratamiento { get; set; }
 
+            /// <summary>
+            /// Gets or sets the nombre.
+            /// </summary>
+            /// <value>
+            /// The nombre.
+            /// </value>
             public string Nombre { get; set; } = "";
 
+            /// <summary>
+            /// Gets or sets a value indicating whether this <see cref="TratamientoApi"/> is activo.
+            /// </summary>
+            /// <value>
+            ///   <c>true</c> if activo; otherwise, <c>false</c>.
+            /// </value>
             public bool Activo { get; set; }
         }
 
         // MOVER VENTANA
+        /// <summary>
+        /// Handles the MouseLeftButtonDown event of the Encabezado control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
         private void Encabezado_MouseLeftButtonDown(
             object sender,
             MouseButtonEventArgs e)
@@ -133,6 +224,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CARGAR INFORMACIÓN INICIAL
+        /// <summary>
+        /// Handles the Loaded event of the Ventana control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Ventana_Loaded(
             object sender,
             RoutedEventArgs e)
@@ -211,6 +307,9 @@ namespace ClinicSyncDesktop.Views
         }
 
         // OBTENER TRATAMIENTOS DESDE LA API
+        /// <summary>
+        /// Cargars the tratamientos asynchronous.
+        /// </summary>
         private async Task CargarTratamientosAsync()
         {
             TratamientoApi[] lista =
@@ -235,6 +334,10 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CAMBIAR ENTRE LOS TRES PASOS
+        /// <summary>
+        /// Mostrars the paso.
+        /// </summary>
+        /// <param name="paso">The paso.</param>
         private void MostrarPaso(int paso)
         {
             pasoActual = paso;
@@ -288,6 +391,10 @@ namespace ClinicSyncDesktop.Views
         }
 
         // MOSTRAR MENSAJES DE ERROR
+        /// <summary>
+        /// Mostrars the error.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
         private void MostrarError(string mensaje)
         {
             txtError.Text = mensaje;
@@ -297,6 +404,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // OCULTAR ERROR AL MODIFICAR CAMPOS
+        /// <summary>
+        /// Handles the TextChanged event of the Campo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void Campo_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -311,6 +423,10 @@ namespace ClinicSyncDesktop.Views
         }
 
         // VALIDAR ANTECEDENTES
+        /// <summary>
+        /// Validars the antecedentes.
+        /// </summary>
+        /// <returns></returns>
         private bool ValidarAntecedentes()
         {
             var resultado =
@@ -343,6 +459,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // BOTÓN SIGUIENTE
+        /// <summary>
+        /// Handles the Click event of the Siguiente control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Siguiente_Click(
             object sender,
             RoutedEventArgs e)
@@ -362,6 +483,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // BOTÓN REGRESAR
+        /// <summary>
+        /// Handles the Click event of the Regresar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Regresar_Click(
             object sender,
             RoutedEventArgs e)
@@ -373,6 +499,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // ABRIR CALENDARIO
+        /// <summary>
+        /// Handles the Click event of the CalendarioVisita control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void CalendarioVisita_Click(
             object sender,
             RoutedEventArgs e)
@@ -406,6 +537,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // SELECCIONAR FECHA DEL CALENDARIO
+        /// <summary>
+        /// Handles the SelectedDatesChanged event of the CalendarioVisita control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
         private void CalendarioVisita_SelectedDatesChanged(
             object sender,
             SelectionChangedEventArgs e)
@@ -431,6 +567,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // VALIDAR FECHA ESCRITA MANUALMENTE
+        /// <summary>
+        /// Handles the LostFocus event of the FechaVisita control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void FechaVisita_LostFocus(
             object sender,
             RoutedEventArgs e)
@@ -467,6 +608,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // FILTRAR TRATAMIENTOS
+        /// <summary>
+        /// Filtrars the tratamiento.
+        /// </summary>
+        /// <param name="objeto">The objeto.</param>
+        /// <returns></returns>
         private bool FiltrarTratamiento(object objeto)
         {
             if (objeto is not TratamientoOpcion t)
@@ -484,6 +630,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // BUSCAR TRATAMIENTO
+        /// <summary>
+        /// Handles the TextChanged event of the BuscarTratamiento control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void BuscarTratamiento_TextChanged(
             object sender,
             TextChangedEventArgs e)
@@ -492,6 +643,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // SELECCIONAR TRATAMIENTO
+        /// <summary>
+        /// Handles the Click event of the SeleccionarTratamiento control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void SeleccionarTratamiento_Click(
             object sender,
             RoutedEventArgs e)
@@ -504,6 +660,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // SUMAR CANTIDAD
+        /// <summary>
+        /// Handles the Click event of the SumarCantidad control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void SumarCantidad_Click(
             object sender,
             RoutedEventArgs e)
@@ -519,6 +680,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // RESTAR CANTIDAD
+        /// <summary>
+        /// Handles the Click event of the RestarCantidad control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void RestarCantidad_Click(
             object sender,
             RoutedEventArgs e)
@@ -536,6 +702,11 @@ namespace ClinicSyncDesktop.Views
         // GUARDAR VISITA
         // PENDIENTE DE CONECTAR EL ENVÍO A LA API
 
+        /// <summary>
+        /// Handles the Click event of the Guardar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Guardar_Click(
             object sender,
             RoutedEventArgs e)
@@ -610,6 +781,11 @@ namespace ClinicSyncDesktop.Views
 
 
         // SUBIR ARCHIVOS PENDIENTES
+        /// <summary>
+        /// Handles the Click event of the SubirArchivo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void SubirArchivo_Click(
             object sender,
             RoutedEventArgs e)
@@ -654,6 +830,10 @@ namespace ClinicSyncDesktop.Views
             }
         }
 
+        /// <summary>
+        /// Agregars the archivo pendiente.
+        /// </summary>
+        /// <param name="archivo">The archivo.</param>
         private void AgregarArchivoPendiente(FileInfo archivo)
         {
             StackPanel fila = new()
@@ -691,6 +871,11 @@ namespace ClinicSyncDesktop.Views
             PanelArchivos.Children.Add(fila);
         }
 
+        /// <summary>
+        /// Handles the Click event of the QuitarArchivoPendiente control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void QuitarArchivoPendiente_Click(
             object sender,
             RoutedEventArgs e)
@@ -706,6 +891,10 @@ namespace ClinicSyncDesktop.Views
             PanelArchivos.Children.Remove(fila);
         }
 
+        /// <summary>
+        /// Mostrars the error archivo.
+        /// </summary>
+        /// <param name="mensaje">The mensaje.</param>
         private void MostrarErrorArchivo(string mensaje)
         {
             MostrarError(mensaje);
@@ -713,6 +902,11 @@ namespace ClinicSyncDesktop.Views
         }
 
         // CERRAR CON CONFIRMACIÓN DE DESCARTE
+        /// <summary>
+        /// Handles the Click event of the Cancelar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Cancelar_Click(
             object sender,
             RoutedEventArgs e)
