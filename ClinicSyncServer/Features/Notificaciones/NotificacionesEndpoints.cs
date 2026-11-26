@@ -46,11 +46,14 @@ public static class NotificacionesEndpoints
 
                 await using var db = factory.Crear();
 
-                // Generar los recordatorios y alertas
-                // que correspondan a la situación actual.
-                await db.ExecuteAsync(
-                    "api.usp_Notificaciones_Sincronizar",
-                    commandType: CommandType.StoredProcedure);
+                // Sincronizar recordatorios de citas próximas y vencidas
+                // (las alertas de stock se gestionan en tiempo real vía trigger).
+                if (tipo is null || tipo == "CITA")
+                {
+                    await db.ExecuteAsync(
+                        "api.usp_Notificaciones_SincronizarCitas",
+                        commandType: CommandType.StoredProcedure);
+                }
 
                 var datos = await db.QueryAsync<NotificacionDto>(
                     "api.usp_Notificaciones_Listar",
